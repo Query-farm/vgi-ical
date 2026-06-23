@@ -4,7 +4,9 @@
 
 <p align="center"><em>A <a href="https://query.farm">Query.Farm</a> VGI worker for DuckDB.</em></p>
 
-# vgi-ical
+# Parse iCalendar (.ics) Events & To-Dos in DuckDB
+
+> **vgi-ical** · a [Query.Farm](https://query.farm) VGI worker · powered by iCal4j
 
 [![test](https://github.com/Query-farm/vgi-ical/actions/workflows/test.yml/badge.svg)](https://github.com/Query-farm/vgi-ical/actions/workflows/test.yml)
 
