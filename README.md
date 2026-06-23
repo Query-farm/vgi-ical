@@ -1,3 +1,9 @@
+<p align="center">
+  <img src="docs/vgi-logo.png" alt="Vector Gateway Interface (VGI)" width="320">
+</p>
+
+<p align="center"><em>A <a href="https://query.farm">Query.Farm</a> VGI worker for DuckDB.</em></p>
+
 # vgi-ical
 
 [![test](https://github.com/Query-farm/vgi-ical/actions/workflows/test.yml/badge.svg)](https://github.com/Query-farm/vgi-ical/actions/workflows/test.yml)
@@ -118,3 +124,12 @@ checkout).
   Transitive deps (commons-lang3/-codec, threeten-extra, caffeine, jparsec,
   groovy) are Apache-2.0 / BSD / permissive.
 - VGI SDK: per Query Farm.
+
+---
+
+## Authorship & License
+
+Written by [Query.Farm](https://query.farm) — every VGI worker is designed and built by Query.Farm.
+
+Copyright 2026 Query Farm LLC - https://query.farm
+
