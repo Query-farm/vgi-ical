@@ -1,0 +1,33 @@
+# name: test/sql/todos.test
+# group: [vgi_ical]
+#
+# ical_todos over the committed rich .ics fixture.
+
+require-env VGI_ICAL_WORKER
+
+statement ok
+LOAD vgi;
+
+statement ok
+ATTACH 'ical' AS ical (TYPE vgi, LOCATION '${VGI_ICAL_WORKER}');
+
+query IIIIII
+SELECT uid, summary, due, status, priority, percent_complete
+FROM ical.ical_todos('test/sql/data/team.ics');
+----
+todo-1@query.farm	Write release notes	2024-01-20 17:00:00+00	NEEDS-ACTION	2	40
+
+# A feed with no VTODOs -> no rows.
+query I
+SELECT count(*) FROM ical.ical_todos('test/sql/data/holiday.ics');
+----
+0
+
+# Garbage bytes -> no rows, no crash.
+query I
+SELECT count(*) FROM ical.ical_todos('test/sql/data/garbage.ics');
+----
+0
+
+statement ok
+DETACH ical;

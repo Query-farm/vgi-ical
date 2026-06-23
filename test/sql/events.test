@@ -1,0 +1,71 @@
+# name: test/sql/events.test
+# group: [vgi_ical]
+#
+# ical_events over committed .ics fixtures: row values, ORDER BY dtstart,
+# UNNEST(attendees), all-day flag, and timezone (UTC) normalisation.
+
+require-env VGI_ICAL_WORKER
+
+# NOTE: under haybarn-unittest `require vgi` SKIPS the file; load explicitly.
+statement ok
+LOAD vgi;
+
+statement ok
+ATTACH 'ical' AS ical (TYPE vgi, LOCATION '${VGI_ICAL_WORKER}');
+
+# ---- rich feed: one VEVENT with all the trimmings ---------------------------
+
+# dtstart is UTC-normalised (a TIMESTAMP WITH TIME ZONE rendered as +00).
+query IIIII
+SELECT summary, dtstart, dtend, all_day, rrule
+FROM ical.ical_events('test/sql/data/team.ics')
+ORDER BY dtstart;
+----
+Sprint Planning	2024-01-15 09:30:00+00	2024-01-15 10:30:00+00	false	FREQ=WEEKLY;BYDAY=MO
+
+query IIII
+SELECT uid, location, status, organizer
+FROM ical.ical_events('test/sql/data/team.ics');
+----
+event-1@query.farm	Conference Room A	CONFIRMED	mailto:alice@query.farm
+
+# attendees is a VARCHAR[] — UNNEST yields one row per attendee, in order.
+query I
+SELECT UNNEST(attendees) AS a
+FROM ical.ical_events('test/sql/data/team.ics')
+ORDER BY a;
+----
+mailto:bob@query.farm
+mailto:carol@query.farm
+
+query I
+SELECT len(attendees) FROM ical.ical_events('test/sql/data/team.ics');
+----
+2
+
+# ---- all-day event: DATE-valued DTSTART -> all_day = true -------------------
+
+query III
+SELECT summary, dtstart, all_day
+FROM ical.ical_events('test/sql/data/holiday.ics');
+----
+Company Holiday	2024-07-04 00:00:00+00	true
+
+# ---- zoned event: TZID + VTIMEZONE -> UTC ----------------------------------
+
+# 09:00 America/New_York in January (EST, -05:00) == 14:00 UTC.
+query II
+SELECT summary, dtstart
+FROM ical.ical_events('test/sql/data/zoned.ics');
+----
+NYC Standup	2024-01-15 14:00:00+00
+
+# ---- garbage bytes: no rows, no crash --------------------------------------
+
+query I
+SELECT count(*) FROM ical.ical_events('test/sql/data/garbage.ics');
+----
+0
+
+statement ok
+DETACH ical;

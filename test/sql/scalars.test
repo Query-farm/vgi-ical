@@ -1,0 +1,63 @@
+# name: test/sql/scalars.test
+# group: [vgi_ical]
+#
+# Scalar functions: ical_calendar_name, ical_event_count, is_valid_ical.
+
+require-env VGI_ICAL_WORKER
+
+statement ok
+LOAD vgi;
+
+statement ok
+ATTACH 'ical' AS ical (TYPE vgi, LOCATION '${VGI_ICAL_WORKER}');
+
+# ---- ical_calendar_name (X-WR-CALNAME, falling back to PRODID) --------------
+
+query I
+SELECT ical.ical_calendar_name('test/sql/data/team.ics');
+----
+Team Calendar
+
+query I
+SELECT ical.ical_calendar_name('test/sql/data/holiday.ics');
+----
+Holidays
+
+# Garbage -> NULL name (no crash).
+query I
+SELECT ical.ical_calendar_name('test/sql/data/garbage.ics') IS NULL;
+----
+true
+
+# ---- ical_event_count ------------------------------------------------------
+
+query I
+SELECT ical.ical_event_count('test/sql/data/team.ics');
+----
+1
+
+query I
+SELECT ical.ical_event_count('test/sql/data/zoned.ics');
+----
+1
+
+# Garbage -> 0 events.
+query I
+SELECT ical.ical_event_count('test/sql/data/garbage.ics');
+----
+0
+
+# ---- is_valid_ical ---------------------------------------------------------
+
+query I
+SELECT ical.is_valid_ical('test/sql/data/team.ics');
+----
+true
+
+query I
+SELECT ical.is_valid_ical('test/sql/data/garbage.ics');
+----
+false
+
+statement ok
+DETACH ical;
