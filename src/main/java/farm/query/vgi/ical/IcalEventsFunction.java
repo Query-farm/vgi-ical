@@ -37,35 +37,66 @@ public final class IcalEventsFunction implements TableFunction {
     @Override public String name() { return "ical_events"; }
 
     @Override public FunctionMetadata metadata() {
+        java.util.Map<String, String> tags = Meta.objectTags(
+                "Parse iCalendar Events",
+                "# ical_events\n\n"
+                        + "Parse an iCalendar (`.ics`) feed into **one row per VEVENT**. Use it to "
+                        + "ingest a calendar feed for scheduling analytics, reporting, or joining "
+                        + "events against other tables.\n\n"
+                        + "**Input** (positional, polymorphic): a VARCHAR file path the worker "
+                        + "opens, or a BLOB of `.ics` bytes.\n\n"
+                        + "**Output**: uid, summary, description, UTC-normalised `dtstart`/`dtend` "
+                        + "(`TIMESTAMP WITH TIME ZONE`), an `all_day` flag, location, status, "
+                        + "organizer, an `attendees VARCHAR[]` array, the recurrence `rrule`, and "
+                        + "`sequence`.\n\n"
+                        + "**Edge cases**: a NULL argument or a feed that fails to parse yields "
+                        + "*no rows* (never an error). DATE-valued starts set `all_day = true`; "
+                        + "recurrences are surfaced as the raw RRULE string, not expanded.",
+                "Parses an iCalendar (`.ics`) feed into one row per VEVENT, backed by iCal4j "
+                        + "(RFC 5545).\n\n"
+                        + "Accepts a VARCHAR file path or a BLOB of `.ics` bytes. Timestamps are "
+                        + "normalised to UTC and surfaced as `TIMESTAMP WITH TIME ZONE`. Bad or "
+                        + "NULL input yields no rows rather than an error. Recurrence rules appear "
+                        + "as the raw RRULE string in the `rrule` column.",
+                "ical events, vevent, calendar events, ics events, parse calendar, dtstart, "
+                        + "dtend, rrule, attendees, scheduling, meetings, appointments",
+                "IcalEventsFunction.java");
+        tags.put("vgi.result_columns_md",
+                "| column | type | description |\n"
+                        + "|---|---|---|\n"
+                        + "| `uid` | VARCHAR | VEVENT unique identifier (UID). |\n"
+                        + "| `summary` | VARCHAR | Event title (SUMMARY). |\n"
+                        + "| `description` | VARCHAR | Long-form description (DESCRIPTION). |\n"
+                        + "| `dtstart` | TIMESTAMP WITH TIME ZONE | Start, UTC-normalised (DTSTART). |\n"
+                        + "| `dtend` | TIMESTAMP WITH TIME ZONE | End, UTC-normalised (DTEND), or NULL. |\n"
+                        + "| `all_day` | BOOLEAN | True when DTSTART is DATE-valued. |\n"
+                        + "| `location` | VARCHAR | Free-text location (LOCATION). |\n"
+                        + "| `status` | VARCHAR | CONFIRMED / TENTATIVE / CANCELLED (STATUS). |\n"
+                        + "| `organizer` | VARCHAR | ORGANIZER value (usually a mailto: URI). |\n"
+                        + "| `attendees` | VARCHAR[] | ATTENDEE values, one per attendee. |\n"
+                        + "| `rrule` | VARCHAR | Recurrence rule (RRULE), or NULL. |\n"
+                        + "| `sequence` | INTEGER | Revision sequence number (SEQUENCE). |");
+        tags.put("vgi.example_queries",
+                "[{\"sql\": \"SELECT summary, location, all_day FROM ical.main.ical_events("
+                        + Meta.SAMPLE_ICS_BLOB + ") ORDER BY dtstart;\", \"description\": "
+                        + "\"List every event in an iCalendar feed by start time.\"}]");
+        // VGI509: a guaranteed-runnable, self-contained example using an inline
+        // .ics BLOB so no external file is needed.
+        tags.put("vgi.executable_examples",
+                "[{\"description\": \"Parse an inline iCalendar feed into event rows.\", "
+                        + "\"sql\": \"SELECT summary, location, all_day FROM "
+                        + "ical.main.ical_events(" + Meta.SAMPLE_ICS_BLOB
+                        + ") ORDER BY dtstart\"}]");
         return FunctionMetadata.describe(
                         "Parse an iCalendar (.ics) feed into one row per VEVENT: uid, summary, "
                                 + "UTC-normalised start/end, all-day flag, location, status, organizer, "
                                 + "attendees array, recurrence rule, and sequence (iCal4j).")
                 .withCategories("calendar", "icalendar", "ical4j")
-                .withTag("vgi.example_queries",
-                        "[{\"sql\": \"SELECT summary, dtstart FROM "
-                                + "ical.main.ical_events('/cal/team.ics') ORDER BY dtstart;\", "
-                                + "\"description\": \"List every event in an iCalendar feed by "
-                                + "start time.\"}]")
-                .withTag("vgi.columns_md",
-                        "| column | type | description |\n"
-                                + "|---|---|---|\n"
-                                + "| `uid` | VARCHAR | VEVENT unique identifier (UID). |\n"
-                                + "| `summary` | VARCHAR | Event title (SUMMARY). |\n"
-                                + "| `description` | VARCHAR | Long-form description (DESCRIPTION). |\n"
-                                + "| `dtstart` | TIMESTAMP WITH TIME ZONE | Start, UTC-normalised (DTSTART). |\n"
-                                + "| `dtend` | TIMESTAMP WITH TIME ZONE | End, UTC-normalised (DTEND), or NULL. |\n"
-                                + "| `all_day` | BOOLEAN | True when DTSTART is DATE-valued. |\n"
-                                + "| `location` | VARCHAR | Free-text location (LOCATION). |\n"
-                                + "| `status` | VARCHAR | CONFIRMED / TENTATIVE / CANCELLED (STATUS). |\n"
-                                + "| `organizer` | VARCHAR | ORGANIZER value (usually a mailto: URI). |\n"
-                                + "| `attendees` | VARCHAR[] | ATTENDEE values, one per attendee. |\n"
-                                + "| `rrule` | VARCHAR | Recurrence rule (RRULE), or NULL. |\n"
-                                + "| `sequence` | INTEGER | Revision sequence number (SEQUENCE). |")
+                .withTags(tags)
                 .withExamples(java.util.List.of(new FunctionExample(
-                        "SELECT summary, dtstart FROM ical.main.ical_events('/cal/team.ics') "
-                                + "ORDER BY dtstart;",
-                        "List every event in an iCalendar feed by start time.",
+                        "SELECT summary, location, all_day FROM ical.main.ical_events("
+                                + Meta.SAMPLE_ICS_BLOB + ") ORDER BY dtstart;",
+                        "Parse an inline iCalendar feed into event rows.",
                         null)));
     }
 

@@ -29,14 +29,39 @@ public final class EventCountFunction extends ScalarFn {
     }
 
     @Override public FunctionMetadata metadata() {
+        java.util.Map<String, String> tags = Meta.objectTags(
+                "Count iCalendar Events",
+                "# ical_event_count\n\n"
+                        + "Return the **number of VEVENTs** in an iCalendar (`.ics`) feed without "
+                        + "materialising the rows. Use it as a cheap probe — e.g. to skip empty "
+                        + "feeds or rank feeds by activity.\n\n"
+                        + "**Input** (positional, polymorphic): a VARCHAR file path the worker "
+                        + "opens, or a BLOB of `.ics` bytes.\n\n"
+                        + "**Output**: an INTEGER count. NULL input yields NULL; an empty or "
+                        + "unparsable feed yields `0` (never an error).",
+                "Counts the VEVENTs in an iCalendar (`.ics`) feed.\n\n"
+                        + "Accepts a VARCHAR file path or a BLOB of `.ics` bytes and returns an "
+                        + "INTEGER. A NULL argument returns NULL; an empty or unparsable feed "
+                        + "returns `0`. Cheaper than `SELECT count(*) FROM ical_events(...)` when "
+                        + "you only need the tally.",
+                "ical event count, count events, number of events, vevent count, "
+                        + "calendar size, ics count",
+                "EventCountFunction.java");
+        tags.put("vgi.example_queries",
+                "[{\"sql\": \"SELECT ical.main.ical_event_count(" + Meta.SAMPLE_ICS_BLOB
+                        + ") AS event_count;\", \"description\": \"Count the VEVENTs in an "
+                        + "iCalendar feed.\"}]");
+        tags.put("vgi.executable_examples",
+                "[{\"description\": \"Count the VEVENTs in an inline iCalendar feed.\", "
+                        + "\"sql\": \"SELECT ical.main.ical_event_count(" + Meta.SAMPLE_ICS_BLOB
+                        + ") AS event_count\"}]");
         return FunctionMetadata.describe(description())
                 .withCategories("calendar", "icalendar", "ical4j")
-                .withTag("vgi.example_queries",
-                        "[{\"sql\": \"SELECT ical.main.ical_event_count('/cal/team.ics');\", "
-                                + "\"description\": \"Count the VEVENTs in an iCalendar feed.\"}]")
+                .withTags(tags)
                 .withExamples(java.util.List.of(new FunctionExample(
-                        "SELECT ical.main.ical_event_count('/cal/team.ics');",
-                        "Count the VEVENTs in an iCalendar feed.",
+                        "SELECT ical.main.ical_event_count(" + Meta.SAMPLE_ICS_BLOB
+                                + ") AS event_count;",
+                        "Count the VEVENTs in an inline iCalendar feed.",
                         null)));
     }
 
