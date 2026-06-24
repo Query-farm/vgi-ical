@@ -129,3 +129,35 @@ jobs:
         run: ci/run-integration.sh
         env:
           TRANSPORT: ${{ matrix.transport }}
+
+  # Metadata-quality gate: build the worker fat JAR, then run vgi-lint against it
+  # (the action force-installs the signed `vgi` community extension itself). A
+  # separate, visible job so a metadata regression fails CI on its own.
+  metadata-quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: gradle
+
+      - name: Build worker fat JAR
+        run: ./gradlew --no-daemon shadowJar
+
+      - name: Resolve worker launch command
+        run: |
+          # Absolute path: the linter spawns the worker as a subprocess. The fat
+          # JAR manifest sets Add-Opens, so a bare `java -jar` works as a LOCATION.
+          JAR="$PWD/$(ls build/libs/vgi-ical-*-all.jar | head -1)"
+          echo "Worker JAR: $JAR"
+          echo "VGI_ICAL_WORKER_LOCATION=java -jar $JAR" >> "$GITHUB_ENV"
+
+      - name: vgi-lint
+        uses: Query-farm/vgi-lint-check@v1
+        with:
+          location: ${{ env.VGI_ICAL_WORKER_LOCATION }}
+          fail-on: info

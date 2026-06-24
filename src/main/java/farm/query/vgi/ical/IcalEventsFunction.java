@@ -5,6 +5,7 @@ import farm.query.vgi.function.Arguments;
 import farm.query.vgi.function.FunctionMetadata;
 import farm.query.vgi.internal.SchemaUtil;
 import farm.query.vgi.protocol.BindResponse;
+import farm.query.vgi.protocol.FunctionExample;
 import farm.query.vgi.table.TableBindParams;
 import farm.query.vgi.table.TableFunction;
 import farm.query.vgi.table.TableInitParams;
@@ -40,7 +41,32 @@ public final class IcalEventsFunction implements TableFunction {
                         "Parse an iCalendar (.ics) feed into one row per VEVENT: uid, summary, "
                                 + "UTC-normalised start/end, all-day flag, location, status, organizer, "
                                 + "attendees array, recurrence rule, and sequence (iCal4j).")
-                .withCategories("calendar", "icalendar", "ical4j");
+                .withCategories("calendar", "icalendar", "ical4j")
+                .withTag("vgi.example_queries",
+                        "[{\"sql\": \"SELECT summary, dtstart FROM "
+                                + "ical.main.ical_events('/cal/team.ics') ORDER BY dtstart;\", "
+                                + "\"description\": \"List every event in an iCalendar feed by "
+                                + "start time.\"}]")
+                .withTag("vgi.columns_md",
+                        "| column | type | description |\n"
+                                + "|---|---|---|\n"
+                                + "| `uid` | VARCHAR | VEVENT unique identifier (UID). |\n"
+                                + "| `summary` | VARCHAR | Event title (SUMMARY). |\n"
+                                + "| `description` | VARCHAR | Long-form description (DESCRIPTION). |\n"
+                                + "| `dtstart` | TIMESTAMP WITH TIME ZONE | Start, UTC-normalised (DTSTART). |\n"
+                                + "| `dtend` | TIMESTAMP WITH TIME ZONE | End, UTC-normalised (DTEND), or NULL. |\n"
+                                + "| `all_day` | BOOLEAN | True when DTSTART is DATE-valued. |\n"
+                                + "| `location` | VARCHAR | Free-text location (LOCATION). |\n"
+                                + "| `status` | VARCHAR | CONFIRMED / TENTATIVE / CANCELLED (STATUS). |\n"
+                                + "| `organizer` | VARCHAR | ORGANIZER value (usually a mailto: URI). |\n"
+                                + "| `attendees` | VARCHAR[] | ATTENDEE values, one per attendee. |\n"
+                                + "| `rrule` | VARCHAR | Recurrence rule (RRULE), or NULL. |\n"
+                                + "| `sequence` | INTEGER | Revision sequence number (SEQUENCE). |")
+                .withExamples(java.util.List.of(new FunctionExample(
+                        "SELECT summary, dtstart FROM ical.main.ical_events('/cal/team.ics') "
+                                + "ORDER BY dtstart;",
+                        "List every event in an iCalendar feed by start time.",
+                        null)));
     }
 
     @Override public List<ArgSpec> argumentSpecs() {

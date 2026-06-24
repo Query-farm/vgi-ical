@@ -5,6 +5,7 @@ import farm.query.vgi.function.Arguments;
 import farm.query.vgi.function.FunctionMetadata;
 import farm.query.vgi.internal.SchemaUtil;
 import farm.query.vgi.protocol.BindResponse;
+import farm.query.vgi.protocol.FunctionExample;
 import farm.query.vgi.table.TableBindParams;
 import farm.query.vgi.table.TableFunction;
 import farm.query.vgi.table.TableInitParams;
@@ -36,7 +37,28 @@ public final class IcalTodosFunction implements TableFunction {
         return FunctionMetadata.describe(
                         "Parse an iCalendar (.ics) feed into one row per VTODO: uid, summary, "
                                 + "UTC-normalised due date, status, priority, and percent complete (iCal4j).")
-                .withCategories("calendar", "icalendar", "ical4j");
+                .withCategories("calendar", "icalendar", "ical4j")
+                .withTag("vgi.example_queries",
+                        "[{\"sql\": \"SELECT summary, due, percent_complete FROM "
+                                + "ical.main.ical_todos('/cal/tasks.ics') "
+                                + "WHERE status <> 'COMPLETED' ORDER BY due;\", "
+                                + "\"description\": \"List the outstanding to-dos from an "
+                                + "iCalendar feed by due date.\"}]")
+                .withTag("vgi.columns_md",
+                        "| column | type | description |\n"
+                                + "|---|---|---|\n"
+                                + "| `uid` | VARCHAR | VTODO unique identifier (UID). |\n"
+                                + "| `summary` | VARCHAR | To-do title (SUMMARY). |\n"
+                                + "| `due` | TIMESTAMP WITH TIME ZONE | Due date/time, UTC-normalised (DUE). |\n"
+                                + "| `status` | VARCHAR | NEEDS-ACTION / IN-PROCESS / COMPLETED / CANCELLED. |\n"
+                                + "| `priority` | INTEGER | Priority 0-9, lower is higher priority (PRIORITY). |\n"
+                                + "| `percent_complete` | INTEGER | Completion percentage 0-100 (PERCENT-COMPLETE). |")
+                .withExamples(java.util.List.of(new FunctionExample(
+                        "SELECT summary, due, percent_complete "
+                                + "FROM ical.main.ical_todos('/cal/tasks.ics') "
+                                + "WHERE status <> 'COMPLETED' ORDER BY due;",
+                        "List the outstanding to-dos from an iCalendar feed by due date.",
+                        null)));
     }
 
     @Override public List<ArgSpec> argumentSpecs() {

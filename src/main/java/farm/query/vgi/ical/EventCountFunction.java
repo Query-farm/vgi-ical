@@ -2,6 +2,7 @@ package farm.query.vgi.ical;
 
 import farm.query.vgi.function.Arguments;
 import farm.query.vgi.function.FunctionMetadata;
+import farm.query.vgi.protocol.FunctionExample;
 import farm.query.vgi.scalar.ScalarFn;
 import farm.query.vgi.scalar.Vector;
 import farm.query.vgi.types.Schemas;
@@ -28,7 +29,15 @@ public final class EventCountFunction extends ScalarFn {
     }
 
     @Override public FunctionMetadata metadata() {
-        return FunctionMetadata.describe(description()).withCategories("calendar", "icalendar", "ical4j");
+        return FunctionMetadata.describe(description())
+                .withCategories("calendar", "icalendar", "ical4j")
+                .withTag("vgi.example_queries",
+                        "[{\"sql\": \"SELECT ical.main.ical_event_count('/cal/team.ics');\", "
+                                + "\"description\": \"Count the VEVENTs in an iCalendar feed.\"}]")
+                .withExamples(java.util.List.of(new FunctionExample(
+                        "SELECT ical.main.ical_event_count('/cal/team.ics');",
+                        "Count the VEVENTs in an iCalendar feed.",
+                        null)));
     }
 
     @Override protected ArrowType outputType(Schema inputSchema, Arguments args) {

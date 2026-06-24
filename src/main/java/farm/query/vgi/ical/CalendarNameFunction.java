@@ -2,6 +2,7 @@ package farm.query.vgi.ical;
 
 import farm.query.vgi.function.Arguments;
 import farm.query.vgi.function.FunctionMetadata;
+import farm.query.vgi.protocol.FunctionExample;
 import farm.query.vgi.scalar.ScalarFn;
 import farm.query.vgi.scalar.Vector;
 import farm.query.vgi.types.Schemas;
@@ -30,7 +31,17 @@ public final class CalendarNameFunction extends ScalarFn {
     }
 
     @Override public FunctionMetadata metadata() {
-        return FunctionMetadata.describe(description()).withCategories("calendar", "icalendar", "ical4j");
+        return FunctionMetadata.describe(description())
+                .withCategories("calendar", "icalendar", "ical4j")
+                .withTag("vgi.example_queries",
+                        "[{\"sql\": \"SELECT ical.main.ical_calendar_name('/cal/team.ics');\", "
+                                + "\"description\": \"Read the display name of an iCalendar feed "
+                                + "(X-WR-CALNAME, falling back to PRODID).\"}]")
+                .withExamples(java.util.List.of(new FunctionExample(
+                        "SELECT ical.main.ical_calendar_name('/cal/team.ics');",
+                        "Read the display name of an iCalendar feed (X-WR-CALNAME, "
+                                + "falling back to PRODID).",
+                        null)));
     }
 
     @Override protected ArrowType outputType(Schema inputSchema, Arguments args) {

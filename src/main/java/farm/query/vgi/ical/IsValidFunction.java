@@ -2,6 +2,7 @@ package farm.query.vgi.ical;
 
 import farm.query.vgi.function.Arguments;
 import farm.query.vgi.function.FunctionMetadata;
+import farm.query.vgi.protocol.FunctionExample;
 import farm.query.vgi.scalar.ScalarFn;
 import farm.query.vgi.scalar.Vector;
 import farm.query.vgi.types.Schemas;
@@ -29,7 +30,16 @@ public final class IsValidFunction extends ScalarFn {
     }
 
     @Override public FunctionMetadata metadata() {
-        return FunctionMetadata.describe(description()).withCategories("calendar", "icalendar", "ical4j");
+        return FunctionMetadata.describe(description())
+                .withCategories("calendar", "icalendar", "ical4j")
+                .withTag("vgi.example_queries",
+                        "[{\"sql\": \"SELECT ical.main.is_valid_ical('/cal/team.ics');\", "
+                                + "\"description\": \"Test whether a file parses as a "
+                                + "well-formed iCalendar (.ics) feed.\"}]")
+                .withExamples(java.util.List.of(new FunctionExample(
+                        "SELECT ical.main.is_valid_ical('/cal/team.ics');",
+                        "Test whether a file parses as a well-formed iCalendar (.ics) feed.",
+                        null)));
     }
 
     @Override protected ArrowType outputType(Schema inputSchema, Arguments args) {
