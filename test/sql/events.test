@@ -6,6 +6,12 @@
 
 require-env VGI_ICAL_WORKER
 
+# httpfs supplies DuckDB's HTTP client, which the vgi extension requires for the
+# HTTP worker transport (http:// LOCATION); it is a harmless no-op for the
+# subprocess and unix transports. CI's preprocess-require.awk rewrites this into
+# an explicit `INSTALL httpfs FROM core; LOAD httpfs;`.
+require httpfs
+
 # NOTE: under haybarn-unittest `require vgi` SKIPS the file; load explicitly.
 statement ok
 LOAD vgi;
