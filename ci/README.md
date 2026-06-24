@@ -62,6 +62,24 @@ SQL-side `ORDER BY` (the runner sorts results), no inline log streaming,
 partition-local state, input-buffering, or wire-order-dependent assertions — so
 no test needs a per-transport gate; all three legs run the full suite.
 
+### httpfs is required for the HTTP transport
+
+The `vgi` extension's HTTP transport uses DuckDB's HTTP client, which lives in
+the **`httpfs`** extension — without it, ATTACH over an `http://` LOCATION raises
+`VGI HTTP transport requires the httpfs extension`. On the standalone
+`haybarn-unittest` runner, extension auto-load/auto-install is off, so `httpfs`
+must be installed and loaded explicitly. Each `.test` therefore carries a
+`require httpfs` line (preprocessed into `INSTALL httpfs FROM core; LOAD
+httpfs;`) and the warm step installs it once. `httpfs` is a harmless no-op for
+the subprocess/unix transports.
+
+This was the one real failure surfaced by adding the http leg: before the
+`httpfs` fix, the http job appeared green but every test was **silently skipped**
+— some `haybarn-unittest` builds carry a built-in `skip on error_message
+matching 'HTTP'` rule, and the `httpfs`-missing BinderException contains the
+substring `HTTP`, so the runner skipped rather than failed. Always confirm the
+http leg reports `All tests passed`, not `All tests were skipped`.
+
 ## Run it locally
 
 ```bash

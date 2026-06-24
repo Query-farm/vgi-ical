@@ -166,16 +166,21 @@ esac
 
 cd "$STAGE"
 
-# Warm the extension cache once: vgi from the signed community channel. A miss
-# here is only a warning — but it is what provisions the signed `vgi`
-# extension so each test file's explicit `LOAD vgi;` succeeds on a clean runner.
-echo "Warming the extension cache (vgi from community) ..."
+# Warm the extension cache once: vgi from the signed community channel, plus
+# httpfs from core (the vgi HTTP transport requires httpfs for DuckDB's HTTP
+# client). A miss here is only a warning — but it is what provisions the signed
+# extensions so each test file's explicit `LOAD vgi;` / `require httpfs` succeed
+# on a clean runner. httpfs is harmless for the subprocess/unix transports.
+echo "Warming the extension cache (vgi from community, httpfs from core) ..."
 mkdir -p "$STAGE/test"
 cat > "$STAGE/test/_warm.test" <<'EOF'
 # name: test/_warm.test
 # group: [warm]
 statement ok
 INSTALL vgi FROM community;
+
+statement ok
+INSTALL httpfs FROM core;
 EOF
 "$HAYBARN_UNITTEST" "test/_warm.test" >/dev/null 2>&1 || echo "::warning::extension warm step did not fully succeed"
 rm -f "$STAGE/test/_warm.test"
