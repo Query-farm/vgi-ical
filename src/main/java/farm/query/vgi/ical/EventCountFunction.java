@@ -69,7 +69,9 @@ public final class EventCountFunction extends ScalarFn {
         return Schemas.INT32;
     }
 
-    public void compute(@Vector(value = "input", any = true) FieldVector in, IntVector out) {
+    public void compute(
+            @Vector(value = "input", any = true, doc = Meta.INPUT_ARG_DOC) FieldVector in,
+            IntVector out) {
         int n = in.getValueCount();
         for (int i = 0; i < n; i++) {
             DocInput input = ScalarInput.at(in, i);

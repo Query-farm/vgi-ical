@@ -89,7 +89,11 @@ public final class IcalTodosFunction implements TableFunction {
     }
 
     @Override public List<ArgSpec> argumentSpecs() {
-        return List.of(ArgSpec.any("input", 0, List.of()));
+        // Polymorphic input carrying a per-argument doc (VGI312); see
+        // ArgSpec.any(...) for the field layout.
+        return List.of(new ArgSpec(
+                "input", 0, new ArrowType.Null(), Meta.INPUT_ARG_DOC,
+                false, false, "", List.of(), false, true, false));
     }
 
     @Override public BindResponse onBind(TableBindParams p) {

@@ -71,7 +71,9 @@ public final class CalendarNameFunction extends ScalarFn {
         return Schemas.UTF8;
     }
 
-    public void compute(@Vector(value = "input", any = true) FieldVector in, VarCharVector out) {
+    public void compute(
+            @Vector(value = "input", any = true, doc = Meta.INPUT_ARG_DOC) FieldVector in,
+            VarCharVector out) {
         int n = in.getValueCount();
         for (int i = 0; i < n; i++) {
             DocInput input = ScalarInput.at(in, i);

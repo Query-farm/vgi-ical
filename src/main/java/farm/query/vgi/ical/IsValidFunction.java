@@ -72,7 +72,9 @@ public final class IsValidFunction extends ScalarFn {
         return Schemas.BOOL;
     }
 
-    public void compute(@Vector(value = "input", any = true) FieldVector in, BitVector out) {
+    public void compute(
+            @Vector(value = "input", any = true, doc = Meta.INPUT_ARG_DOC) FieldVector in,
+            BitVector out) {
         int n = in.getValueCount();
         for (int i = 0; i < n; i++) {
             DocInput input = ScalarInput.at(in, i);

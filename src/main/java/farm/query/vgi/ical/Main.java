@@ -40,9 +40,9 @@ public final class Main {
     /** Catalog-level metadata tags surfaced to DuckDB and the vgi-lint linter. */
     private static final java.util.Map<String, String> CATALOG_TAGS = java.util.Map.ofEntries(
             java.util.Map.entry("vgi.title", "iCalendar (.ics) Parsing"),
-            java.util.Map.entry("vgi.keywords",
+            java.util.Map.entry("vgi.keywords", Meta.keywordsJson(
                     "icalendar, ical, ics, calendar, vevent, vtodo, rfc 5545, ical4j, events, "
-                            + "todos, tasks, scheduling, rrule, recurrence, calendar feed"),
+                            + "todos, tasks, scheduling, rrule, recurrence, calendar feed")),
             java.util.Map.entry("vgi.doc_llm",
                     "# iCalendar parsing in SQL\n\n"
                             + "Parse iCalendar (`.ics`) feeds directly in SQL, backed by iCal4j "
@@ -86,17 +86,16 @@ public final class Main {
     /** Schema-level metadata tags for the single {@code main} schema. */
     private static final java.util.Map<String, String> SCHEMA_TAGS = java.util.Map.ofEntries(
             java.util.Map.entry("vgi.title", "iCalendar Functions (main)"),
-            java.util.Map.entry("vgi.keywords",
+            java.util.Map.entry("vgi.keywords", Meta.keywordsJson(
                     "icalendar, ics, calendar, events, todos, ical_events, ical_todos, "
                             + "ical_calendar_name, ical_event_count, is_valid_ical, rrule, "
-                            + "scheduling, rfc 5545, ical4j"),
+                            + "scheduling, rfc 5545, ical4j")),
             // VGI123 classifying tags MUST use BARE keys (not vgi.-namespaced).
             java.util.Map.entry("domain", "calendar"),
             java.util.Map.entry("category", "parsing"),
             java.util.Map.entry("topic", "icalendar"),
-            java.util.Map.entry("vgi.source_url",
-                    "https://github.com/Query-farm/vgi-ical/blob/main/src/main/java/farm/query/"
-                            + "vgi/ical/Main.java"),
+            // VGI139: no per-schema vgi.source_url — source_url lives on the
+            // catalog object only (set via Worker.builder().sourceUrl(...)).
             java.util.Map.entry("vgi.doc_llm",
                     "iCalendar (`.ics`) parsing functions. `ical_events` and `ical_todos` expand "
                             + "a feed into one row per VEVENT / VTODO; `ical_calendar_name`, "

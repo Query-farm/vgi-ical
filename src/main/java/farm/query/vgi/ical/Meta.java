@@ -16,31 +16,68 @@ import java.util.Map;
  *       LLM/agent audience.</li>
  *   <li>{@code vgi.doc_md} (VGI113) — a Markdown narrative for human docs
  *       (distinct content from {@code vgi.doc_llm}).</li>
- *   <li>{@code vgi.keywords} (VGI126) — comma-separated search terms/synonyms.</li>
- *   <li>{@code vgi.source_url} (VGI128) — link to the implementing source file.</li>
+ *   <li>{@code vgi.keywords} (VGI126/VGI138) — search terms/synonyms as a JSON
+ *       array of strings.</li>
  * </ul>
+ *
+ * <p>Per-object {@code vgi.source_url} is intentionally NOT set (VGI139): the
+ * {@code source_url} lives on the catalog object only.
  */
 final class Meta {
 
     private Meta() {}
 
-    /** Base GitHub blob URL for source files in this repo (pinned to {@code main}). */
-    private static final String SOURCE_BASE =
-            "https://github.com/Query-farm/vgi-ical/blob/main/src/main/java/farm/query/vgi/ical";
+    /**
+     * Per-argument documentation (VGI312) for the single polymorphic {@code input}
+     * argument shared by every function in this worker. The argument is an
+     * any-typed positional: pass either a VARCHAR file path (the worker opens and
+     * reads the file) or a BLOB of raw {@code .ics} bytes (parsed in place). A
+     * NULL argument is handled gracefully — table functions emit no rows and
+     * scalars return NULL — so the worker never errors on missing input.
+     */
+    static final String INPUT_ARG_DOC =
+            "The iCalendar (.ics) feed to read. Pass either a filesystem path — the "
+                    + "worker opens and reads that file — or the raw .ics content itself, "
+                    + "which is parsed in place (e.g. an inline feed or a column of fetched "
+                    + "calendar data). NULL or unparsable input is handled gracefully: table "
+                    + "functions return no rows and scalar functions return NULL/0/false "
+                    + "rather than raising an error.";
 
-    /** Build the canonical {@code vgi.source_url} for a Java source file. */
-    static String sourceUrl(String javaFileName) {
-        return SOURCE_BASE + "/" + javaFileName;
+    /**
+     * Render a comma-separated keyword list as a JSON array of strings, e.g.
+     * {@code "a, b"} -> {@code ["a","b"]}. {@code vgi.keywords} must be a JSON
+     * array (VGI138), not a comma-separated string.
+     */
+    static String keywordsJson(String commaSeparated) {
+        StringBuilder sb = new StringBuilder("[");
+        boolean first = true;
+        for (String raw : commaSeparated.split(",")) {
+            String kw = raw.trim();
+            if (kw.isEmpty()) {
+                continue;
+            }
+            if (!first) {
+                sb.append(',');
+            }
+            first = false;
+            sb.append('"').append(kw.replace("\\", "\\\\").replace("\"", "\\\"")).append('"');
+        }
+        return sb.append(']').toString();
     }
 
     /**
-     * Build the five standard per-object discovery/description tags.
+     * Build the four standard per-object discovery/description tags.
+     *
+     * <p>{@code vgi.keywords} is emitted as a JSON array of strings (VGI138). No
+     * per-object {@code vgi.source_url} is set: VGI139 keeps {@code source_url}
+     * on the catalog object only, so {@code javaFileName} is accepted for call-site
+     * documentation but no longer surfaced as a tag.
      *
      * @param title        human display name (VGI124)
      * @param docLlm       Markdown narrative for an LLM/agent audience (VGI112)
      * @param docMd        Markdown narrative for human docs (VGI113), distinct from {@code docLlm}
-     * @param keywords     comma-separated search terms (VGI126)
-     * @param javaFileName implementing source file, e.g. {@code "IcalEventsFunction.java"} (VGI128)
+     * @param keywords     comma-separated search terms, serialized to a JSON array (VGI126/VGI138)
+     * @param javaFileName implementing source file, e.g. {@code "IcalEventsFunction.java"}
      */
     static Map<String, String> objectTags(
             String title, String docLlm, String docMd, String keywords, String javaFileName) {
@@ -48,8 +85,7 @@ final class Meta {
         tags.put("vgi.title", title);
         tags.put("vgi.doc_llm", docLlm);
         tags.put("vgi.doc_md", docMd);
-        tags.put("vgi.keywords", keywords);
-        tags.put("vgi.source_url", sourceUrl(javaFileName));
+        tags.put("vgi.keywords", keywordsJson(keywords));
         return tags;
     }
 

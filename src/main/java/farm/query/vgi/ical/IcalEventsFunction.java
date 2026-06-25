@@ -103,7 +103,11 @@ public final class IcalEventsFunction implements TableFunction {
     @Override public List<ArgSpec> argumentSpecs() {
         // Polymorphic input: an any-typed positional so DuckDB binds both a
         // VARCHAR path (the worker opens the file) and a BLOB of .ics bytes.
-        return List.of(ArgSpec.any("input", 0, List.of()));
+        // The 11-arg constructor mirrors ArgSpec.any(...) but carries a
+        // per-argument doc (VGI312) that the linter/LLM reads.
+        return List.of(new ArgSpec(
+                "input", 0, new ArrowType.Null(), Meta.INPUT_ARG_DOC,
+                false, false, "", List.of(), false, true, false));
     }
 
     @Override public BindResponse onBind(TableBindParams p) {
