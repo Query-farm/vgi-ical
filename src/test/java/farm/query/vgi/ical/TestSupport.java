@@ -37,7 +37,8 @@ public final class TestSupport {
                 null, null, null, null, null, null,
                 new byte[0], null, null, null,
                 // vgi 0.4.0: trailing atUnit, atValue, storage components — unused here.
-                null, null, null);
+                // vgi bump: trailing copyFrom component — unused here.
+                null, null, null, null);
 
         TableProducerState state = fn.createProducer(init);
 
