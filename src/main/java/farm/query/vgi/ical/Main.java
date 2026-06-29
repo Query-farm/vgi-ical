@@ -61,6 +61,7 @@ public final class Main {
                             + "feed validation."),
             java.util.Map.entry("vgi.doc_md",
                     "# iCalendar (.ics) Parsing in SQL\n\n"
+                            + "![iCal4j logo](https://www.ical4j.org/images/logo-48.png)\n\n"
                             + "**Query iCalendar feeds directly in DuckDB SQL** — turn `.ics` "
                             + "calendar files into queryable rows of events, to-dos, and "
                             + "calendar metadata, powered by the battle-tested "
