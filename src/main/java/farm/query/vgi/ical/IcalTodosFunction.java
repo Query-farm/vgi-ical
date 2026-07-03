@@ -56,6 +56,7 @@ public final class IcalTodosFunction implements TableFunction {
                 "ical todos, vtodo, tasks, to-do, calendar tasks, due date, priority, "
                         + "percent complete, task tracking, ics tasks",
                 "IcalTodosFunction.java");
+        tags.put("vgi.category", "To-dos");
         tags.put("vgi.result_columns_md",
                 "| column | type | description |\n"
                         + "|---|---|---|\n"

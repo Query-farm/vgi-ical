@@ -42,11 +42,12 @@ public final class EventCountFunction extends ScalarFn {
                 "Counts the VEVENTs in an iCalendar (`.ics`) feed.\n\n"
                         + "Accepts a VARCHAR file path or a BLOB of `.ics` bytes and returns an "
                         + "INTEGER. A NULL argument returns NULL; an empty or unparsable feed "
-                        + "returns `0`. Cheaper than `SELECT count(*) FROM ical_events(...)` when "
-                        + "you only need the tally.",
+                        + "returns `0`. Cheaper than materialising and counting rows from the "
+                        + "event table function when you only need the tally.",
                 "ical event count, count events, number of events, vevent count, "
                         + "calendar size, ics count",
                 "EventCountFunction.java");
+        tags.put("vgi.category", "Events");
         tags.put("vgi.example_queries",
                 "[{\"sql\": \"SELECT ical.main.ical_event_count(" + Meta.SAMPLE_ICS_BLOB
                         + ") AS event_count;\", \"description\": \"Count the VEVENTs in an "

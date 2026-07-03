@@ -61,6 +61,7 @@ public final class IcalEventsFunction implements TableFunction {
                 "ical events, vevent, calendar events, ics events, parse calendar, dtstart, "
                         + "dtend, rrule, attendees, scheduling, meetings, appointments",
                 "IcalEventsFunction.java");
+        tags.put("vgi.category", "Events");
         tags.put("vgi.result_columns_md",
                 "| column | type | description |\n"
                         + "|---|---|---|\n"

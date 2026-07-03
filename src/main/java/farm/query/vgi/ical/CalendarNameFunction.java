@@ -49,6 +49,7 @@ public final class CalendarNameFunction extends ScalarFn {
                 "ical calendar name, x-wr-calname, prodid, calendar title, feed name, "
                         + "calendar display name, ics name",
                 "CalendarNameFunction.java");
+        tags.put("vgi.category", "Calendar metadata");
         tags.put("vgi.example_queries",
                 "[{\"sql\": \"SELECT ical.main.ical_calendar_name(" + Meta.SAMPLE_ICS_BLOB
                         + ") AS calendar_name;\", \"description\": \"Read the display name of an "

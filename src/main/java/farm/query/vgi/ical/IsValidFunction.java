@@ -50,6 +50,7 @@ public final class IsValidFunction extends ScalarFn {
                 "is valid ical, validate ical, well-formed, ics validation, calendar "
                         + "validation, feed check, parseable, verify ics",
                 "IsValidFunction.java");
+        tags.put("vgi.category", "Calendar metadata");
         tags.put("vgi.example_queries",
                 "[{\"sql\": \"SELECT ical.main.is_valid_ical(" + Meta.SAMPLE_ICS_BLOB
                         + ") AS is_valid;\", \"description\": \"Test whether the input parses as a "
