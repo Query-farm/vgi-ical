@@ -34,7 +34,10 @@ public final class Main {
                 .registerTable(new IcalTodosFunction())
                 .registerScalar(new CalendarNameFunction())
                 .registerScalar(new EventCountFunction())
-                .registerScalar(new IsValidFunction());
+                .registerScalar(new IsValidFunction())
+                // VGI146: a browsable, credential-free registry view so an agent can
+                // scan real sample feeds before calling the feed-argument functions.
+                .registerView(ExampleCalendars.view());
     }
 
     /** Catalog-level metadata tags surfaced to DuckDB and the vgi-lint linter. */
@@ -226,6 +229,18 @@ public final class Main {
                         + "feed. Return one summary per row.",
                 "SELECT summary FROM ical.main.ical_todos(" + AGENT_ICS_BLOB + ")",
                 "The single to-do summary is 'Update changelog'."));
+        // VGI520: exercise the browsable example_calendars registry view. The
+        // reference reads precomputed columns straight off the view (no feed
+        // argument needed), so grading is deterministic.
+        tasks.add(agentTask(
+                "browse_example_calendars",
+                "This worker ships a built-in registry of sample iCalendar feeds. Using the "
+                        + "worker, find which built-in sample calendar has the most events, and "
+                        + "return that calendar's display name.",
+                "SELECT calendar_name FROM ical.main.example_calendars "
+                        + "ORDER BY event_count DESC, name LIMIT 1",
+                "The 'Ops Calendar' sample has the most events (two), so its display name is "
+                        + "'Ops Calendar'."));
         return tasksToJson(tasks);
     }
 

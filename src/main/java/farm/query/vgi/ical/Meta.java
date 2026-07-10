@@ -90,13 +90,14 @@ final class Meta {
     }
 
     /**
-     * A self-contained iCalendar feed expressed as a DuckDB SQL {@code BLOB}
-     * expression, so executable examples need no external {@code .ics} file. The
-     * feed has one VEVENT (with two attendees and an RRULE) and one VTODO; lines
-     * are joined with {@code chr(10)} and the whole thing cast to {@code BLOB} so
-     * the worker resolves it as raw {@code .ics} bytes rather than a file path.
+     * A self-contained iCalendar feed expressed as a DuckDB SQL {@code VARCHAR}
+     * expression (lines joined with {@code chr(10)}). The feed has one VEVENT
+     * (with two attendees and an RRULE) and one VTODO. {@link #SAMPLE_ICS_BLOB}
+     * casts this to {@code BLOB} so the worker resolves it as raw {@code .ics}
+     * bytes rather than a file path; the raw text form backs the browsable
+     * {@code example_calendars} view.
      */
-    static final String SAMPLE_ICS_BLOB =
+    static final String SAMPLE_ICS_TEXT_SQL =
             "array_to_string(['BEGIN:VCALENDAR',"
                     + "'VERSION:2.0',"
                     + "'PRODID:-//Query Farm//vgi-ical//EN',"
@@ -123,5 +124,36 @@ final class Meta {
                     + "'PRIORITY:2',"
                     + "'PERCENT-COMPLETE:40',"
                     + "'END:VTODO',"
-                    + "'END:VCALENDAR'], chr(10))::BLOB";
+                    + "'END:VCALENDAR'], chr(10))";
+
+    /**
+     * {@link #SAMPLE_ICS_TEXT_SQL} cast to {@code BLOB}, so executable examples
+     * need no external {@code .ics} file — the worker resolves it as raw
+     * {@code .ics} bytes rather than a filesystem path.
+     */
+    static final String SAMPLE_ICS_BLOB = SAMPLE_ICS_TEXT_SQL + "::BLOB";
+
+    /**
+     * Render a {@code vgi.result_columns_schema} tag (VGI307/VGI321): a JSON array
+     * of {@code {name, type, description}} objects describing a table function's
+     * static result columns. {@code cols} is a flat sequence of
+     * {@code name, type, description} triples.
+     */
+    static String resultColumnsSchema(String... cols) {
+        StringBuilder sb = new StringBuilder("[");
+        for (int i = 0; i + 2 < cols.length; i += 3) {
+            if (i > 0) {
+                sb.append(',');
+            }
+            sb.append("{\"name\":\"").append(jsonStr(cols[i]))
+                    .append("\",\"type\":\"").append(jsonStr(cols[i + 1]))
+                    .append("\",\"description\":\"").append(jsonStr(cols[i + 2]))
+                    .append("\"}");
+        }
+        return sb.append(']').toString();
+    }
+
+    private static String jsonStr(String s) {
+        return s.replace("\\", "\\\\").replace("\"", "\\\"");
+    }
 }

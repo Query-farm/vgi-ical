@@ -62,21 +62,21 @@ public final class IcalEventsFunction implements TableFunction {
                         + "dtend, rrule, attendees, scheduling, meetings, appointments",
                 "IcalEventsFunction.java");
         tags.put("vgi.category", "Events");
-        tags.put("vgi.result_columns_md",
-                "| column | type | description |\n"
-                        + "|---|---|---|\n"
-                        + "| `uid` | VARCHAR | VEVENT unique identifier (UID). |\n"
-                        + "| `summary` | VARCHAR | Event title (SUMMARY). |\n"
-                        + "| `description` | VARCHAR | Long-form description (DESCRIPTION). |\n"
-                        + "| `dtstart` | TIMESTAMP WITH TIME ZONE | Start, UTC-normalised (DTSTART). |\n"
-                        + "| `dtend` | TIMESTAMP WITH TIME ZONE | End, UTC-normalised (DTEND), or NULL. |\n"
-                        + "| `all_day` | BOOLEAN | True when DTSTART is DATE-valued. |\n"
-                        + "| `location` | VARCHAR | Free-text location (LOCATION). |\n"
-                        + "| `status` | VARCHAR | CONFIRMED / TENTATIVE / CANCELLED (STATUS). |\n"
-                        + "| `organizer` | VARCHAR | ORGANIZER value (usually a mailto: URI). |\n"
-                        + "| `attendees` | VARCHAR[] | ATTENDEE values, one per attendee. |\n"
-                        + "| `rrule` | VARCHAR | Recurrence rule (RRULE), or NULL. |\n"
-                        + "| `sequence` | INTEGER | Revision sequence number (SEQUENCE). |");
+        // VGI307/VGI321: structured result schema (JSON array of {name,type,description}).
+        // The types mirror the Arrow EVENTS_SCHEMA so VGI910 (DESCRIBE) agrees.
+        tags.put("vgi.result_columns_schema", Meta.resultColumnsSchema(
+                "uid", "VARCHAR", "VEVENT unique identifier (UID).",
+                "summary", "VARCHAR", "Event title (SUMMARY).",
+                "description", "VARCHAR", "Long-form description (DESCRIPTION).",
+                "dtstart", "TIMESTAMP WITH TIME ZONE", "Start, UTC-normalised (DTSTART).",
+                "dtend", "TIMESTAMP WITH TIME ZONE", "End, UTC-normalised (DTEND), or NULL.",
+                "all_day", "BOOLEAN", "True when DTSTART is DATE-valued (an all-day event).",
+                "location", "VARCHAR", "Free-text location (LOCATION).",
+                "status", "VARCHAR", "Event status: CONFIRMED / TENTATIVE / CANCELLED (STATUS).",
+                "organizer", "VARCHAR", "ORGANIZER value (usually a mailto: URI).",
+                "attendees", "VARCHAR[]", "ATTENDEE values, one array element per attendee.",
+                "rrule", "VARCHAR", "Recurrence rule as the raw RRULE string, or NULL.",
+                "sequence", "INTEGER", "Revision sequence number (SEQUENCE)."));
         tags.put("vgi.example_queries",
                 "[{\"sql\": \"SELECT summary, location, all_day FROM ical.main.ical_events("
                         + Meta.SAMPLE_ICS_BLOB + ") ORDER BY dtstart;\", \"description\": "

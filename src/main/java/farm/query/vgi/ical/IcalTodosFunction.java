@@ -57,15 +57,17 @@ public final class IcalTodosFunction implements TableFunction {
                         + "percent complete, task tracking, ics tasks",
                 "IcalTodosFunction.java");
         tags.put("vgi.category", "To-dos");
-        tags.put("vgi.result_columns_md",
-                "| column | type | description |\n"
-                        + "|---|---|---|\n"
-                        + "| `uid` | VARCHAR | VTODO unique identifier (UID). |\n"
-                        + "| `summary` | VARCHAR | To-do title (SUMMARY). |\n"
-                        + "| `due` | TIMESTAMP WITH TIME ZONE | Due date/time, UTC-normalised (DUE). |\n"
-                        + "| `status` | VARCHAR | NEEDS-ACTION / IN-PROCESS / COMPLETED / CANCELLED. |\n"
-                        + "| `priority` | INTEGER | Priority 0-9, lower is higher priority (PRIORITY). |\n"
-                        + "| `percent_complete` | INTEGER | Completion percentage 0-100 (PERCENT-COMPLETE). |");
+        // VGI307/VGI321: structured result schema (JSON array of {name,type,description}).
+        // The types mirror the Arrow TODOS_SCHEMA so VGI910 (DESCRIBE) agrees.
+        tags.put("vgi.result_columns_schema", Meta.resultColumnsSchema(
+                "uid", "VARCHAR", "VTODO unique identifier (UID).",
+                "summary", "VARCHAR", "To-do title (SUMMARY).",
+                "due", "TIMESTAMP WITH TIME ZONE", "Due date/time, UTC-normalised (DUE), or NULL.",
+                "status", "VARCHAR",
+                "To-do status: NEEDS-ACTION / IN-PROCESS / COMPLETED / CANCELLED (STATUS).",
+                "priority", "INTEGER", "Priority 0-9, where lower is higher priority (PRIORITY).",
+                "percent_complete", "INTEGER",
+                "Completion percentage 0-100 (PERCENT-COMPLETE)."));
         tags.put("vgi.example_queries",
                 "[{\"sql\": \"SELECT summary, status, percent_complete FROM "
                         + "ical.main.ical_todos(" + Meta.SAMPLE_ICS_BLOB + ") "
