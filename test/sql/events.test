@@ -49,6 +49,18 @@ SELECT len(attendees) FROM ical.ical_events('test/sql/data/team.ics');
 ----
 2
 
+# categories is a VARCHAR[] — CATEGORIES split on commas; url + audit timestamps.
+query I
+SELECT array_to_string(categories, '|') FROM ical.ical_events('test/sql/data/team.ics');
+----
+Engineering|Planning
+
+query III
+SELECT url, created, last_modified
+FROM ical.ical_events('test/sql/data/team.ics');
+----
+https://cal.query.farm/events/event-1	2024-01-01 08:00:00+00	2024-01-10 12:00:00+00
+
 # ---- all-day event: DATE-valued DTSTART -> all_day = true -------------------
 
 query III

@@ -39,7 +39,11 @@ public final class IcalSchemas {
             commented("organizer", Schemas.UTF8, "ORGANIZER value (typically a mailto: URI)."),
             listOfUtf8("attendees", "ATTENDEE values, one element per attendee (VARCHAR[])."),
             commented("rrule", Schemas.UTF8, "Recurrence rule string (RRULE), or NULL for one-off events."),
-            commented("sequence", Schemas.INT32, "Revision sequence number (SEQUENCE).")));
+            commented("sequence", Schemas.INT32, "Revision sequence number (SEQUENCE)."),
+            listOfUtf8("categories", "Category tags (CATEGORIES), split on commas, one element per tag (VARCHAR[])."),
+            commented("url", Schemas.UTF8, "Associated URL (URL property), or NULL when absent."),
+            commented("created", utcTimestamp(), "Creation time, UTC-normalised (CREATED), or NULL when absent."),
+            commented("last_modified", utcTimestamp(), "Last-modified time, UTC-normalised (LAST-MODIFIED), or NULL when absent.")));
 
     /** {@code ical_todos} output: one row per VTODO. */
     public static final Schema TODOS_SCHEMA = new Schema(List.of(

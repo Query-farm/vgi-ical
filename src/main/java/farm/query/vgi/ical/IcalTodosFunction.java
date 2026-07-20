@@ -40,8 +40,8 @@ public final class IcalTodosFunction implements TableFunction {
                         + "Parse an iCalendar (`.ics`) feed into **one row per VTODO** (task). Use "
                         + "it to pull outstanding to-dos out of a shared calendar for task "
                         + "tracking or reporting.\n\n"
-                        + "**Input** (positional, polymorphic): a VARCHAR file path the worker "
-                        + "opens, or a BLOB of `.ics` bytes.\n\n"
+                        + "**Input** (positional, polymorphic): a `VARCHAR` file path the worker "
+                        + "opens, or a `BLOB` of `.ics` bytes.\n\n"
                         + "**Output**: uid, summary, UTC-normalised `due` (`TIMESTAMP WITH TIME "
                         + "ZONE`), status (`NEEDS-ACTION` / `IN-PROCESS` / `COMPLETED` / "
                         + "`CANCELLED`), priority (0-9), and percent complete (0-100).\n\n"
@@ -49,7 +49,7 @@ public final class IcalTodosFunction implements TableFunction {
                         + "(never an error). A feed with only events (no VTODOs) yields no rows.",
                 "Parses an iCalendar (`.ics`) feed into one row per VTODO (task), backed by "
                         + "iCal4j (RFC 5545).\n\n"
-                        + "Accepts a VARCHAR file path or a BLOB of `.ics` bytes. The `due` column "
+                        + "Accepts a `VARCHAR` file path or a `BLOB` of `.ics` bytes. The `due` column "
                         + "is normalised to UTC and surfaced as `TIMESTAMP WITH TIME ZONE`. Filter "
                         + "on `status` to separate open from completed tasks. Bad or NULL input "
                         + "yields no rows rather than an error.",

@@ -36,14 +36,14 @@ public final class CalendarNameFunction extends ScalarFn {
                 "# ical_calendar_name\n\n"
                         + "Return the **display name** of an iCalendar (`.ics`) feed: the "
                         + "`X-WR-CALNAME` property if present, otherwise the `PRODID`.\n\n"
-                        + "**Input** (positional, polymorphic): a VARCHAR file path the worker "
-                        + "opens, or a BLOB of `.ics` bytes.\n\n"
-                        + "**Output**: a VARCHAR name, or NULL when neither property is present or "
+                        + "**Input** (positional, polymorphic): a `VARCHAR` file path the worker "
+                        + "opens, or a `BLOB` of `.ics` bytes.\n\n"
+                        + "**Output**: a `VARCHAR` name, or NULL when neither property is present or "
                         + "the input is NULL / unparsable.\n\n"
                         + "Use it to label a feed in a UI or to group rows by source calendar.",
                 "Returns the display name of an iCalendar (`.ics`) feed, reading `X-WR-CALNAME` "
                         + "and falling back to `PRODID`.\n\n"
-                        + "Accepts a VARCHAR file path or a BLOB of `.ics` bytes. Returns NULL "
+                        + "Accepts a `VARCHAR` file path or a `BLOB` of `.ics` bytes. Returns NULL "
                         + "when the calendar has no name property, or when the input is NULL or "
                         + "fails to parse — never an error.",
                 "ical calendar name, x-wr-calname, prodid, calendar title, feed name, "

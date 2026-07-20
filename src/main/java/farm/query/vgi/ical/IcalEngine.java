@@ -78,7 +78,11 @@ public final class IcalEngine {
             String organizer,
             List<String> attendees,
             String rrule,
-            Integer sequence) {}
+            Integer sequence,
+            List<String> categories,
+            String url,
+            Long createdMicros,
+            Long lastModifiedMicros) {}
 
     /** One VTODO. */
     public record TodoRow(
@@ -187,7 +191,32 @@ public final class IcalEngine {
                 firstPropertyValue(props, Property.ORGANIZER),
                 attendees,
                 firstPropertyValue(props, Property.RRULE),
-                parseInt(firstPropertyValue(props, Property.SEQUENCE)));
+                parseInt(firstPropertyValue(props, Property.SEQUENCE)),
+                categoriesOf(props),
+                firstPropertyValue(props, Property.URL),
+                toMicros(firstProperty(props, Property.CREATED)),
+                toMicros(firstProperty(props, Property.LAST_MODIFIED)));
+    }
+
+    /**
+     * Collect an event's category tags. A CATEGORIES property carries a
+     * comma-separated list of tags (RFC 5545 §3.8.1.2), and a component may repeat
+     * the property, so we gather every CATEGORIES value, split each on commas, and
+     * return the trimmed, non-blank tags in source order.
+     */
+    private static List<String> categoriesOf(List<Property> props) {
+        List<String> out = new ArrayList<>();
+        for (Property p : props) {
+            if (Property.CATEGORIES.equalsIgnoreCase(p.getName())) {
+                String v = p.getValue();
+                if (v == null) continue;
+                for (String tag : v.split(",")) {
+                    String trimmed = tag.trim();
+                    if (!trimmed.isEmpty()) out.add(trimmed);
+                }
+            }
+        }
+        return out;
     }
 
     private static TodoRow toTodo(Component c) {

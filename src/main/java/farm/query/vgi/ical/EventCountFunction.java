@@ -35,13 +35,13 @@ public final class EventCountFunction extends ScalarFn {
                         + "Return the **number of VEVENTs** in an iCalendar (`.ics`) feed without "
                         + "materialising the rows. Use it as a cheap probe — e.g. to skip empty "
                         + "feeds or rank feeds by activity.\n\n"
-                        + "**Input** (positional, polymorphic): a VARCHAR file path the worker "
-                        + "opens, or a BLOB of `.ics` bytes.\n\n"
-                        + "**Output**: an INTEGER count. NULL input yields NULL; an empty or "
+                        + "**Input** (positional, polymorphic): a `VARCHAR` file path the worker "
+                        + "opens, or a `BLOB` of `.ics` bytes.\n\n"
+                        + "**Output**: an `INTEGER` count. NULL input yields NULL; an empty or "
                         + "unparsable feed yields `0` (never an error).",
                 "Counts the VEVENTs in an iCalendar (`.ics`) feed.\n\n"
-                        + "Accepts a VARCHAR file path or a BLOB of `.ics` bytes and returns an "
-                        + "INTEGER. A NULL argument returns NULL; an empty or unparsable feed "
+                        + "Accepts a `VARCHAR` file path or a `BLOB` of `.ics` bytes and returns an "
+                        + "`INTEGER`. A NULL argument returns NULL; an empty or unparsable feed "
                         + "returns `0`. Cheaper than materialising and counting rows from the "
                         + "event table function when you only need the tally.",
                 "ical event count, count events, number of events, vevent count, "

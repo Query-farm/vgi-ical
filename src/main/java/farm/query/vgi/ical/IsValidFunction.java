@@ -37,14 +37,14 @@ public final class IsValidFunction extends ScalarFn {
                         + "feed** under iCal4j's compatibility-relaxed rules. Use it to guard a "
                         + "pipeline before calling `ical_events` / `ical_todos`, or to filter "
                         + "dirty data.\n\n"
-                        + "**Input** (positional, polymorphic): a VARCHAR file path the worker "
-                        + "opens, or a BLOB of `.ics` bytes.\n\n"
-                        + "**Output**: a BOOLEAN. NULL input yields NULL; malformed bytes yield "
+                        + "**Input** (positional, polymorphic): a `VARCHAR` file path the worker "
+                        + "opens, or a `BLOB` of `.ics` bytes.\n\n"
+                        + "**Output**: a `BOOLEAN`. NULL input yields NULL; malformed bytes yield "
                         + "`false` (never an error). Validation is relaxed, so minor RFC "
                         + "violations still count as valid.",
                 "Returns true when the input parses as a well-formed iCalendar (`.ics`) feed "
                         + "(iCal4j, compatibility-relaxed).\n\n"
-                        + "Accepts a VARCHAR file path or a BLOB of `.ics` bytes. A NULL argument "
+                        + "Accepts a `VARCHAR` file path or a `BLOB` of `.ics` bytes. A NULL argument "
                         + "returns NULL; malformed input returns `false` rather than raising an "
                         + "error, so it is safe to call across a column of mixed-quality data.",
                 "is valid ical, validate ical, well-formed, ics validation, calendar "

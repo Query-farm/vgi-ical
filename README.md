@@ -67,6 +67,10 @@ One row per `VEVENT`:
 | `attendees` | VARCHAR[] | one element per `ATTENDEE` |
 | `rrule` | VARCHAR | `RRULE`, or NULL for one-off events |
 | `sequence` | INT | `SEQUENCE` revision number |
+| `categories` | VARCHAR[] | `CATEGORIES` tags, split on commas |
+| `url` | VARCHAR | `URL`, or NULL |
+| `created` | TIMESTAMP | `CREATED`, UTC-normalised, or NULL |
+| `last_modified` | TIMESTAMP | `LAST-MODIFIED`, UTC-normalised, or NULL |
 
 ### `ical_todos(input) → table`
 

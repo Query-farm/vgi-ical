@@ -58,6 +58,18 @@ class IcalEventsTest {
         @SuppressWarnings("unchecked")
         List<String> attendees = (List<String>) att;
         assertEquals(List.of("mailto:bob@query.farm", "mailto:carol@query.farm"), attendees);
+
+        // categories: CATEGORIES value split on commas, in source order.
+        Object cats = r.get("categories");
+        assertTrue(cats instanceof List<?>, "categories should be a list");
+        @SuppressWarnings("unchecked")
+        List<String> categories = (List<String>) cats;
+        assertEquals(List.of("Engineering", "Planning"), categories);
+
+        // url + audit timestamps (CREATED / LAST-MODIFIED), UTC micros.
+        assertEquals("https://cal.query.farm/events/event-1", r.get("url"));
+        assertEquals(microsUtc(2024, 1, 1, 8, 0), ((Number) r.get("created")).longValue());
+        assertEquals(microsUtc(2024, 1, 10, 12, 0), ((Number) r.get("last_modified")).longValue());
     }
 
     @Test void worksOverByteInput() {

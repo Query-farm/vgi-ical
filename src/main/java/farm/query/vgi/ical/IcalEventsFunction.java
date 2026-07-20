@@ -22,7 +22,9 @@ import java.util.List;
 /**
  * {@code ical.ical_events(path | bytes)} — one row per VEVENT in an iCalendar
  * feed, with UTC-normalised {@code dtstart}/{@code dtend}, an {@code all_day}
- * flag, an {@code attendees VARCHAR[]} array, and the recurrence {@code rrule}.
+ * flag, an {@code attendees VARCHAR[]} array, the recurrence {@code rrule}, a
+ * {@code categories VARCHAR[]} tag array, {@code url}, and the UTC-normalised
+ * {@code created}/{@code last_modified} audit timestamps.
  *
  * <p>A NULL argument or a feed that fails to parse yields <em>no rows</em> (the
  * worker never crashes the query on bad input — see {@link IcalEngine}).
@@ -43,18 +45,19 @@ public final class IcalEventsFunction implements TableFunction {
                         + "Parse an iCalendar (`.ics`) feed into **one row per VEVENT**. Use it to "
                         + "ingest a calendar feed for scheduling analytics, reporting, or joining "
                         + "events against other tables.\n\n"
-                        + "**Input** (positional, polymorphic): a VARCHAR file path the worker "
-                        + "opens, or a BLOB of `.ics` bytes.\n\n"
+                        + "**Input** (positional, polymorphic): a `VARCHAR` file path the worker "
+                        + "opens, or a `BLOB` of `.ics` bytes.\n\n"
                         + "**Output**: uid, summary, description, UTC-normalised `dtstart`/`dtend` "
                         + "(`TIMESTAMP WITH TIME ZONE`), an `all_day` flag, location, status, "
-                        + "organizer, an `attendees VARCHAR[]` array, the recurrence `rrule`, and "
-                        + "`sequence`.\n\n"
+                        + "organizer, an `attendees VARCHAR[]` array, the recurrence `rrule`, "
+                        + "`sequence`, a `categories VARCHAR[]` tag array, `url`, and the "
+                        + "UTC-normalised `created` / `last_modified` audit timestamps.\n\n"
                         + "**Edge cases**: a NULL argument or a feed that fails to parse yields "
-                        + "*no rows* (never an error). DATE-valued starts set `all_day = true`; "
+                        + "*no rows* (never an error). `DATE`-valued starts set `all_day = true`; "
                         + "recurrences are surfaced as the raw RRULE string, not expanded.",
                 "Parses an iCalendar (`.ics`) feed into one row per VEVENT, backed by iCal4j "
                         + "(RFC 5545).\n\n"
-                        + "Accepts a VARCHAR file path or a BLOB of `.ics` bytes. Timestamps are "
+                        + "Accepts a `VARCHAR` file path or a `BLOB` of `.ics` bytes. Timestamps are "
                         + "normalised to UTC and surfaced as `TIMESTAMP WITH TIME ZONE`. Bad or "
                         + "NULL input yields no rows rather than an error. Recurrence rules appear "
                         + "as the raw RRULE string in the `rrule` column.",
@@ -76,7 +79,12 @@ public final class IcalEventsFunction implements TableFunction {
                 "organizer", "VARCHAR", "ORGANIZER value (usually a mailto: URI).",
                 "attendees", "VARCHAR[]", "ATTENDEE values, one array element per attendee.",
                 "rrule", "VARCHAR", "Recurrence rule as the raw RRULE string, or NULL.",
-                "sequence", "INTEGER", "Revision sequence number (SEQUENCE)."));
+                "sequence", "INTEGER", "Revision sequence number (SEQUENCE).",
+                "categories", "VARCHAR[]", "Category tags (CATEGORIES), one array element per tag.",
+                "url", "VARCHAR", "Associated URL (URL property), or NULL.",
+                "created", "TIMESTAMP WITH TIME ZONE", "Creation time, UTC-normalised (CREATED), or NULL.",
+                "last_modified", "TIMESTAMP WITH TIME ZONE",
+                "Last-modified time, UTC-normalised (LAST-MODIFIED), or NULL."));
         tags.put("vgi.example_queries",
                 "[{\"sql\": \"SELECT summary, location, all_day FROM ical.main.ical_events("
                         + Meta.SAMPLE_ICS_BLOB + ") ORDER BY dtstart;\", \"description\": "
@@ -91,7 +99,8 @@ public final class IcalEventsFunction implements TableFunction {
         return FunctionMetadata.describe(
                         "Parse an iCalendar (.ics) feed into one row per VEVENT: uid, summary, "
                                 + "UTC-normalised start/end, all-day flag, location, status, organizer, "
-                                + "attendees array, recurrence rule, and sequence (iCal4j).")
+                                + "attendees array, recurrence rule, sequence, category tags, url, and "
+                                + "created/last-modified timestamps (iCal4j).")
                 .withCategories("calendar", "icalendar", "ical4j")
                 .withTags(tags)
                 .withExamples(java.util.List.of(new FunctionExample(
@@ -157,6 +166,7 @@ public final class IcalEventsFunction implements TableFunction {
             VectorSchemaRoot root = VectorSchemaRoot.create(IcalSchemas.EVENTS_SCHEMA, Allocators.root());
             root.allocateNew();
             ListVector attendeesVec = (ListVector) root.getVector("attendees");
+            ListVector categoriesVec = (ListVector) root.getVector("categories");
             for (int i = 0; i < events.size(); i++) {
                 IcalEngine.EventRow e = events.get(i);
                 IcalSchemas.setUtf8(root, "uid", i, e.uid());
@@ -171,6 +181,10 @@ public final class IcalEventsFunction implements TableFunction {
                 IcalSchemas.writeStringList(attendeesVec, i, e.attendees());
                 IcalSchemas.setUtf8(root, "rrule", i, e.rrule());
                 IcalSchemas.setInt(root, "sequence", i, e.sequence());
+                IcalSchemas.writeStringList(categoriesVec, i, e.categories());
+                IcalSchemas.setUtf8(root, "url", i, e.url());
+                IcalSchemas.setTimestamp(root, "created", i, e.createdMicros());
+                IcalSchemas.setTimestamp(root, "last_modified", i, e.lastModifiedMicros());
             }
             root.setRowCount(events.size());
             out.emit(root);
