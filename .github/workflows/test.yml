@@ -5,6 +5,8 @@ on:
     branches: [main]
   pull_request:
   workflow_dispatch:
+  # Allow the docker-publish workflow to gate the image build on this suite.
+  workflow_call:
 
 # The VGI Java SDK (farm.query:vgi, farm.query:vgirpc) and iCal4j are published
 # to Maven Central, so this build is fully self-contained — no sibling-repo
