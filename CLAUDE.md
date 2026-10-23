@@ -14,7 +14,7 @@ with Gradle (Kotlin DSL, JDK 21) into a shaded fat JAR. Catalog name `ical`
 ## Layout
 
 ```
-build.gradle.kts / settings.gradle.kts / gradle.properties   Gradle, shadow plugin (com.gradleup.shadow 9.4.2)
+build.gradle.kts / settings.gradle.kts / gradle.properties   Gradle, shadow plugin (com.gradleup.shadow 9.6.1)
 src/main/java/farm/query/vgi/ical/
   Main.java                  Worker.builder().catalogName("ical")...registerTable/registerScalar
   IcalEventsFunction.java     table fn: ical_events(path|bytes) -> one row per VEVENT
@@ -61,11 +61,12 @@ Makefile                     build / fixtures / test-unit / test-sql / test / cl
 6. **`haybarn-unittest` skips `require vgi`** — `.test` files use explicit
    `LOAD vgi;` then `ATTACH ... (TYPE vgi, LOCATION '${VGI_ICAL_WORKER}')`.
 
-## vgi 0.4.0 record arity (test drivers)
+## vgi 0.43.0 record arity (test drivers)
 
-`TestSupport.invoke` builds a `TableInitParams` with the full 0.4.0 component
-list, including the trailing `atUnit`/`atValue`/`storage` nulls. If the SDK
-bumps and the constructor arity changes, `javap -cp <vgi jar>
+`TestSupport.invoke` builds a `TableInitParams` with the full 0.43.0 component
+list (25), including `bindOutputSchema` and the trailing `atUnit`/`atValue`/
+`storage`/`copyFrom`/`splitPayloads`. If the SDK bumps and the constructor
+arity changes, `javap -cp <vgi jar>
 farm.query.vgi.table.TableInitParams` shows the current signature.
 
 ## Verify

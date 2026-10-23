@@ -1,0 +1,46 @@
+# Private grader sidecar for `vgi-lint simulate` (and `lint`'s VGI520 coverage).
+# The worker publishes only task names + prompts in `vgi.agent_test_tasks`
+# (Main.agentTestTasksJson); these grader fields are keyed by that name and never
+# sent to the analyst agent (VGI416).
+tasks:
+  - name: count_events
+    reference_sql: |-
+      SELECT ical.main.ical_event_count(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Ops Calendar','BEGIN:VEVENT','UID:a1@query.farm','SUMMARY:Deploy release','DTSTART:20240310T150000Z','DTEND:20240310T160000Z','END:VEVENT','BEGIN:VEVENT','UID:a2@query.farm','SUMMARY:Retro','DTSTART:20240311T170000Z','DTEND:20240311T173000Z','END:VEVENT','BEGIN:VTODO','UID:b1@query.farm','SUMMARY:Update changelog','DUE:20240312T170000Z','STATUS:NEEDS-ACTION','END:VTODO','END:VCALENDAR'], chr(10))::BLOB)
+    success_criteria: "The feed has two VEVENTs, so the count is 2."
+    ignore_column_names: true
+    unordered: true
+
+  - name: calendar_display_name
+    reference_sql: |-
+      SELECT ical.main.ical_calendar_name(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Ops Calendar','BEGIN:VEVENT','UID:a1@query.farm','SUMMARY:Deploy release','DTSTART:20240310T150000Z','DTEND:20240310T160000Z','END:VEVENT','BEGIN:VEVENT','UID:a2@query.farm','SUMMARY:Retro','DTSTART:20240311T170000Z','DTEND:20240311T173000Z','END:VEVENT','BEGIN:VTODO','UID:b1@query.farm','SUMMARY:Update changelog','DUE:20240312T170000Z','STATUS:NEEDS-ACTION','END:VTODO','END:VCALENDAR'], chr(10))::BLOB)
+    success_criteria: "The X-WR-CALNAME is 'Ops Calendar'."
+    ignore_column_names: true
+    unordered: true
+
+  - name: validate_feed
+    reference_sql: |-
+      SELECT ical.main.is_valid_ical(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Ops Calendar','BEGIN:VEVENT','UID:a1@query.farm','SUMMARY:Deploy release','DTSTART:20240310T150000Z','DTEND:20240310T160000Z','END:VEVENT','BEGIN:VEVENT','UID:a2@query.farm','SUMMARY:Retro','DTSTART:20240311T170000Z','DTEND:20240311T173000Z','END:VEVENT','BEGIN:VTODO','UID:b1@query.farm','SUMMARY:Update changelog','DUE:20240312T170000Z','STATUS:NEEDS-ACTION','END:VTODO','END:VCALENDAR'], chr(10))::BLOB)
+    success_criteria: "The feed parses cleanly, so the result is true."
+    ignore_column_names: true
+    unordered: true
+
+  - name: list_event_summaries
+    reference_sql: |-
+      SELECT summary FROM ical.main.ical_events(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Ops Calendar','BEGIN:VEVENT','UID:a1@query.farm','SUMMARY:Deploy release','DTSTART:20240310T150000Z','DTEND:20240310T160000Z','END:VEVENT','BEGIN:VEVENT','UID:a2@query.farm','SUMMARY:Retro','DTSTART:20240311T170000Z','DTEND:20240311T173000Z','END:VEVENT','BEGIN:VTODO','UID:b1@query.farm','SUMMARY:Update changelog','DUE:20240312T170000Z','STATUS:NEEDS-ACTION','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) ORDER BY dtstart
+    success_criteria: "The two event summaries are 'Deploy release' and 'Retro'."
+    ignore_column_names: true
+    unordered: true
+
+  - name: list_open_todos
+    reference_sql: |-
+      SELECT summary FROM ical.main.ical_todos(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Ops Calendar','BEGIN:VEVENT','UID:a1@query.farm','SUMMARY:Deploy release','DTSTART:20240310T150000Z','DTEND:20240310T160000Z','END:VEVENT','BEGIN:VEVENT','UID:a2@query.farm','SUMMARY:Retro','DTSTART:20240311T170000Z','DTEND:20240311T173000Z','END:VEVENT','BEGIN:VTODO','UID:b1@query.farm','SUMMARY:Update changelog','DUE:20240312T170000Z','STATUS:NEEDS-ACTION','END:VTODO','END:VCALENDAR'], chr(10))::BLOB)
+    success_criteria: "The single to-do summary is 'Update changelog'."
+    ignore_column_names: true
+    unordered: true
+
+  - name: browse_example_calendars
+    reference_sql: |-
+      SELECT calendar_name FROM ical.main.example_calendars ORDER BY event_count DESC, name LIMIT 1
+    success_criteria: "The 'Ops Calendar' sample has the most events (two), so its display name is 'Ops Calendar'."
+    ignore_column_names: true
+    unordered: true

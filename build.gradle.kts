@@ -4,7 +4,7 @@ plugins {
     java
     application
     // Fat/shaded JAR: `./gradlew shadowJar` -> build/libs/vgi-ical-<ver>-all.jar
-    id("com.gradleup.shadow") version "9.5.1"
+    id("com.gradleup.shadow") version "9.6.1"
 }
 
 group = "farm.query"
@@ -38,22 +38,22 @@ dependencies {
     // VGI Java SDK from Maven Central. `vgi` is the worker/catalog API and pulls
     // in farm.query:vgirpc transitively; vgirpc is declared explicitly because
     // the code imports farm.query.vgirpc.* directly.
-    implementation("farm.query:vgi:0.19.0")
-    implementation("farm.query:vgirpc:0.16.0")
+    implementation("farm.query:vgi:0.43.0")
+    implementation("farm.query:vgirpc:0.33.1")
 
     // iCal4j — BSD-3-Clause (permissive). The RFC 5545 (iCalendar) parser:
     // CalendarBuilder + the net.fortuna.ical4j.model object tree (VEvent, VToDo,
     // VTimeZone, ...). Pulls in commons-lang3/-codec, threeten-extra, caffeine,
     // jparsec, groovy transitively (all permissive: Apache-2.0 / BSD / EPL).
-    implementation("org.mnode.ical4j:ical4j:4.3.0")
+    implementation("org.mnode.ical4j:ical4j:4.4.0")
 
     // slf4j-simple sends ALL log output to System.err. A stdio VGI worker speaks
     // Arrow-IPC on stdout, so any library logging that lands on stdout corrupts
     // the transport and hangs the worker. iCal4j (and caffeine) log via slf4j;
     // binding slf4j-simple keeps every line on stderr.
-    implementation("org.slf4j:slf4j-simple:2.0.18")
+    implementation("org.slf4j:slf4j-simple:2.0.20")
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.14.4")
+    testImplementation("org.junit.jupiter:junit-jupiter:6.1.3")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 

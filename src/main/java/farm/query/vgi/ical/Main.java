@@ -122,17 +122,16 @@ public final class Main {
                     "https://github.com/Query-farm/vgi-ical/issues"),
             java.util.Map.entry("vgi.support_policy_url",
                     "https://github.com/Query-farm/vgi-ical/blob/main/README.md"),
-            // VGI152/VGI920: a fixed analyst-task suite for `vgi-lint simulate`. Each
-            // task grades the analyst's SQL result against a deterministic
-            // reference_sql over an inline .ics feed, with value-only grading
-            // (ignore_column_names + unordered) so it is stable.
+            // VGI152/VGI920: a fixed analyst-task suite for `vgi-lint simulate`:
+            // names + prompts only; the private graders live in
+            // vgi-agent-tests.yaml (VGI416).
             java.util.Map.entry("vgi.agent_test_tasks", agentTestTasksJson()));
 
     /**
      * A small, deterministic iCalendar feed described to the simulated analyst in
      * each {@code vgi.agent_test_tasks} prompt, so the task is self-contained. The
-     * matching {@link #AGENT_ICS_BLOB} builds the same feed as a DuckDB {@code BLOB}
-     * for the reference query.
+     * graders in {@code vgi-agent-tests.yaml} build the same feed as a DuckDB
+     * {@code BLOB} for the reference query.
      */
     private static final String AGENT_ICS_TEXT =
             "BEGIN:VCALENDAR\n"
@@ -159,37 +158,12 @@ public final class Main {
                     + "END:VTODO\n"
                     + "END:VCALENDAR";
 
-    /** The {@link #AGENT_ICS_TEXT} feed as a DuckDB {@code BLOB} expression. */
-    private static final String AGENT_ICS_BLOB =
-            "array_to_string(['BEGIN:VCALENDAR',"
-                    + "'VERSION:2.0',"
-                    + "'PRODID:-//Query Farm//vgi-ical//EN',"
-                    + "'X-WR-CALNAME:Ops Calendar',"
-                    + "'BEGIN:VEVENT',"
-                    + "'UID:a1@query.farm',"
-                    + "'SUMMARY:Deploy release',"
-                    + "'DTSTART:20240310T150000Z',"
-                    + "'DTEND:20240310T160000Z',"
-                    + "'END:VEVENT',"
-                    + "'BEGIN:VEVENT',"
-                    + "'UID:a2@query.farm',"
-                    + "'SUMMARY:Retro',"
-                    + "'DTSTART:20240311T170000Z',"
-                    + "'DTEND:20240311T173000Z',"
-                    + "'END:VEVENT',"
-                    + "'BEGIN:VTODO',"
-                    + "'UID:b1@query.farm',"
-                    + "'SUMMARY:Update changelog',"
-                    + "'DUE:20240312T170000Z',"
-                    + "'STATUS:NEEDS-ACTION',"
-                    + "'END:VTODO',"
-                    + "'END:VCALENDAR'], chr(10))::BLOB";
-
     /**
-     * Build the {@code vgi.agent_test_tasks} JSON suite (VGI152/VGI920). Each task
-     * gives the analyst only a {@code prompt} (with the feed spelled out); grading
-     * compares the analyst's result to a deterministic {@code reference_sql} over
-     * {@link #AGENT_ICS_BLOB}, value-only (column names + row order ignored).
+     * Build the {@code vgi.agent_test_tasks} JSON suite (VGI152/VGI920). Only the
+     * public {@code name} + {@code prompt} (with the feed spelled out) are published
+     * (VGI416); the private grader fields ({@code reference_sql},
+     * {@code success_criteria}, ...) live in the {@code vgi-agent-tests.yaml}
+     * sidecar at the repo root, keyed by task name.
      */
     private static String agentTestTasksJson() {
         java.util.List<java.util.Map<String, Object>> tasks = new java.util.ArrayList<>();
@@ -197,64 +171,41 @@ public final class Main {
                 "count_events",
                 "You have this iCalendar (.ics) feed:\n\n" + AGENT_ICS_TEXT + "\n\n"
                         + "Using this worker, count how many events (VEVENT entries) the feed "
-                        + "contains. Return the single count.",
-                "SELECT ical.main.ical_event_count(" + AGENT_ICS_BLOB + ")",
-                "The feed has two VEVENTs, so the count is 2."));
+                        + "contains. Return the single count."));
         tasks.add(agentTask(
                 "calendar_display_name",
                 "You have this iCalendar (.ics) feed:\n\n" + AGENT_ICS_TEXT + "\n\n"
                         + "Using this worker, read the calendar's display name (the "
-                        + "X-WR-CALNAME property). Return the single name.",
-                "SELECT ical.main.ical_calendar_name(" + AGENT_ICS_BLOB + ")",
-                "The X-WR-CALNAME is 'Ops Calendar'."));
+                        + "X-WR-CALNAME property). Return the single name."));
         tasks.add(agentTask(
                 "validate_feed",
                 "You have this iCalendar (.ics) feed:\n\n" + AGENT_ICS_TEXT + "\n\n"
                         + "Using this worker, determine whether it is a well-formed iCalendar "
-                        + "feed. Return the single boolean.",
-                "SELECT ical.main.is_valid_ical(" + AGENT_ICS_BLOB + ")",
-                "The feed parses cleanly, so the result is true."));
+                        + "feed. Return the single boolean."));
         tasks.add(agentTask(
                 "list_event_summaries",
                 "You have this iCalendar (.ics) feed:\n\n" + AGENT_ICS_TEXT + "\n\n"
                         + "Using this worker, list the SUMMARY of every event in the feed. "
-                        + "Return one summary per row.",
-                "SELECT summary FROM ical.main.ical_events(" + AGENT_ICS_BLOB
-                        + ") ORDER BY dtstart",
-                "The two event summaries are 'Deploy release' and 'Retro'."));
+                        + "Return one summary per row."));
         tasks.add(agentTask(
                 "list_open_todos",
                 "You have this iCalendar (.ics) feed:\n\n" + AGENT_ICS_TEXT + "\n\n"
                         + "Using this worker, list the SUMMARY of every to-do (VTODO) in the "
-                        + "feed. Return one summary per row.",
-                "SELECT summary FROM ical.main.ical_todos(" + AGENT_ICS_BLOB + ")",
-                "The single to-do summary is 'Update changelog'."));
-        // VGI520: exercise the browsable example_calendars registry view. The
-        // reference reads precomputed columns straight off the view (no feed
-        // argument needed), so grading is deterministic.
+                        + "feed. Return one summary per row."));
+        // VGI520: exercise the browsable example_calendars registry view (no feed
+        // argument needed).
         tasks.add(agentTask(
                 "browse_example_calendars",
                 "This worker ships a built-in registry of sample iCalendar feeds. Using the "
                         + "worker, find which built-in sample calendar has the most events, and "
-                        + "return that calendar's display name.",
-                "SELECT calendar_name FROM ical.main.example_calendars "
-                        + "ORDER BY event_count DESC, name LIMIT 1",
-                "The 'Ops Calendar' sample has the most events (two), so its display name is "
-                        + "'Ops Calendar'."));
+                        + "return that calendar's display name."));
         return tasksToJson(tasks);
     }
 
-    private static java.util.Map<String, Object> agentTask(
-            String name, String prompt, String referenceSql, String successCriteria) {
+    private static java.util.Map<String, Object> agentTask(String name, String prompt) {
         java.util.Map<String, Object> t = new java.util.LinkedHashMap<>();
         t.put("name", name);
         t.put("prompt", prompt);
-        t.put("reference_sql", referenceSql);
-        t.put("success_criteria", successCriteria);
-        // Grade on VALUES only — every reference returns a single column, so
-        // ignoring column aliases and row order keeps grading stable.
-        t.put("ignore_column_names", true);
-        t.put("unordered", true);
         return t;
     }
 
