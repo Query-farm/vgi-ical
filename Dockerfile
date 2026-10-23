@@ -27,8 +27,13 @@ COPY gradle ./gradle
 COPY gradle.properties settings.gradle.kts build.gradle.kts ./
 COPY src ./src
 
+# Maven Central rate-limits shared CI egress IPs (HTTP 429) on a cold cache, so
+# give Gradle more, slower retries than its default 3 x 1s before giving up.
 RUN --mount=type=cache,target=/root/.gradle \
-    ./gradlew --no-daemon --console=plain shadowJar \
+    ./gradlew --no-daemon --console=plain \
+      -Dorg.gradle.internal.repository.max.retries=8 \
+      -Dorg.gradle.internal.repository.initial.backoff=2000 \
+      shadowJar \
     && cp build/libs/vgi-ical-*-all.jar /worker.jar
 
 # ---- runtime stage ---------------------------------------------------------
