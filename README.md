@@ -119,6 +119,9 @@ make test-sql    # shadowJar + fixtures + haybarn-unittest E2E
 make test        # both
 ```
 
+`make test-sql` needs haybarn **2.0** (`uv tool install --prerelease allow 'haybarn-unittest>=2.0.0rc11,<2.1'`):
+the worker speaks VGI protocol `vgi.v3` / 3.1, which haybarn 1.5's `vgi` extension rejects.
+
 The VGI Java SDK (`farm.query:vgi`, `farm.query:vgirpc`) and iCal4j resolve from
 **Maven Central** — the build is fully self-contained (no `mavenLocal`, no sibling
 checkout).

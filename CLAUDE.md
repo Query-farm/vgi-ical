@@ -61,9 +61,16 @@ Makefile                     build / fixtures / test-unit / test-sql / test / cl
 6. **`haybarn-unittest` skips `require vgi`** — `.test` files use explicit
    `LOAD vgi;` then `ATTACH ... (TYPE vgi, LOCATION '${VGI_ICAL_WORKER}')`.
 
-## vgi 0.43.0 record arity (test drivers)
+## vgi 0.46.0 record arity (test drivers)
 
-`TestSupport.invoke` builds a `TableInitParams` with the full 0.43.0 component
+**Protocol:** vgi 0.46.0 speaks VGI protocol `vgi.v3` / 3.1.0, which only the
+haybarn **2.0** community `vgi` extension attaches (haybarn 1.5 rejects it).
+`haybarn-unittest` 2.0 isolates `$HOME`, so `ci/run-integration.sh` and
+`make test-sql` pass `--keep-home` (otherwise the installed `vgi` extension is
+"not found").
+
+
+`TestSupport.invoke` builds a `TableInitParams` with the full 0.46.0 component (unchanged since 0.43.0)
 list (25), including `bindOutputSchema` and the trailing `atUnit`/`atValue`/
 `storage`/`copyFrom`/`splitPayloads`. If the SDK bumps and the constructor
 arity changes, `javap -cp <vgi jar>
