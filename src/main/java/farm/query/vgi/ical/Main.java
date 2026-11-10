@@ -43,6 +43,9 @@ public final class Main {
     /** Catalog-level metadata tags surfaced to DuckDB and the vgi-lint linter. */
     private static final java.util.Map<String, String> CATALOG_TAGS = java.util.Map.ofEntries(
             java.util.Map.entry("vgi.title", "iCalendar (.ics) Parsing"),
+            // VGI148: one-sentence subtitle shown in catalog listings.
+            java.util.Map.entry("vgi.subtitle",
+                    "Turn .ics calendar feeds into queryable events, to-dos and feed health checks."),
             java.util.Map.entry("vgi.keywords", Meta.keywordsJson(
                     "icalendar, ical, ics, calendar, vevent, vtodo, rfc 5545, ical4j, events, "
                             + "todos, tasks, scheduling, rrule, recurrence, calendar feed")),
@@ -259,7 +262,7 @@ public final class Main {
 
     /** Schema-level metadata tags for the single {@code main} schema. */
     private static final java.util.Map<String, String> SCHEMA_TAGS = java.util.Map.ofEntries(
-            java.util.Map.entry("vgi.title", "iCalendar Functions (main)"),
+            java.util.Map.entry("vgi.title", "iCalendar Functions"),
             java.util.Map.entry("vgi.keywords", Meta.keywordsJson(
                     "icalendar, ics, calendar, events, todos, ical_events, ical_todos, "
                             + "ical_calendar_name, ical_event_count, is_valid_ical, rrule, "
