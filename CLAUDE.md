@@ -61,9 +61,9 @@ Makefile                     build / fixtures / test-unit / test-sql / test / cl
 6. **`haybarn-unittest` skips `require vgi`** — `.test` files use explicit
    `LOAD vgi;` then `ATTACH ... (TYPE vgi, LOCATION '${VGI_ICAL_WORKER}')`.
 
-## vgi 0.47.0 record arity (test drivers)
+## vgi 0.48.0 record arity (test drivers)
 
-**Protocol:** vgi 0.47.0 speaks VGI protocol `vgi.v3` / 3.2.0, which only the
+**Protocol:** vgi 0.48.0 speaks VGI protocol `vgi.v3` / 3.3.0, which only the
 haybarn **2.0** community `vgi` extension attaches (haybarn 1.5 rejects it).
 `haybarn-unittest` 2.0 isolates `$HOME`, so `ci/run-integration.sh` and
 `make test-sql` pass `--keep-home` (otherwise the installed `vgi` extension is
