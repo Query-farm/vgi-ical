@@ -22,7 +22,7 @@ class IcalEventsTest {
     /** Wrap an .ics string as a single VARCHAR-bytes (a "path-like" string is wrong here,
      *  so we pass the raw bytes via the Arguments positional as a byte[]). */
     private static Arguments bytesArg(byte[] ics) {
-        // The any-typed positional accepts a byte[] -> DocInput(bytes).
+        // The BLOB overload accepts a byte[] -> DocInput(bytes).
         return new Arguments(java.util.Arrays.asList((Object) ics), Map.of());
     }
 
@@ -32,7 +32,7 @@ class IcalEventsTest {
     }
 
     @Test void parsesRichEventRowValues() {
-        var result = TestSupport.invoke(new IcalEventsFunction(),
+        var result = TestSupport.invoke(new IcalEventsFunction(InputType.BYTES),
                 bytesArg(Fixtures.richCalendar().getBytes(java.nio.charset.StandardCharsets.UTF_8)));
         List<Map<String, Object>> rows = result.rows();
         assertEquals(1, rows.size(), "one VEVENT expected");
@@ -73,13 +73,13 @@ class IcalEventsTest {
     }
 
     @Test void worksOverByteInput() {
-        var result = TestSupport.invoke(new IcalEventsFunction(), bytesArg(Fixtures.richBytes()));
+        var result = TestSupport.invoke(new IcalEventsFunction(InputType.BYTES), bytesArg(Fixtures.richBytes()));
         assertEquals(1, result.totalRows());
         assertEquals("Sprint Planning", result.rows().get(0).get("summary"));
     }
 
     @Test void allDayEventFlaggedTrue() {
-        var result = TestSupport.invoke(new IcalEventsFunction(),
+        var result = TestSupport.invoke(new IcalEventsFunction(InputType.BYTES),
                 bytesArg(Fixtures.allDayCalendar().getBytes(java.nio.charset.StandardCharsets.UTF_8)));
         List<Map<String, Object>> rows = result.rows();
         assertEquals(1, rows.size());
@@ -90,7 +90,7 @@ class IcalEventsTest {
     }
 
     @Test void zonedEventNormalisedToUtc() {
-        var result = TestSupport.invoke(new IcalEventsFunction(),
+        var result = TestSupport.invoke(new IcalEventsFunction(InputType.BYTES),
                 bytesArg(Fixtures.zonedCalendar().getBytes(java.nio.charset.StandardCharsets.UTF_8)));
         List<Map<String, Object>> rows = result.rows();
         assertEquals(1, rows.size());
@@ -100,12 +100,12 @@ class IcalEventsTest {
     }
 
     @Test void malformedFeedYieldsNoRowsNoCrash() {
-        var result = TestSupport.invoke(new IcalEventsFunction(), bytesArg(Fixtures.garbageBytes()));
+        var result = TestSupport.invoke(new IcalEventsFunction(InputType.BYTES), bytesArg(Fixtures.garbageBytes()));
         assertEquals(0, result.totalRows());
     }
 
     @Test void nullInputYieldsNoRows() {
-        var result = TestSupport.invoke(new IcalEventsFunction(),
+        var result = TestSupport.invoke(new IcalEventsFunction(InputType.BYTES),
                 new Arguments(java.util.Arrays.asList((Object) null), Map.of()));
         assertEquals(0, result.totalRows());
     }

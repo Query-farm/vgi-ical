@@ -1,5 +1,6 @@
 package farm.query.vgi.ical;
 
+import farm.query.vgi.function.ArgSpec;
 import farm.query.vgi.function.Arguments;
 import farm.query.vgi.function.FunctionMetadata;
 import farm.query.vgi.protocol.FunctionExample;
@@ -20,9 +21,13 @@ import org.apache.arrow.vector.util.Text;
 public final class CalendarNameFunction extends ScalarFn {
 
     private final IcalEngine engine;
+    private final InputType inputType;
 
-    public CalendarNameFunction() { this(IcalEngine.shared()); }
-    public CalendarNameFunction(IcalEngine engine) { this.engine = engine; }
+    public CalendarNameFunction(InputType inputType) { this(inputType, IcalEngine.shared()); }
+    public CalendarNameFunction(InputType inputType, IcalEngine engine) {
+        this.inputType = java.util.Objects.requireNonNull(inputType);
+        this.engine = engine;
+    }
 
     @Override public String name() { return "ical_calendar_name"; }
 
@@ -36,7 +41,7 @@ public final class CalendarNameFunction extends ScalarFn {
                 "# ical_calendar_name\n\n"
                         + "Return the **display name** of an iCalendar (`.ics`) feed: the "
                         + "`X-WR-CALNAME` property if present, otherwise the `PRODID`.\n\n"
-                        + "**Input** (positional, polymorphic): a `VARCHAR` file path the worker "
+                        + "**Input** (typed overloads): a `VARCHAR` file path the worker "
                         + "opens, or a `BLOB` of `.ics` bytes.\n\n"
                         + "**Output**: a `VARCHAR` name, or NULL when neither property is present or "
                         + "the input is NULL / unparsable.\n\n"
@@ -68,12 +73,17 @@ public final class CalendarNameFunction extends ScalarFn {
                         null)));
     }
 
+    // FieldVector lets both typed overloads share the same batch implementation.
+    @Override public java.util.List<ArgSpec> argumentSpecs() {
+        return java.util.List.of(inputType.argumentSpec());
+    }
+
     @Override protected ArrowType outputType(Schema inputSchema, Arguments args) {
         return Schemas.UTF8;
     }
 
     public void compute(
-            @Vector(value = "input", any = true, doc = Meta.INPUT_ARG_DOC) FieldVector in,
+            @Vector("input") FieldVector in,
             VarCharVector out) {
         int n = in.getValueCount();
         for (int i = 0; i < n; i++) {

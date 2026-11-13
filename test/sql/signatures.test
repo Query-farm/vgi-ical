@@ -1,0 +1,129 @@
+# name: test/sql/signatures.test
+# group: [vgi_ical]
+# Typed overload discovery, path/blob dispatch, NULLs, and invalid arguments.
+
+require-env VGI_ICAL_WORKER
+
+require httpfs
+
+statement ok
+LOAD vgi;
+
+statement ok
+ATTACH 'ical' AS ical (TYPE vgi, LOCATION '${VGI_ICAL_WORKER}');
+
+# Every function advertises exactly VARCHAR and BLOB, with argument docs.
+query TTTTT
+SELECT function_name, arg_name, arg_type, is_any_type::VARCHAR,
+       (length(arg_description) > 0)::VARCHAR
+FROM vgi_function_arguments()
+WHERE catalog_name = 'ical'
+ORDER BY function_name, arg_type;
+----
+ical_calendar_name	content	BLOB	false	true
+ical_calendar_name	path	VARCHAR	false	true
+ical_event_count	content	BLOB	false	true
+ical_event_count	path	VARCHAR	false	true
+ical_events	content	BLOB	false	true
+ical_events	path	VARCHAR	false	true
+ical_todos	content	BLOB	false	true
+ical_todos	path	VARCHAR	false	true
+is_valid_ical	content	BLOB	false	true
+is_valid_ical	path	VARCHAR	false	true
+
+# The existing suites cover file paths; these calls exercise raw byte overloads.
+statement ok
+SET VARIABLE ical_test_bytes = (SELECT content FROM read_blob('test/sql/data/team.ics'));
+
+query T
+SELECT summary FROM ical.ical_events(getvariable('ical_test_bytes'));
+----
+Sprint Planning
+
+query T
+SELECT summary FROM ical.ical_todos(getvariable('ical_test_bytes'));
+----
+Write release notes
+
+# Multi-row input exercises scalar vector dispatch, including NULL and bad data.
+query TII
+SELECT ical.ical_calendar_name(content), ical.ical_event_count(content),
+       ical.is_valid_ical(content)
+FROM (
+    SELECT 1 AS id, content FROM read_blob('test/sql/data/team.ics')
+    UNION ALL SELECT 2, NULL::BLOB
+    UNION ALL SELECT 3, 'garbage'::BLOB
+) feeds ORDER BY id;
+----
+Team Calendar	1	true
+NULL	NULL	NULL
+NULL	0	false
+
+query TII
+SELECT ical.ical_calendar_name(path), ical.ical_event_count(path),
+       ical.is_valid_ical(path)
+FROM (VALUES (1, 'test/sql/data/team.ics'), (2, NULL::VARCHAR),
+             (3, 'test/sql/data/garbage.ics')) feeds(id, path)
+ORDER BY id;
+----
+Team Calendar	1	true
+NULL	NULL	NULL
+NULL	0	false
+
+# Untyped NULL remains usable with both overloads registered.
+query III
+SELECT ical.ical_calendar_name(NULL) IS NULL,
+       ical.ical_event_count(NULL) IS NULL, ical.is_valid_ical(NULL) IS NULL;
+----
+true	true	true
+
+query I
+SELECT count(*) FROM ical.ical_events(NULL);
+----
+0
+
+query I
+SELECT count(*) FROM ical.ical_todos(NULL);
+----
+0
+
+query II
+SELECT (SELECT count(*) FROM ical.ical_events(NULL::VARCHAR)),
+       (SELECT count(*) FROM ical.ical_events(NULL::BLOB));
+----
+0	0
+
+query II
+SELECT (SELECT count(*) FROM ical.ical_todos(NULL::VARCHAR)),
+       (SELECT count(*) FROM ical.ical_todos(NULL::BLOB));
+----
+0	0
+
+# Invalid types fail at binding instead of becoming filesystem paths.
+statement error
+SELECT * FROM ical.ical_events(123);
+----
+Binder Error
+
+statement error
+SELECT * FROM ical.ical_todos(true);
+----
+Binder Error
+
+statement error
+SELECT ical.ical_calendar_name(123);
+----
+Binder Error
+
+statement error
+SELECT ical.ical_event_count(123);
+----
+Binder Error
+
+statement error
+SELECT ical.is_valid_ical([1, 2]);
+----
+Binder Error
+
+statement ok
+DETACH ical;

@@ -26,7 +26,7 @@ class IcalTodosTest {
     }
 
     @Test void parsesTodoRowValues() {
-        var result = TestSupport.invoke(new IcalTodosFunction(), bytesArg(Fixtures.richCalendar()));
+        var result = TestSupport.invoke(new IcalTodosFunction(InputType.BYTES), bytesArg(Fixtures.richCalendar()));
         List<Map<String, Object>> rows = result.rows();
         assertEquals(1, rows.size());
         Map<String, Object> r = rows.get(0);
@@ -39,7 +39,7 @@ class IcalTodosTest {
     }
 
     @Test void malformedFeedYieldsNoTodos() {
-        var result = TestSupport.invoke(new IcalTodosFunction(),
+        var result = TestSupport.invoke(new IcalTodosFunction(InputType.BYTES),
                 new Arguments(java.util.Arrays.asList((Object) Fixtures.garbageBytes()), Map.of()));
         assertEquals(0, result.totalRows());
     }

@@ -7,10 +7,10 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
 /**
- * Resolves the polymorphic first argument of every iCal function: a
+ * Resolves the typed input overloads of every iCal function: a
  * {@code VARCHAR} path (the worker opens the {@code .ics} file) <em>or</em> a
  * {@code BLOB}/{@code BINARY} column whose {@code .ics} bytes travelled over
- * Arrow. Modeled on vgi-tika's {@code DocInput}.
+ * Arrow. Other input types are rejected rather than converted to paths.
  */
 public record DocInput(byte[] bytes, Path path) {
 
@@ -19,11 +19,16 @@ public record DocInput(byte[] bytes, Path path) {
         if (value == null) {
             return null;
         }
+        if (type != null && !(type instanceof ArrowType.Utf8)
+                && !(type instanceof ArrowType.LargeUtf8) && !isBinary(type)) {
+            throw invalidType();
+        }
         if (value instanceof byte[] b) {
+            if (type != null && !isBinary(type)) throw invalidType();
             return new DocInput(b, null);
         }
         if (value instanceof Text t) {
-            return new DocInput(null, Path.of(t.toString()));
+            return fromArgument(t.toString(), type);
         }
         if (value instanceof String s) {
             // Binary/blob types may arrive as a String for some transports —
@@ -33,8 +38,11 @@ public record DocInput(byte[] bytes, Path path) {
             }
             return new DocInput(null, Path.of(s));
         }
-        // Fallback: stringify and treat as a path.
-        return new DocInput(null, Path.of(value.toString()));
+        throw invalidType();
+    }
+
+    private static IllegalArgumentException invalidType() {
+        return new IllegalArgumentException("input must be a VARCHAR file path or BLOB calendar bytes");
     }
 
     public boolean isPath() {

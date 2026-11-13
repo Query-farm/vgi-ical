@@ -78,9 +78,11 @@ To build the worker jar yourself, see [Build & test](#build--test).
 
 ### Path-or-bytes input
 
-Every function takes a single polymorphic argument: a **VARCHAR path** (the worker
-opens the `.ics` file) or a **BLOB** of `.ics` bytes that travelled over Arrow.
-A `NULL` argument yields `NULL` / no rows.
+Every function has two typed overloads, each taking one argument: a **VARCHAR
+path** (the worker opens the `.ics` file) or a **BLOB** of `.ics` bytes that
+travelled over Arrow. Unsupported argument types are rejected at SQL bind time
+instead of being converted to file paths. A `NULL` argument yields `NULL` / no
+rows.
 
 ## Functions
 

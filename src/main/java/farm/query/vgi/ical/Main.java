@@ -21,7 +21,7 @@ public final class Main {
                     ? System.getenv("VGI_ICAL_GIT_COMMIT") : "unknown";
 
     public static Worker buildWorker() {
-        return Worker.builder()
+        Worker worker = Worker.builder()
                 .catalogName("ical")
                 .implementationVersion(GIT_COMMIT)
                 .catalogComment("iCalendar (.ics) events, todos, and metadata parsing (iCal4j)")
@@ -30,14 +30,17 @@ public final class Main {
                 .schemaComment("main", "iCalendar (.ics) parsing functions: extract events and "
                         + "todos as rows, and read calendar-level metadata (iCal4j).")
                 .schemaTags("main", SCHEMA_TAGS)
-                .registerTable(new IcalEventsFunction())
-                .registerTable(new IcalTodosFunction())
-                .registerScalar(new CalendarNameFunction())
-                .registerScalar(new EventCountFunction())
-                .registerScalar(new IsValidFunction())
                 // VGI146: a browsable, credential-free registry view so an agent can
                 // scan real sample feeds before calling the feed-argument functions.
                 .registerView(ExampleCalendars.view());
+        for (InputType inputType : InputType.values()) {
+            worker.registerTable(new IcalEventsFunction(inputType))
+                    .registerTable(new IcalTodosFunction(inputType))
+                    .registerScalar(new CalendarNameFunction(inputType))
+                    .registerScalar(new EventCountFunction(inputType))
+                    .registerScalar(new IsValidFunction(inputType));
+        }
+        return worker;
     }
 
     /** Catalog-level metadata tags surfaced to DuckDB and the vgi-lint linter. */

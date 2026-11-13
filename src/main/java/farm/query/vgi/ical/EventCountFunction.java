@@ -1,5 +1,6 @@
 package farm.query.vgi.ical;
 
+import farm.query.vgi.function.ArgSpec;
 import farm.query.vgi.function.Arguments;
 import farm.query.vgi.function.FunctionMetadata;
 import farm.query.vgi.protocol.FunctionExample;
@@ -18,9 +19,13 @@ import org.apache.arrow.vector.types.pojo.Schema;
 public final class EventCountFunction extends ScalarFn {
 
     private final IcalEngine engine;
+    private final InputType inputType;
 
-    public EventCountFunction() { this(IcalEngine.shared()); }
-    public EventCountFunction(IcalEngine engine) { this.engine = engine; }
+    public EventCountFunction(InputType inputType) { this(inputType, IcalEngine.shared()); }
+    public EventCountFunction(InputType inputType, IcalEngine engine) {
+        this.inputType = java.util.Objects.requireNonNull(inputType);
+        this.engine = engine;
+    }
 
     @Override public String name() { return "ical_event_count"; }
 
@@ -35,7 +40,7 @@ public final class EventCountFunction extends ScalarFn {
                         + "Return the **number of VEVENTs** in an iCalendar (`.ics`) feed without "
                         + "materialising the rows. Use it as a cheap probe — e.g. to skip empty "
                         + "feeds or rank feeds by activity.\n\n"
-                        + "**Input** (positional, polymorphic): a `VARCHAR` file path the worker "
+                        + "**Input** (typed overloads): a `VARCHAR` file path the worker "
                         + "opens, or a `BLOB` of `.ics` bytes.\n\n"
                         + "**Output**: an `INTEGER` count. NULL input yields NULL; an empty or "
                         + "unparsable feed yields `0` (never an error).",
@@ -66,12 +71,17 @@ public final class EventCountFunction extends ScalarFn {
                         null)));
     }
 
+    // FieldVector lets both typed overloads share the same batch implementation.
+    @Override public java.util.List<ArgSpec> argumentSpecs() {
+        return java.util.List.of(inputType.argumentSpec());
+    }
+
     @Override protected ArrowType outputType(Schema inputSchema, Arguments args) {
         return Schemas.INT32;
     }
 
     public void compute(
-            @Vector(value = "input", any = true, doc = Meta.INPUT_ARG_DOC) FieldVector in,
+            @Vector("input") FieldVector in,
             IntVector out) {
         int n = in.getValueCount();
         for (int i = 0; i < n; i++) {

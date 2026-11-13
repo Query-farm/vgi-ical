@@ -27,9 +27,13 @@ import java.util.List;
 public final class IcalTodosFunction implements TableFunction {
 
     private final IcalEngine engine;
+    private final InputType inputType;
 
-    public IcalTodosFunction() { this(IcalEngine.shared()); }
-    public IcalTodosFunction(IcalEngine engine) { this.engine = engine; }
+    public IcalTodosFunction(InputType inputType) { this(inputType, IcalEngine.shared()); }
+    public IcalTodosFunction(InputType inputType, IcalEngine engine) {
+        this.inputType = java.util.Objects.requireNonNull(inputType);
+        this.engine = engine;
+    }
 
     @Override public String name() { return "ical_todos"; }
 
@@ -40,7 +44,7 @@ public final class IcalTodosFunction implements TableFunction {
                         + "Parse an iCalendar (`.ics`) feed into **one row per VTODO** (task). Use "
                         + "it to pull outstanding to-dos out of a shared calendar for task "
                         + "tracking or reporting.\n\n"
-                        + "**Input** (positional, polymorphic): a `VARCHAR` file path the worker "
+                        + "**Input** (typed overloads): a `VARCHAR` file path the worker "
                         + "opens, or a `BLOB` of `.ics` bytes.\n\n"
                         + "**Output**: uid, summary, UTC-normalised `due` (`TIMESTAMP WITH TIME "
                         + "ZONE`), status (`NEEDS-ACTION` / `IN-PROCESS` / `COMPLETED` / "
@@ -92,11 +96,7 @@ public final class IcalTodosFunction implements TableFunction {
     }
 
     @Override public List<ArgSpec> argumentSpecs() {
-        // Polymorphic input carrying a per-argument doc (VGI312); see
-        // ArgSpec.any(...) for the field layout.
-        return List.of(new ArgSpec(
-                "input", 0, new ArrowType.Null(), Meta.INPUT_ARG_DOC,
-                false, false, "", List.of(), false, true, false));
+        return List.of(inputType.argumentSpec());
     }
 
     @Override public BindResponse onBind(TableBindParams p) {

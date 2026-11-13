@@ -6,7 +6,7 @@ import org.apache.arrow.vector.VarCharVector;
 
 import java.nio.file.Path;
 
-/** Resolve a path-or-bytes {@link DocInput} from one cell of an any-typed scalar vector. */
+/** Resolve a {@link DocInput} from a VARCHAR or BLOB scalar input column. */
 final class ScalarInput {
 
     private ScalarInput() {}

@@ -28,22 +28,6 @@ final class Meta {
     private Meta() {}
 
     /**
-     * Per-argument documentation (VGI312) for the single polymorphic {@code input}
-     * argument shared by every function in this worker. The argument is an
-     * any-typed positional: pass either a VARCHAR file path (the worker opens and
-     * reads the file) or a BLOB of raw {@code .ics} bytes (parsed in place). A
-     * NULL argument is handled gracefully — table functions emit no rows and
-     * scalars return NULL — so the worker never errors on missing input.
-     */
-    static final String INPUT_ARG_DOC =
-            "The iCalendar (.ics) feed to read. Pass either a filesystem path — the "
-                    + "worker opens and reads that file — or the raw .ics content itself, "
-                    + "which is parsed in place (e.g. an inline feed or a column of fetched "
-                    + "calendar data). NULL or unparsable input is handled gracefully: table "
-                    + "functions return no rows and scalar functions return NULL/0/false "
-                    + "rather than raising an error.";
-
-    /**
      * Render a comma-separated keyword list as a JSON array of strings, e.g.
      * {@code "a, b"} -> {@code ["a","b"]}. {@code vgi.keywords} must be a JSON
      * array (VGI138), not a comma-separated string.

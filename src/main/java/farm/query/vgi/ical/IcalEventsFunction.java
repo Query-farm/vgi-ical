@@ -32,9 +32,13 @@ import java.util.List;
 public final class IcalEventsFunction implements TableFunction {
 
     private final IcalEngine engine;
+    private final InputType inputType;
 
-    public IcalEventsFunction() { this(IcalEngine.shared()); }
-    public IcalEventsFunction(IcalEngine engine) { this.engine = engine; }
+    public IcalEventsFunction(InputType inputType) { this(inputType, IcalEngine.shared()); }
+    public IcalEventsFunction(InputType inputType, IcalEngine engine) {
+        this.inputType = java.util.Objects.requireNonNull(inputType);
+        this.engine = engine;
+    }
 
     @Override public String name() { return "ical_events"; }
 
@@ -45,7 +49,7 @@ public final class IcalEventsFunction implements TableFunction {
                         + "Parse an iCalendar (`.ics`) feed into **one row per VEVENT**. Use it to "
                         + "ingest a calendar feed for scheduling analytics, reporting, or joining "
                         + "events against other tables.\n\n"
-                        + "**Input** (positional, polymorphic): a `VARCHAR` file path the worker "
+                        + "**Input** (typed overloads): a `VARCHAR` file path the worker "
                         + "opens, or a `BLOB` of `.ics` bytes.\n\n"
                         + "**Output**: uid, summary, description, UTC-normalised `dtstart`/`dtend` "
                         + "(`TIMESTAMP WITH TIME ZONE`), an `all_day` flag, location, status, "
@@ -111,13 +115,7 @@ public final class IcalEventsFunction implements TableFunction {
     }
 
     @Override public List<ArgSpec> argumentSpecs() {
-        // Polymorphic input: an any-typed positional so DuckDB binds both a
-        // VARCHAR path (the worker opens the file) and a BLOB of .ics bytes.
-        // The 11-arg constructor mirrors ArgSpec.any(...) but carries a
-        // per-argument doc (VGI312) that the linter/LLM reads.
-        return List.of(new ArgSpec(
-                "input", 0, new ArrowType.Null(), Meta.INPUT_ARG_DOC,
-                false, false, "", List.of(), false, true, false));
+        return List.of(inputType.argumentSpec());
     }
 
     @Override public BindResponse onBind(TableBindParams p) {

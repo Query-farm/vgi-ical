@@ -41,7 +41,7 @@ class ScalarFunctionsTest {
         try (VarBinaryVector in = blobVec(rich(), null, Fixtures.garbageBytes());
              VarCharVector out = new VarCharVector("out", alloc)) {
             out.allocateNew();
-            new CalendarNameFunction().compute(in, out);
+            new CalendarNameFunction(InputType.BYTES).compute(in, out);
             assertEquals("Team Calendar", out.getObject(0).toString());
             assertTrue(out.isNull(1), "null input -> null name");
             assertTrue(out.isNull(2), "garbage -> null name");
@@ -52,7 +52,7 @@ class ScalarFunctionsTest {
         try (VarBinaryVector in = blobVec(rich(), null, Fixtures.garbageBytes());
              IntVector out = new IntVector("out", alloc)) {
             out.allocateNew();
-            new EventCountFunction().compute(in, out);
+            new EventCountFunction(InputType.BYTES).compute(in, out);
             assertEquals(1, out.get(0));
             assertTrue(out.isNull(1), "null input -> null count");
             assertEquals(0, out.get(2), "garbage -> 0 events");
@@ -63,7 +63,7 @@ class ScalarFunctionsTest {
         try (VarBinaryVector in = blobVec(rich(), null, Fixtures.garbageBytes());
              BitVector out = new BitVector("out", alloc)) {
             out.allocateNew();
-            new IsValidFunction().compute(in, out);
+            new IsValidFunction(InputType.BYTES).compute(in, out);
             assertTrue(out.get(0) != 0, "rich feed is valid");
             assertTrue(out.isNull(1), "null input -> null");
             assertFalse(out.get(2) != 0, "garbage is invalid");

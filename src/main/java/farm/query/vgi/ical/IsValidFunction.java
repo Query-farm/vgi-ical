@@ -1,5 +1,6 @@
 package farm.query.vgi.ical;
 
+import farm.query.vgi.function.ArgSpec;
 import farm.query.vgi.function.Arguments;
 import farm.query.vgi.function.FunctionMetadata;
 import farm.query.vgi.protocol.FunctionExample;
@@ -19,9 +20,13 @@ import org.apache.arrow.vector.types.pojo.Schema;
 public final class IsValidFunction extends ScalarFn {
 
     private final IcalEngine engine;
+    private final InputType inputType;
 
-    public IsValidFunction() { this(IcalEngine.shared()); }
-    public IsValidFunction(IcalEngine engine) { this.engine = engine; }
+    public IsValidFunction(InputType inputType) { this(inputType, IcalEngine.shared()); }
+    public IsValidFunction(InputType inputType, IcalEngine engine) {
+        this.inputType = java.util.Objects.requireNonNull(inputType);
+        this.engine = engine;
+    }
 
     @Override public String name() { return "is_valid_ical"; }
 
@@ -37,7 +42,7 @@ public final class IsValidFunction extends ScalarFn {
                         + "feed** under iCal4j's compatibility-relaxed rules. Use it to guard a "
                         + "pipeline before calling `ical_events` / `ical_todos`, or to filter "
                         + "dirty data.\n\n"
-                        + "**Input** (positional, polymorphic): a `VARCHAR` file path the worker "
+                        + "**Input** (typed overloads): a `VARCHAR` file path the worker "
                         + "opens, or a `BLOB` of `.ics` bytes.\n\n"
                         + "**Output**: a `BOOLEAN`. NULL input yields NULL; malformed bytes yield "
                         + "`false` (never an error). Validation is relaxed, so minor RFC "
@@ -69,12 +74,17 @@ public final class IsValidFunction extends ScalarFn {
                         null)));
     }
 
+    // FieldVector lets both typed overloads share the same batch implementation.
+    @Override public java.util.List<ArgSpec> argumentSpecs() {
+        return java.util.List.of(inputType.argumentSpec());
+    }
+
     @Override protected ArrowType outputType(Schema inputSchema, Arguments args) {
         return Schemas.BOOL;
     }
 
     public void compute(
-            @Vector(value = "input", any = true, doc = Meta.INPUT_ARG_DOC) FieldVector in,
+            @Vector("input") FieldVector in,
             BitVector out) {
         int n = in.getValueCount();
         for (int i = 0; i < n; i++) {

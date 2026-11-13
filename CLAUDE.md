@@ -24,8 +24,9 @@ src/main/java/farm/query/vgi/ical/
   IsValidFunction.java        scalar: is_valid_ical
   IcalEngine.java             the iCal4j integration: parse, TZ->UTC, all-day, error capture
   IcalSchemas.java            Arrow schemas + cell writers (TIMESTAMP/UTC, VARCHAR[])
-  DocInput.java               path-vs-bytes input dispatch (an any-typed positional arg)
-  ScalarInput.java            per-cell path/bytes resolution for the any-typed scalars
+  InputType.java              VARCHAR path / BLOB bytes overload specs and argument docs
+  DocInput.java               path-vs-bytes input dispatch; rejects unsupported types
+  ScalarInput.java            per-cell path/bytes resolution for typed scalar overloads
 src/test/java/...            JUnit: IcalEvents, IcalTodos, ScalarFunctions
                              + Fixtures.java (.ics text builder) + SqlFixtureGenerator + TestSupport
 test/sql/*.test + data/      haybarn-unittest E2E + committed generated fixtures (*.ics)
