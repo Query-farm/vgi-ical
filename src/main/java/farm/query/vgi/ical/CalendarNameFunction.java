@@ -32,7 +32,9 @@ public final class CalendarNameFunction extends ScalarFn {
     @Override public String name() { return "ical_calendar_name"; }
 
     @Override public String description() {
-        return "The calendar's display name from an .ics feed (X-WR-CALNAME, falling back to PRODID).";
+        return "The calendar's display name from "
+                + (inputType == InputType.PATH ? "an .ics file" : "raw .ics bytes")
+                + " (X-WR-CALNAME, falling back to PRODID).";
     }
 
     @Override public FunctionMetadata metadata() {

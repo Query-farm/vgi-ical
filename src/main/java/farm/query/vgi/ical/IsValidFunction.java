@@ -31,7 +31,9 @@ public final class IsValidFunction extends ScalarFn {
     @Override public String name() { return "is_valid_ical"; }
 
     @Override public String description() {
-        return "True when the input parses as a well-formed iCalendar (.ics) feed (iCal4j, relaxed).";
+        return "True when "
+                + (inputType == InputType.PATH ? "the file at the given path" : "the supplied bytes")
+                + " can be parsed as a well-formed iCalendar (.ics) feed (iCal4j, relaxed).";
     }
 
     @Override public FunctionMetadata metadata() {

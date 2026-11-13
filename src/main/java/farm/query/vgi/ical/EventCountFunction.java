@@ -30,7 +30,9 @@ public final class EventCountFunction extends ScalarFn {
     @Override public String name() { return "ical_event_count"; }
 
     @Override public String description() {
-        return "Count the VEVENTs in an .ics feed (0 when the feed is empty or unparsable).";
+        return "Count the VEVENTs in "
+                + (inputType == InputType.PATH ? "an .ics file" : "raw .ics bytes")
+                + " (0 when the feed is empty or unparsable).";
     }
 
     @Override public FunctionMetadata metadata() {
