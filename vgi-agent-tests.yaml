@@ -44,3 +44,17 @@ tasks:
     success_criteria: "The 'Ops Calendar' sample has the most events (two), so its display name is 'Ops Calendar'."
     ignore_column_names: true
     unordered: true
+
+  # Composed tasks: the natural solution combines ical_events with ical_todos.
+  - name: unified_agenda
+    reference_sql: |-
+      SELECT summary, occurs_at FROM (SELECT summary, dtstart AS occurs_at FROM ical.main.ical_events(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Ops Calendar','BEGIN:VEVENT','UID:a1@query.farm','SUMMARY:Deploy release','DTSTART:20240310T150000Z','DTEND:20240310T160000Z','END:VEVENT','BEGIN:VEVENT','UID:a2@query.farm','SUMMARY:Retro','DTSTART:20240311T170000Z','DTEND:20240311T173000Z','END:VEVENT','BEGIN:VTODO','UID:b1@query.farm','SUMMARY:Update changelog','DUE:20240312T170000Z','STATUS:NEEDS-ACTION','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) UNION ALL SELECT summary, due AS occurs_at FROM ical.main.ical_todos(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Ops Calendar','BEGIN:VEVENT','UID:a1@query.farm','SUMMARY:Deploy release','DTSTART:20240310T150000Z','DTEND:20240310T160000Z','END:VEVENT','BEGIN:VEVENT','UID:a2@query.farm','SUMMARY:Retro','DTSTART:20240311T170000Z','DTEND:20240311T173000Z','END:VEVENT','BEGIN:VTODO','UID:b1@query.farm','SUMMARY:Update changelog','DUE:20240312T170000Z','STATUS:NEEDS-ACTION','END:VTODO','END:VCALENDAR'], chr(10))::BLOB)) ORDER BY occurs_at
+    success_criteria: "Three rows in time order: 'Deploy release' (2024-03-10 15:00 UTC), 'Retro' (2024-03-11 17:00 UTC), then the to-do 'Update changelog' (due 2024-03-12 17:00 UTC)."
+    ignore_column_names: true
+
+  - name: todos_due_after_events
+    reference_sql: |-
+      SELECT t.summary AS todo, e.summary AS event FROM ical.main.ical_todos(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Ops Calendar','BEGIN:VEVENT','UID:a1@query.farm','SUMMARY:Deploy release','DTSTART:20240310T150000Z','DTEND:20240310T160000Z','END:VEVENT','BEGIN:VEVENT','UID:a2@query.farm','SUMMARY:Retro','DTSTART:20240311T170000Z','DTEND:20240311T173000Z','END:VEVENT','BEGIN:VTODO','UID:b1@query.farm','SUMMARY:Update changelog','DUE:20240312T170000Z','STATUS:NEEDS-ACTION','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) AS t JOIN ical.main.ical_events(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Ops Calendar','BEGIN:VEVENT','UID:a1@query.farm','SUMMARY:Deploy release','DTSTART:20240310T150000Z','DTEND:20240310T160000Z','END:VEVENT','BEGIN:VEVENT','UID:a2@query.farm','SUMMARY:Retro','DTSTART:20240311T170000Z','DTEND:20240311T173000Z','END:VEVENT','BEGIN:VTODO','UID:b1@query.farm','SUMMARY:Update changelog','DUE:20240312T170000Z','STATUS:NEEDS-ACTION','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) AS e ON t.due BETWEEN e.dtstart AND e.dtstart + INTERVAL 7 DAY
+    success_criteria: "Two pairings: 'Update changelog' with 'Deploy release', and 'Update changelog' with 'Retro'."
+    ignore_column_names: true
+    unordered: true

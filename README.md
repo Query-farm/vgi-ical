@@ -120,6 +120,31 @@ One row per `VTODO`: `uid`, `summary`, `due` (TIMESTAMP), `status`,
 - `ical_event_count(input) → INT` — number of `VEVENT`s (0 for empty/unparsable).
 - `is_valid_ical(input) → BOOLEAN` — true when the feed parses cleanly.
 
+### Combining functions
+
+The functions are most useful together. Join a feed's to-dos to its events to
+find the follow-up work due in the week after each meeting starts:
+
+```sql
+SELECT e.summary AS event, e.dtstart, t.summary AS todo, t.due
+FROM ical.main.ical_events('/cal/team.ics') AS e
+JOIN ical.main.ical_todos('/cal/team.ics') AS t
+  ON t.due BETWEEN e.dtstart AND e.dtstart + INTERVAL 7 DAY
+ORDER BY e.dtstart, t.due;
+```
+
+Table functions take only literal arguments, but the scalars accept columns, so
+a whole table of stored feeds can be health-checked in one pass:
+
+```sql
+SELECT name,
+       ical.main.is_valid_ical(feed::BLOB)      AS is_valid,
+       ical.main.ical_calendar_name(feed::BLOB) AS calendar,
+       ical.main.ical_event_count(feed::BLOB)   AS events
+FROM ical.main.example_calendars
+ORDER BY name;
+```
+
 ## Time-zone & all-day handling
 
 iCalendar date-times come in three flavours (RFC 5545 §3.3.5). Every emitted

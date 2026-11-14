@@ -124,7 +124,14 @@ final class ExampleCalendars {
                 "[{\"sql\": \"SELECT name, calendar_name, event_count, todo_count "
                         + "FROM ical.main.example_calendars ORDER BY event_count DESC, name;\", "
                         + "\"description\": \"List the built-in sample iCalendar feeds, richest "
-                        + "first, with their display name and event/to-do counts.\"}]");
+                        + "first, with their display name and event/to-do counts.\"},"
+                        // Composed: the registry view + all three scalar helpers.
+                        + "{\"sql\": \"" + Main.FEED_AUDIT_SQL + ";\", \"description\": "
+                        + "\"Health-check a whole table of stored feeds in one pass: scalars "
+                        + "accept column arguments (table functions do not), so apply "
+                        + "is_valid_ical, ical_calendar_name and ical_event_count to every row "
+                        + "and flag feeds whose parsed event count disagrees with the recorded "
+                        + "one. The same query works over any table of .ics text or bytes.\"}]");
 
         Map<String, String> columnComments = new LinkedHashMap<>();
         columnComments.put("name", "Short slug identifier for the sample feed (e.g. `team_calendar`).");
