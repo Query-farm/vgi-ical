@@ -12,8 +12,6 @@
 
 GRADLE        ?= ./gradlew
 UNITTEST      ?= haybarn-unittest
-TEST_DIR       = .
-TEST_PATTERN   = test/sql/*
 
 # The fat JAR is a self-contained VGI worker; its manifest sets Add-Opens so a
 # bare `java -jar` works as a LOCATION (no extra --add-opens needed).
@@ -32,19 +30,25 @@ test-unit:
 	$(GRADLE) --no-daemon test
 
 # SQL E2E: build the fat JAR, (re)generate fixtures, then run the .test files
-# through DuckDB via haybarn-unittest with the worker as the VGI LOCATION.
+# through DuckDB via haybarn-unittest with the worker as the VGI LOCATION. Goes
+# through ci/run-integration.sh (as CI does), which rewrites each `require httpfs`
+# into an explicit INSTALL+LOAD: run raw, haybarn-unittest SKIPS every file.
+# TRANSPORT=subprocess|http|unix picks the worker transport (default subprocess).
 test-sql: build fixtures
-	@command -v $(UNITTEST) >/dev/null 2>&1 || { \
+	@UT="$$(command -v $(UNITTEST))"; \
+	if [ -z "$$UT" ]; then \
 		echo "ERROR: $(UNITTEST) not found on PATH." >&2; \
 		echo "  Install: uv tool install --prerelease allow 'haybarn-unittest>=2.0.0rc11,<2.1'" >&2; \
 		echo "  Then:    export PATH=\"\$$HOME/.local/bin:\$$PATH\"" >&2; \
 		exit 1; \
-	}
-	@JAR="$$(ls $(JAR_GLOB) | head -1)"; \
+	fi; \
+	JAR="$$(ls $(JAR_GLOB) | head -1)"; \
 	if [ -z "$$JAR" ]; then echo "ERROR: fat JAR not built ($(JAR_GLOB))" >&2; exit 1; fi; \
 	echo "Worker JAR: $$JAR"; \
+	HAYBARN_UNITTEST="$$UT" \
 	VGI_ICAL_WORKER="java -jar $$(pwd)/$$JAR" \
-		$(UNITTEST) --keep-home --test-dir "$(TEST_DIR)" "$(TEST_PATTERN)"
+	VGI_ICAL_WORKER_JAR="$$(pwd)/$$JAR" \
+		ci/run-integration.sh
 
 test: test-unit test-sql
 

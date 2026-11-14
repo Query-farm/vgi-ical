@@ -17,7 +17,7 @@ statement ok
 LOAD vgi;
 
 statement ok
-ATTACH 'ical' AS ical (TYPE vgi, LOCATION '${VGI_ICAL_WORKER}');
+ATTACH 'ical' AS ical (TYPE vgi, LOCATION '{VGI_ICAL_WORKER}');
 
 # ---- rich feed: one VEVENT with all the trimmings ---------------------------
 

@@ -1,0 +1,107 @@
+# name: test/sql/composed.test
+# group: [vgi_ical]
+#
+# Queries that combine several of the worker's objects, mirroring the composed
+# examples in the metadata (ComposedExamples.java) and README: scalars over a
+# column of feeds, an ical_events overlap self-join, and ical_events joined to
+# ical_todos.
+
+require-env VGI_ICAL_WORKER
+
+# httpfs supplies DuckDB's HTTP client, which the vgi extension requires for the
+# HTTP worker transport (http:// LOCATION); a no-op for subprocess/unix. CI's
+# preprocess-require.awk rewrites this into `INSTALL httpfs FROM core; LOAD httpfs;`.
+require httpfs
+
+# icu supplies TIMESTAMP WITH TIME ZONE arithmetic (dtstart + INTERVAL ...); the
+# DuckDB CLI and Python packages autoload it. Pin the session to UTC so the +00
+# rendering matches the other files, which run without icu.
+require icu
+
+statement ok
+SET TimeZone = 'UTC';
+
+statement ok
+LOAD vgi;
+
+statement ok
+ATTACH 'ical' AS ical (TYPE vgi, LOCATION '{VGI_ICAL_WORKER}');
+
+# ---- audit a directory of feeds: read_blob() content -> the three scalars ----
+# The bytes are read by DuckDB and passed as BLOB, so this works for any
+# transport regardless of the worker's own filesystem.
+query TTTI
+SELECT parse_filename(filename) AS file,
+       ical.main.is_valid_ical(content) AS is_valid,
+       ical.main.ical_calendar_name(content) AS calendar,
+       ical.main.ical_event_count(content) AS events
+FROM read_blob('test/sql/data/*.ics')
+ORDER BY file;
+----
+conflict.ics	true	Design Calendar	3
+garbage.ics	false	NULL	0
+holiday.ics	true	Holidays	1
+team.ics	true	Team Calendar	1
+zoned.ics	true	-//Query Farm//vgi-ical test//EN	1
+
+# ---- the scalars accept a column of stored feeds (cast text to BLOB) --------
+query TTTI
+SELECT name,
+       ical.main.is_valid_ical(feed::BLOB) AS is_valid,
+       ical.main.ical_calendar_name(feed::BLOB) AS parsed_name,
+       ical.main.ical_event_count(feed::BLOB) AS parsed_events
+FROM (SELECT name, feed FROM ical.main.example_calendars
+      UNION ALL SELECT 'truncated_export', 'BEGIN:VCALENDAR') AS f
+ORDER BY name;
+----
+ops_calendar	true	Ops Calendar	2
+team_calendar	true	Team Calendar	1
+truncated_export	false	NULL	0
+
+# A VARCHAR argument is a file PATH, so un-cast feed text is not parsed.
+query T
+SELECT bool_or(ical.main.is_valid_ical(feed)) FROM ical.main.example_calendars;
+----
+false
+
+# ---- double-booked events: overlap self-join on [dtstart, dtend) ------------
+# Team sync starts exactly when Customer call ends: back-to-back, not a conflict.
+query TTTT
+SELECT a.summary AS first_event, b.summary AS second_event,
+       greatest(a.dtstart, b.dtstart) AS overlap_start,
+       least(a.dtend, b.dtend) AS overlap_end
+FROM ical.main.ical_events('test/sql/data/conflict.ics') AS a
+JOIN ical.main.ical_events('test/sql/data/conflict.ics') AS b
+  ON a.uid < b.uid AND a.dtstart < b.dtend AND b.dtstart < a.dtend
+ORDER BY overlap_start, first_event;
+----
+Design review	Customer call	2024-04-02 09:30:00+00	2024-04-02 10:00:00+00
+
+# ---- to-dos due within 7 days of each event's start --------------------------
+# Pairing is by time only: the one open to-do falls in every event's window.
+# 'Print handouts' is due before the events start, so it pairs with none.
+query TTTT
+SELECT e.summary AS event, e.dtstart, t.summary AS todo, t.due
+FROM ical.main.ical_events('test/sql/data/conflict.ics') AS e
+JOIN ical.main.ical_todos('test/sql/data/conflict.ics') AS t
+  ON t.due BETWEEN e.dtstart AND e.dtstart + INTERVAL 7 DAY
+ORDER BY e.dtstart, t.due;
+----
+Design review	2024-04-02 09:00:00+00	Send review notes	2024-04-03 12:00:00+00
+Customer call	2024-04-02 09:30:00+00	Send review notes	2024-04-03 12:00:00+00
+Team sync	2024-04-02 10:15:00+00	Send review notes	2024-04-03 12:00:00+00
+
+# ---- open to-dos due before each event (LEFT JOIN keeps events with none) ---
+# 'Print handouts' is due before every event but COMPLETED, so it never counts;
+# 'Send review notes' is due after every event.
+query TI
+SELECT e.summary, count(t.uid) AS open_todos
+FROM ical.main.ical_events('test/sql/data/conflict.ics') AS e
+LEFT JOIN ical.main.ical_todos('test/sql/data/conflict.ics') AS t
+  ON t.due < e.dtstart AND t.status IS DISTINCT FROM 'COMPLETED'
+GROUP BY e.summary, e.dtstart
+ORDER BY e.dtstart;
+----
+Design review	0
+Customer call	0
+Team sync	0

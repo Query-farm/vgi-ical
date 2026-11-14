@@ -14,7 +14,7 @@ statement ok
 LOAD vgi;
 
 statement ok
-ATTACH 'ical' AS ical (TYPE vgi, LOCATION '${VGI_ICAL_WORKER}');
+ATTACH 'ical' AS ical (TYPE vgi, LOCATION '{VGI_ICAL_WORKER}');
 
 query IIIIII
 SELECT uid, summary, due, status, priority, percent_complete

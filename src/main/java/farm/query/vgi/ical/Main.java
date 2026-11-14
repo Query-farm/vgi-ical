@@ -165,6 +165,55 @@ public final class Main {
                     + "END:VCALENDAR";
 
     /**
+     * A second agent feed for the composed tasks: three events and three to-dos,
+     * one of them COMPLETED, so the answers depend on joining events to to-dos
+     * and on honouring STATUS. The graders in {@code vgi-agent-tests.yaml} build
+     * the same feed as a DuckDB {@code BLOB}.
+     */
+    private static final String AGENT_PLAN_ICS_TEXT =
+            "BEGIN:VCALENDAR\n"
+                    + "VERSION:2.0\n"
+                    + "PRODID:-//Query Farm//vgi-ical//EN\n"
+                    + "X-WR-CALNAME:Launch Plan\n"
+                    + "BEGIN:VEVENT\n"
+                    + "UID:p1@query.farm\n"
+                    + "SUMMARY:Kickoff\n"
+                    + "DTSTART:20240506T090000Z\n"
+                    + "DTEND:20240506T100000Z\n"
+                    + "END:VEVENT\n"
+                    + "BEGIN:VEVENT\n"
+                    + "UID:p2@query.farm\n"
+                    + "SUMMARY:Design freeze\n"
+                    + "DTSTART:20240508T140000Z\n"
+                    + "DTEND:20240508T150000Z\n"
+                    + "END:VEVENT\n"
+                    + "BEGIN:VEVENT\n"
+                    + "UID:p3@query.farm\n"
+                    + "SUMMARY:Launch review\n"
+                    + "DTSTART:20240510T160000Z\n"
+                    + "DTEND:20240510T170000Z\n"
+                    + "END:VEVENT\n"
+                    + "BEGIN:VTODO\n"
+                    + "UID:q1@query.farm\n"
+                    + "SUMMARY:Draft spec\n"
+                    + "DUE:20240507T170000Z\n"
+                    + "STATUS:COMPLETED\n"
+                    + "END:VTODO\n"
+                    + "BEGIN:VTODO\n"
+                    + "UID:q2@query.farm\n"
+                    + "SUMMARY:Final mockups\n"
+                    + "DUE:20240508T120000Z\n"
+                    + "STATUS:IN-PROCESS\n"
+                    + "END:VTODO\n"
+                    + "BEGIN:VTODO\n"
+                    + "UID:q3@query.farm\n"
+                    + "SUMMARY:Release notes\n"
+                    + "DUE:20240513T170000Z\n"
+                    + "STATUS:NEEDS-ACTION\n"
+                    + "END:VTODO\n"
+                    + "END:VCALENDAR";
+
+    /**
      * Build the {@code vgi.agent_test_tasks} JSON suite (VGI152/VGI920). Only the
      * public {@code name} + {@code prompt} (with the feed spelled out) are published
      * (VGI416); the private grader fields ({@code reference_sql},
@@ -198,21 +247,23 @@ public final class Main {
                 "You have this iCalendar (.ics) feed:\n\n" + AGENT_ICS_TEXT + "\n\n"
                         + "Using this worker, list the SUMMARY of every to-do (VTODO) in the "
                         + "feed. Return one summary per row."));
-        // Composed tasks: the natural solution combines ical_events with ical_todos.
+        // Composed tasks over a richer feed (with a COMPLETED to-do) so a solution
+        // that skips the status filter or the outer join gives a different answer.
         tasks.add(agentTask(
-                "unified_agenda",
-                "You have this iCalendar (.ics) feed:\n\n" + AGENT_ICS_TEXT + "\n\n"
-                        + "Using this worker, build a single chronological agenda that "
-                        + "contains every event and every to-do in the feed. Return one row "
-                        + "per item with two columns: its SUMMARY and its time (the event "
-                        + "start, or the to-do due time), ordered by that time."));
+                "feed_digest",
+                "You have this iCalendar (.ics) feed:\n\n" + AGENT_PLAN_ICS_TEXT + "\n\n"
+                        + "Using this worker, summarise the feed in a single row with exactly "
+                        + "three columns, in this order: the calendar's display name (text), "
+                        + "the number of events (integer), and the number of to-dos whose "
+                        + "STATUS is not COMPLETED (integer)."));
         tasks.add(agentTask(
-                "todos_due_after_events",
-                "You have this iCalendar (.ics) feed:\n\n" + AGENT_ICS_TEXT + "\n\n"
-                        + "Using this worker, find every pairing of a to-do and an event "
-                        + "where the to-do is due within 7 days after the event starts. "
-                        + "Return one row per pairing with two columns: the to-do SUMMARY and "
-                        + "the event SUMMARY."));
+                "open_todos_before_events",
+                "You have this iCalendar (.ics) feed:\n\n" + AGENT_PLAN_ICS_TEXT + "\n\n"
+                        + "Using this worker, report for every event how many to-dos that are "
+                        + "not COMPLETED fall due before the event starts. Events with no such "
+                        + "to-do must still appear, with 0. Return one row per event with "
+                        + "exactly two columns, in this order: the event SUMMARY (text) and the "
+                        + "count (integer), ordered by event start time."));
         // VGI520: exercise the browsable example_calendars registry view (no feed
         // argument needed).
         tasks.add(agentTask(
@@ -278,40 +329,8 @@ public final class Main {
         return sb.toString();
     }
 
-    /**
-     * Composed example: run the three scalar helpers over every feed stored in the
-     * {@code example_calendars} registry view and compare against the recorded
-     * counts. Scalars take column arguments, so this is how a table of stored
-     * feeds is audited (table functions bind only literal arguments).
-     */
-    static final String FEED_AUDIT_SQL =
-            "SELECT name, ical.main.is_valid_ical(feed::BLOB) AS is_valid, "
-                    + "ical.main.ical_calendar_name(feed::BLOB) AS parsed_name, "
-                    + "ical.main.ical_event_count(feed::BLOB) AS parsed_events, "
-                    + "ical.main.ical_event_count(feed::BLOB) = event_count AS count_matches "
-                    + "FROM ical.main.example_calendars ORDER BY name";
-
-    /** Composed example: events + to-dos of one feed as a single labelled timeline. */
-    static final String UNIFIED_AGENDA_SQL =
-            "SELECT ical.main.ical_calendar_name(" + Meta.SAMPLE_ICS_BLOB + ") AS calendar, "
-                    + "kind, summary, occurs_at FROM ("
-                    + "SELECT 'event' AS kind, summary, dtstart AS occurs_at "
-                    + "FROM ical.main.ical_events(" + Meta.SAMPLE_ICS_BLOB + ") "
-                    + "UNION ALL "
-                    + "SELECT 'todo' AS kind, summary, due AS occurs_at "
-                    + "FROM ical.main.ical_todos(" + Meta.SAMPLE_ICS_BLOB + ")) "
-                    + "ORDER BY occurs_at, kind, summary";
-
-    /** Composed example: to-dos due within seven days after each event starts. */
-    static final String PREP_WINDOW_SQL =
-            "SELECT e.summary AS event, e.dtstart, t.summary AS todo, t.due, t.priority "
-                    + "FROM ical.main.ical_events(" + Meta.SAMPLE_ICS_BLOB + ") AS e "
-                    + "JOIN ical.main.ical_todos(" + Meta.SAMPLE_ICS_BLOB + ") AS t "
-                    + "ON t.due BETWEEN e.dtstart AND e.dtstart + INTERVAL 7 DAY "
-                    + "ORDER BY e.dtstart, t.due";
-
     /** Schema-level metadata tags for the single {@code main} schema. */
-    private static final java.util.Map<String, String> SCHEMA_TAGS = java.util.Map.ofEntries(
+    static final java.util.Map<String, String> SCHEMA_TAGS = java.util.Map.ofEntries(
             java.util.Map.entry("vgi.title", "iCalendar Functions"),
             java.util.Map.entry("vgi.keywords", Meta.keywordsJson(
                     "icalendar, ics, calendar, events, todos, ical_events, ical_todos, "
@@ -373,10 +392,12 @@ public final class Main {
                             + "\"Count the events in a feed.\"},"
                             + "{\"sql\": \"SELECT ical.main.is_valid_ical("
                             + Meta.SAMPLE_ICS_BLOB + ") AS is_valid;\", \"description\": "
-                            + "\"Validate an iCalendar feed.\"}]"));
-            // Composed (multi-object) examples live on the objects they start from
-            // (example_calendars, ical_events, ical_todos): this tag is already at
-            // the VGI417 4,000-character agent-context limit.
+                            + "\"Validate an iCalendar feed.\"},"
+                            // Composed examples: each is also on its driving object's list
+                            // (example_calendars / is_valid_ical, ical_events, ical_todos).
+                            + ComposedExamples.FEED_AUDIT_JSON + ","
+                            + ComposedExamples.EVENT_CONFLICTS_JSON + ","
+                            + ComposedExamples.TODOS_DUE_WEEK_JSON + "]"));
 
     public static void main(String[] args) {
         String stderrPath = System.getenv("VGI_WORKER_STDERR");

@@ -27,8 +27,11 @@ SELECT summary, dtstart, location
 FROM ical.ical_events('/cal/team.ics')
 ORDER BY dtstart;
 
--- a column of feeds (paths or .ics bytes) work too — pass a BLOB
-SELECT summary FROM ical.ical_events((SELECT body FROM feeds LIMIT 1));
+-- a whole directory of feeds: the scalars take column arguments
+SELECT parse_filename(filename) AS file, ical.is_valid_ical(content) AS ok,
+       ical.ical_event_count(content) AS events
+FROM read_blob('/cal/*.ics')
+ORDER BY file;
 ```
 
 ## Quick start
@@ -84,6 +87,16 @@ travelled over Arrow. Unsupported argument types are rejected at SQL bind time
 instead of being converted to file paths. A `NULL` argument yields `NULL` / no
 rows.
 
+A `VARCHAR` is always read as a path, so `.ics` *text* held in a column must be
+cast first (`feed::BLOB`); passed uncast, the worker looks for a file of that name
+and returns `false` / `NULL` / `0`.
+
+The **scalars** accept column arguments, so they run once per row. The **table
+functions** bind only literal arguments: `ical_events(t.feed)`, a `LATERAL` call
+or a subquery argument fails with *Binder Error: Table function cannot contain
+subqueries*. Pass a path or a BLOB literal, and use the scalars (or
+`read_blob()`, below) to work across many feeds.
+
 ## Functions
 
 ### `ical_events(input) → table`
@@ -122,19 +135,20 @@ One row per `VTODO`: `uid`, `summary`, `due` (TIMESTAMP), `status`,
 
 ### Combining functions
 
-The functions are most useful together. Join a feed's to-dos to its events to
-find the follow-up work due in the week after each meeting starts:
+Audit a directory of feeds in one pass. DuckDB's `read_blob()` reads each file
+as a BLOB, and the scalars run per row (unparsable files come back `false`,
+`NULL`, `0`):
 
 ```sql
-SELECT e.summary AS event, e.dtstart, t.summary AS todo, t.due
-FROM ical.main.ical_events('/cal/team.ics') AS e
-JOIN ical.main.ical_todos('/cal/team.ics') AS t
-  ON t.due BETWEEN e.dtstart AND e.dtstart + INTERVAL 7 DAY
-ORDER BY e.dtstart, t.due;
+SELECT parse_filename(filename)              AS file,
+       ical.main.is_valid_ical(content)      AS is_valid,
+       ical.main.ical_calendar_name(content) AS calendar,
+       ical.main.ical_event_count(content)   AS events
+FROM read_blob('/cal/*.ics')
+ORDER BY file;
 ```
 
-Table functions take only literal arguments, but the scalars accept columns, so
-a whole table of stored feeds can be health-checked in one pass:
+The same scalars work over a table of stored feed text; cast it to `BLOB`:
 
 ```sql
 SELECT name,
@@ -144,6 +158,36 @@ SELECT name,
 FROM ical.main.example_calendars
 ORDER BY name;
 ```
+
+Find double-booked meetings by joining a feed's events to themselves on
+overlapping `[dtstart, dtend)` ranges (back-to-back events do not count):
+
+```sql
+SELECT a.summary AS first_event, b.summary AS second_event,
+       greatest(a.dtstart, b.dtstart) AS overlap_start,
+       least(a.dtend, b.dtend)        AS overlap_end
+FROM ical.main.ical_events('/cal/team.ics') AS a
+JOIN ical.main.ical_events('/cal/team.ics') AS b
+  ON a.uid < b.uid AND a.dtstart < b.dtend AND b.dtstart < a.dtend
+ORDER BY overlap_start, first_event;
+```
+
+Count the open to-dos due before each event starts. The `LEFT JOIN` keeps
+events with none. iCalendar does not link to-dos to events, so any pairing is by
+time:
+
+```sql
+SELECT e.summary, count(t.uid) AS open_todos_due_before
+FROM ical.main.ical_events('/cal/team.ics') AS e
+LEFT JOIN ical.main.ical_todos('/cal/team.ics') AS t
+  ON t.due < e.dtstart AND t.status IS DISTINCT FROM 'COMPLETED'
+GROUP BY e.summary, e.dtstart
+ORDER BY e.dtstart;
+```
+
+Arithmetic on the `TIMESTAMP WITH TIME ZONE` columns (such as
+`dtstart + INTERVAL 7 DAY`) needs DuckDB's `icu` extension, which the DuckDB CLI
+and Python packages load automatically.
 
 ## Time-zone & all-day handling
 
@@ -177,12 +221,15 @@ Arrow-IPC stream stays clean.
 ```sh
 make build       # fat JAR -> build/libs/vgi-ical-<ver>-all.jar
 make test-unit   # JUnit (in-process table/scalar drivers)
-make test-sql    # shadowJar + fixtures + haybarn-unittest E2E
+make test-sql    # shadowJar + fixtures + haybarn-unittest E2E (TRANSPORT=subprocess|http|unix)
 make test        # both
 ```
 
 `make test-sql` needs haybarn **2.0** (`uv tool install --prerelease allow 'haybarn-unittest>=2.0.0rc11,<2.1'`):
 the worker speaks VGI protocol `vgi.v3` / 3.3, which haybarn 1.5's `vgi` extension rejects.
+It runs the suite through `ci/run-integration.sh`, as CI does: that script rewrites
+each `require httpfs` / `require icu` into an explicit install-and-load (run raw,
+`haybarn-unittest` skips those files) and fails the run if any file is skipped.
 
 The VGI Java SDK (`farm.query:vgi`, `farm.query:vgirpc`) and iCal4j resolve from
 **Maven Central** — the build is fully self-contained (no `mavenLocal`, no sibling

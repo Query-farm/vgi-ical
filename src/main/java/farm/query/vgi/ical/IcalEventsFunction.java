@@ -93,13 +93,9 @@ public final class IcalEventsFunction implements TableFunction {
                 "[{\"sql\": \"SELECT summary, location, all_day FROM ical.main.ical_events("
                         + Meta.SAMPLE_ICS_BLOB + ") ORDER BY dtstart;\", \"description\": "
                         + "\"List every event in an iCalendar feed by start time.\"},"
-                        // Composed: ical_events + ical_todos + ical_calendar_name.
-                        + "{\"sql\": \"" + Main.UNIFIED_AGENDA_SQL + ";\", \"description\": "
-                        + "\"Build one chronological agenda from a feed by unioning its events "
-                        + "(ical_events, by start) with its to-dos (ical_todos, by due date) and "
-                        + "labelling every row with the feed's display name "
-                        + "(ical_calendar_name), so meetings and deadlines read as a single "
-                        + "timeline.\"}]");
+                        // Composed: ical_events self-join, then ical_events JOIN ical_todos.
+                        + ComposedExamples.EVENT_CONFLICTS_JSON + ","
+                        + ComposedExamples.TODOS_DUE_WEEK_JSON + "]");
         // VGI509: a guaranteed-runnable, self-contained example using an inline
         // .ics BLOB so no external file is needed.
         tags.put("vgi.executable_examples",

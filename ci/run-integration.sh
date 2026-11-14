@@ -188,4 +188,16 @@ rm -f "$STAGE/test/_warm.test"
 # Run the whole suite in one invocation, streaming the runner's native
 # sqllogictest report. Any failed assertion exits non-zero and fails the job.
 echo "Running suite (transport: $TRANSPORT, worker: $VGI_ICAL_WORKER) ..."
-"$HAYBARN_UNITTEST" --keep-home "test/sql/*"
+# A file whose `require` is unmet is SKIPPED, and the runner still exits 0, so
+# an all-skipped run (e.g. raw `require httpfs` files) would pass silently.
+# Fail on any skip: every file here is expected to run.
+LOG="$STAGE/suite.log"
+set +e
+"$HAYBARN_UNITTEST" --keep-home "test/sql/*" 2>&1 | tee "$LOG"
+status=${PIPESTATUS[0]}
+set -e
+[ "$status" -eq 0 ] || exit "$status"
+if grep -qiE 'skipped' "$LOG"; then
+  echo "::error::haybarn-unittest skipped test files; see the report above" >&2
+  exit 1
+fi

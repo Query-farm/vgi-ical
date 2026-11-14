@@ -77,21 +77,15 @@ public final class IcalTodosFunction implements TableFunction {
                         + "ical.main.ical_todos(" + Meta.SAMPLE_ICS_BLOB + ") "
                         + "WHERE status <> 'COMPLETED' ORDER BY due;\", \"description\": "
                         + "\"List the outstanding to-dos from an iCalendar feed by due date.\"},"
-                        // Composed: joins ical_todos to ical_events over the same feed.
-                        + "{\"sql\": \"" + Main.PREP_WINDOW_SQL + ";\", \"description\": "
-                        + "\"Join a feed's to-dos to its events to find the work due in the "
-                        + "week after each meeting starts (the follow-ups a meeting generates), "
-                        + "which neither ical_events nor ical_todos can answer alone.\"}]");
+                        // Composed: ical_events JOIN ical_todos on a due-date window.
+                        + ComposedExamples.TODOS_DUE_WEEK_JSON + "]");
         tags.put("vgi.executable_examples",
                 "[{\"description\": \"List the open to-dos from an inline iCalendar feed.\", "
                         + "\"sql\": \"SELECT summary, status, percent_complete FROM "
                         + "ical.main.ical_todos(" + Meta.SAMPLE_ICS_BLOB
                         + ") WHERE status <> 'COMPLETED' ORDER BY due\"},"
-                        // Composed: joins ical_todos to ical_events over the same feed.
-                        + "{\"description\": \"Pair each event with the to-dos due in the "
-                        + "week after it starts (ical_events joined to ical_todos), surfacing "
-                        + "the follow-up work a meeting creates.\", "
-                        + "\"sql\": \"" + Main.PREP_WINDOW_SQL + "\"}]");
+                        // Composed: ical_events JOIN ical_todos on a due-date window.
+                        + ComposedExamples.TODOS_DUE_WEEK_EXECUTABLE_JSON + "]");
         return FunctionMetadata.describe(
                         "Parse an iCalendar (.ics) feed into one row per VTODO: uid, summary, "
                                 + "UTC-normalised due date, status, priority, and percent complete (iCal4j).")

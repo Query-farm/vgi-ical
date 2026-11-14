@@ -30,6 +30,11 @@ public final class SqlFixtureGenerator {
         // zoned.ics — TZID event + VTIMEZONE for UTC-normalisation E2E.
         Files.writeString(dir.resolve("zoned.ics"), Fixtures.zonedCalendar(), StandardCharsets.UTF_8);
 
+        // conflict.ics — overlapping + back-to-back events and two to-dos
+        // (composed-query E2E: overlap self-join, events/to-dos joins).
+        Files.writeString(dir.resolve("conflict.ics"), Fixtures.conflictCalendar(),
+                StandardCharsets.UTF_8);
+
         // garbage.ics — not iCalendar at all -> is_valid_ical false / no rows.
         Files.write(dir.resolve("garbage.ics"), Fixtures.garbageBytes());
 

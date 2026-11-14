@@ -63,7 +63,7 @@ final class ExampleCalendars {
     /**
      * Build the {@code example_calendars} view: a SQL view over an inline
      * {@code VALUES} list of curated sample feeds. The {@code feed} column carries
-     * the raw, line-folded iCalendar text (the same feeds the examples use); the
+     * the raw iCalendar text (lines separated by LF) (the same feeds the examples use); the
      * other columns are precomputed facts about each sample.
      */
     static View view() {
@@ -87,10 +87,12 @@ final class ExampleCalendars {
                         + "`event_count` (how many VEVENTs the sample has), `todo_count` (how many "
                         + "VTODOs it has), `description` (a one-line summary), and `feed` (the raw "
                         + "iCalendar text). The view takes no arguments and needs no credentials. "
-                        + "Note: VGI table functions accept only literal arguments, so paste the "
-                        + "`feed` text inline into `ical_events`, `ical_todos`, `ical_event_count`, "
-                        + "`ical_calendar_name`, or `is_valid_ical` rather than passing this column "
-                        + "as a subquery.";
+                        + "The scalar helpers (`is_valid_ical`, `ical_calendar_name`, "
+                        + "`ical_event_count`) accept this column directly: pass `feed::BLOB` "
+                        + "(a plain `VARCHAR` is read as a file path). The table functions "
+                        + "`ical_events` and `ical_todos` accept only literal arguments, so paste "
+                        + "the feed text inline as a `BLOB` literal rather than passing this column "
+                        + "or a subquery.";
 
         String docMd =
                 "## example_calendars\n\n"
@@ -126,12 +128,7 @@ final class ExampleCalendars {
                         + "\"description\": \"List the built-in sample iCalendar feeds, richest "
                         + "first, with their display name and event/to-do counts.\"},"
                         // Composed: the registry view + all three scalar helpers.
-                        + "{\"sql\": \"" + Main.FEED_AUDIT_SQL + ";\", \"description\": "
-                        + "\"Health-check a whole table of stored feeds in one pass: scalars "
-                        + "accept column arguments (table functions do not), so apply "
-                        + "is_valid_ical, ical_calendar_name and ical_event_count to every row "
-                        + "and flag feeds whose parsed event count disagrees with the recorded "
-                        + "one. The same query works over any table of .ics text or bytes.\"}]");
+                        + ComposedExamples.FEED_AUDIT_JSON + "]");
 
         Map<String, String> columnComments = new LinkedHashMap<>();
         columnComments.put("name", "Short slug identifier for the sample feed (e.g. `team_calendar`).");
@@ -142,7 +139,8 @@ final class ExampleCalendars {
         columnComments.put("todo_count",
                 "Number of VTODO entries in the sample feed (a small integer count).");
         columnComments.put("description", "One-line human summary of what the sample feed contains.");
-        columnComments.put("feed", "Raw, line-folded iCalendar (`.ics`) text for the sample feed.");
+        columnComments.put("feed", "Raw iCalendar (`.ics`) text for the sample feed, lines separated by LF; "
+                + "cast it to `BLOB` before passing it to the scalar helpers.");
 
         return new View(
                         "main",

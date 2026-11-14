@@ -61,7 +61,9 @@ public final class IsValidFunction extends ScalarFn {
         tags.put("vgi.example_queries",
                 "[{\"sql\": \"SELECT ical.main.is_valid_ical(" + Meta.SAMPLE_ICS_BLOB
                         + ") AS is_valid;\", \"description\": \"Test whether the input parses as a "
-                        + "well-formed iCalendar (.ics) feed.\"}]");
+                        + "well-formed iCalendar (.ics) feed.\"},"
+                        // Composed: example_calendars view + all three scalar helpers.
+                        + ComposedExamples.FEED_AUDIT_JSON + "]");
         tags.put("vgi.executable_examples",
                 "[{\"description\": \"Validate an inline iCalendar feed.\", "
                         + "\"sql\": \"SELECT ical.main.is_valid_ical(" + Meta.SAMPLE_ICS_BLOB

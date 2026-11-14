@@ -1,0 +1,13 @@
+# vgi-lint configuration for the vgi-ical worker.
+#
+# CI runs the reusable `Query-farm/vgi-lint-check@v2` action against the built
+# fat JAR at `--fail-on info` (see .github/workflows/test.yml). This file pins the
+# same settings for a local run from the repo root, after `make build`:
+#
+#   uvx --refresh --prerelease allow --from 'vgi-lint-check>=2.5.1' \
+#     vgi-lint lint --execute --execute-mode run --fail-on info
+#
+# The jar name carries the project version, so the location globs it through sh.
+location = "sh -c 'exec java -jar build/libs/vgi-ical-*-all.jar'"
+select = ["ALL"]
+fail_on = "info"
