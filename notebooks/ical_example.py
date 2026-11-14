@@ -8,7 +8,7 @@ from matplotlib.patches import Patch
 from IPython.display import display
 from vgi_notebooks import finish, prose
 
-SOURCE = "Source: authored synthetic-day.ics · native VGI iCal v0.4.1 · fixed UTC window · recurrence not expanded"
+SOURCE = "Source: authored synthetic-day.ics · VGI iCal v0.4.1 JAR · fixed UTC window · recurrence not expanded"
 
 
 def validate_buffer(value):
