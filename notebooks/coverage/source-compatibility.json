@@ -1,0 +1,13 @@
+{
+  "released": "v0.4.1",
+  "current": "844b6db753a95c82ce41f622a9495b5d735667b3",
+  "review": "Reviewed main-source diff: new composed example metadata and corrected metadata descriptions only. Parser and output schemas unchanged. Actual complete runtime catalogs, full view/table-function columns and built-in feed audit match. Source current freshly built with Gradle; notebook executes released JAR.",
+  "changed_source_files": [
+    "src/main/java/farm/query/vgi/ical/ComposedExamples.java",
+    "src/main/java/farm/query/vgi/ical/ExampleCalendars.java",
+    "src/main/java/farm/query/vgi/ical/IcalEventsFunction.java",
+    "src/main/java/farm/query/vgi/ical/IcalTodosFunction.java",
+    "src/main/java/farm/query/vgi/ical/IsValidFunction.java",
+    "src/main/java/farm/query/vgi/ical/Main.java"
+  ]
+}

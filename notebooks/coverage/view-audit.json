@@ -1,0 +1,32 @@
+{
+  "query": "SELECT name,calendar_name,event_count,todo_count,ical.main.ical_calendar_name(feed::BLOB) AS decoded_name,ical.main.ical_event_count(feed::BLOB) AS decoded_events,ical.main.is_valid_ical(feed::BLOB) AS parses FROM ical.main.example_calendars ORDER BY name",
+  "columns": [
+    "name",
+    "calendar_name",
+    "event_count",
+    "todo_count",
+    "decoded_name",
+    "decoded_events",
+    "parses"
+  ],
+  "rows": [
+    [
+      "ops_calendar",
+      "Ops Calendar",
+      2,
+      1,
+      "Ops Calendar",
+      2,
+      true
+    ],
+    [
+      "team_calendar",
+      "Team Calendar",
+      1,
+      1,
+      "Team Calendar",
+      1,
+      true
+    ]
+  ]
+}

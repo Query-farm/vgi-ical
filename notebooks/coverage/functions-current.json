@@ -1,0 +1,442 @@
+{
+  "query": "SELECT * FROM duckdb_functions() WHERE database_name='ical' ORDER BY schema_name,function_name,parameter_types",
+  "columns": [
+    "database_name",
+    "database_oid",
+    "schema_name",
+    "function_name",
+    "alias_of",
+    "function_type",
+    "description",
+    "comment",
+    "tags",
+    "return_type",
+    "parameters",
+    "parameter_types",
+    "varargs",
+    "macro_definition",
+    "has_side_effects",
+    "internal",
+    "extension_name",
+    "function_oid",
+    "examples",
+    "stability",
+    "categories"
+  ],
+  "rows": [
+    [
+      "ical",
+      "22592",
+      "main",
+      "ical_calendar_name",
+      null,
+      "scalar",
+      "The calendar's display name from raw .ics bytes (X-WR-CALNAME, falling back to PRODID).",
+      null,
+      {
+        "vgi.category": "Calendar metadata",
+        "vgi.doc_llm": "# ical_calendar_name\n\nReturn the **display name** of an iCalendar (`.ics`) feed: the `X-WR-CALNAME` property if present, otherwise the `PRODID`.\n\n**Input** (typed overloads): a `VARCHAR` file path the worker opens, or a `BLOB` of `.ics` bytes.\n\n**Output**: a `VARCHAR` name, or NULL when neither property is present or the input is NULL / unparsable.\n\nUse it to label a feed in a UI or to group rows by source calendar.",
+        "vgi.doc_md": "Returns the display name of an iCalendar (`.ics`) feed, reading `X-WR-CALNAME` and falling back to `PRODID`.\n\nAccepts a `VARCHAR` file path or a `BLOB` of `.ics` bytes. Returns NULL when the calendar has no name property, or when the input is NULL or fails to parse \u2014 never an error.",
+        "vgi.example_queries": "[{\"sql\": \"SELECT ical.main.ical_calendar_name(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Team Calendar','BEGIN:VEVENT','UID:event-1@query.farm','SUMMARY:Sprint Planning','DESCRIPTION:Plan the next two-week sprint.','DTSTART:20240115T093000Z','DTEND:20240115T103000Z','LOCATION:Conference Room A','STATUS:CONFIRMED','ORGANIZER:mailto:alice@query.farm','ATTENDEE:mailto:bob@query.farm','ATTENDEE:mailto:carol@query.farm','RRULE:FREQ=WEEKLY;BYDAY=MO','SEQUENCE:3','END:VEVENT','BEGIN:VTODO','UID:todo-1@query.farm','SUMMARY:Write release notes','DUE:20240120T170000Z','STATUS:NEEDS-ACTION','PRIORITY:2','PERCENT-COMPLETE:40','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) AS calendar_name;\", \"description\": \"Read the display name of an iCalendar feed (X-WR-CALNAME, falling back to PRODID).\"}]",
+        "vgi.executable_examples": "[{\"description\": \"Read the display name of an inline iCalendar feed.\", \"sql\": \"SELECT ical.main.ical_calendar_name(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Team Calendar','BEGIN:VEVENT','UID:event-1@query.farm','SUMMARY:Sprint Planning','DESCRIPTION:Plan the next two-week sprint.','DTSTART:20240115T093000Z','DTEND:20240115T103000Z','LOCATION:Conference Room A','STATUS:CONFIRMED','ORGANIZER:mailto:alice@query.farm','ATTENDEE:mailto:bob@query.farm','ATTENDEE:mailto:carol@query.farm','RRULE:FREQ=WEEKLY;BYDAY=MO','SEQUENCE:3','END:VEVENT','BEGIN:VTODO','UID:todo-1@query.farm','SUMMARY:Write release notes','DUE:20240120T170000Z','STATUS:NEEDS-ACTION','PRIORITY:2','PERCENT-COMPLETE:40','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) AS calendar_name\"}]",
+        "vgi.keywords": "[\"ical calendar name\",\"x-wr-calname\",\"prodid\",\"calendar title\",\"feed name\",\"calendar display name\",\"ics name\"]",
+        "vgi.title": "iCalendar Display Name"
+      },
+      "VARCHAR",
+      [
+        "content"
+      ],
+      [
+        "BLOB"
+      ],
+      null,
+      null,
+      false,
+      true,
+      null,
+      22596,
+      [
+        "SELECT ical.main.ical_calendar_name(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Team Calendar','BEGIN:VEVENT','UID:event-1@query.farm','SUMMARY:Sprint Planning','DESCRIPTION:Plan the next two-week sprint.','DTSTART:20240115T093000Z','DTEND:20240115T103000Z','LOCATION:Conference Room A','STATUS:CONFIRMED','ORGANIZER:mailto:alice@query.farm','ATTENDEE:mailto:bob@query.farm','ATTENDEE:mailto:carol@query.farm','RRULE:FREQ=WEEKLY;BYDAY=MO','SEQUENCE:3','END:VEVENT','BEGIN:VTODO','UID:todo-1@query.farm','SUMMARY:Write release notes','DUE:20240120T170000Z','STATUS:NEEDS-ACTION','PRIORITY:2','PERCENT-COMPLETE:40','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) AS calendar_name;"
+      ],
+      "CONSISTENT",
+      [
+        "calendar",
+        "icalendar",
+        "ical4j"
+      ]
+    ],
+    [
+      "ical",
+      "22592",
+      "main",
+      "ical_calendar_name",
+      null,
+      "scalar",
+      "The calendar's display name from an .ics file (X-WR-CALNAME, falling back to PRODID).",
+      null,
+      {
+        "vgi.category": "Calendar metadata",
+        "vgi.doc_llm": "# ical_calendar_name\n\nReturn the **display name** of an iCalendar (`.ics`) feed: the `X-WR-CALNAME` property if present, otherwise the `PRODID`.\n\n**Input** (typed overloads): a `VARCHAR` file path the worker opens, or a `BLOB` of `.ics` bytes.\n\n**Output**: a `VARCHAR` name, or NULL when neither property is present or the input is NULL / unparsable.\n\nUse it to label a feed in a UI or to group rows by source calendar.",
+        "vgi.doc_md": "Returns the display name of an iCalendar (`.ics`) feed, reading `X-WR-CALNAME` and falling back to `PRODID`.\n\nAccepts a `VARCHAR` file path or a `BLOB` of `.ics` bytes. Returns NULL when the calendar has no name property, or when the input is NULL or fails to parse \u2014 never an error.",
+        "vgi.example_queries": "[{\"sql\": \"SELECT ical.main.ical_calendar_name(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Team Calendar','BEGIN:VEVENT','UID:event-1@query.farm','SUMMARY:Sprint Planning','DESCRIPTION:Plan the next two-week sprint.','DTSTART:20240115T093000Z','DTEND:20240115T103000Z','LOCATION:Conference Room A','STATUS:CONFIRMED','ORGANIZER:mailto:alice@query.farm','ATTENDEE:mailto:bob@query.farm','ATTENDEE:mailto:carol@query.farm','RRULE:FREQ=WEEKLY;BYDAY=MO','SEQUENCE:3','END:VEVENT','BEGIN:VTODO','UID:todo-1@query.farm','SUMMARY:Write release notes','DUE:20240120T170000Z','STATUS:NEEDS-ACTION','PRIORITY:2','PERCENT-COMPLETE:40','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) AS calendar_name;\", \"description\": \"Read the display name of an iCalendar feed (X-WR-CALNAME, falling back to PRODID).\"}]",
+        "vgi.executable_examples": "[{\"description\": \"Read the display name of an inline iCalendar feed.\", \"sql\": \"SELECT ical.main.ical_calendar_name(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Team Calendar','BEGIN:VEVENT','UID:event-1@query.farm','SUMMARY:Sprint Planning','DESCRIPTION:Plan the next two-week sprint.','DTSTART:20240115T093000Z','DTEND:20240115T103000Z','LOCATION:Conference Room A','STATUS:CONFIRMED','ORGANIZER:mailto:alice@query.farm','ATTENDEE:mailto:bob@query.farm','ATTENDEE:mailto:carol@query.farm','RRULE:FREQ=WEEKLY;BYDAY=MO','SEQUENCE:3','END:VEVENT','BEGIN:VTODO','UID:todo-1@query.farm','SUMMARY:Write release notes','DUE:20240120T170000Z','STATUS:NEEDS-ACTION','PRIORITY:2','PERCENT-COMPLETE:40','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) AS calendar_name\"}]",
+        "vgi.keywords": "[\"ical calendar name\",\"x-wr-calname\",\"prodid\",\"calendar title\",\"feed name\",\"calendar display name\",\"ics name\"]",
+        "vgi.title": "iCalendar Display Name"
+      },
+      "VARCHAR",
+      [
+        "path"
+      ],
+      [
+        "VARCHAR"
+      ],
+      null,
+      null,
+      false,
+      true,
+      null,
+      22596,
+      [
+        "SELECT ical.main.ical_calendar_name(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Team Calendar','BEGIN:VEVENT','UID:event-1@query.farm','SUMMARY:Sprint Planning','DESCRIPTION:Plan the next two-week sprint.','DTSTART:20240115T093000Z','DTEND:20240115T103000Z','LOCATION:Conference Room A','STATUS:CONFIRMED','ORGANIZER:mailto:alice@query.farm','ATTENDEE:mailto:bob@query.farm','ATTENDEE:mailto:carol@query.farm','RRULE:FREQ=WEEKLY;BYDAY=MO','SEQUENCE:3','END:VEVENT','BEGIN:VTODO','UID:todo-1@query.farm','SUMMARY:Write release notes','DUE:20240120T170000Z','STATUS:NEEDS-ACTION','PRIORITY:2','PERCENT-COMPLETE:40','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) AS calendar_name;"
+      ],
+      "CONSISTENT",
+      [
+        "calendar",
+        "icalendar",
+        "ical4j"
+      ]
+    ],
+    [
+      "ical",
+      "22592",
+      "main",
+      "ical_event_count",
+      null,
+      "scalar",
+      "Count the VEVENTs in raw .ics bytes (0 when the feed is empty or unparsable).",
+      null,
+      {
+        "vgi.category": "Events",
+        "vgi.doc_llm": "# ical_event_count\n\nReturn the **number of VEVENTs** in an iCalendar (`.ics`) feed without materialising the rows. Use it as a cheap probe \u2014 e.g. to skip empty feeds or rank feeds by activity.\n\n**Input** (typed overloads): a `VARCHAR` file path the worker opens, or a `BLOB` of `.ics` bytes.\n\n**Output**: an `INTEGER` count. NULL input yields NULL; an empty or unparsable feed yields `0` (never an error).",
+        "vgi.doc_md": "Counts the VEVENTs in an iCalendar (`.ics`) feed.\n\nAccepts a `VARCHAR` file path or a `BLOB` of `.ics` bytes and returns an `INTEGER`. A NULL argument returns NULL; an empty or unparsable feed returns `0`. Cheaper than materialising and counting rows from the event table function when you only need the tally.",
+        "vgi.example_queries": "[{\"sql\": \"SELECT ical.main.ical_event_count(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Team Calendar','BEGIN:VEVENT','UID:event-1@query.farm','SUMMARY:Sprint Planning','DESCRIPTION:Plan the next two-week sprint.','DTSTART:20240115T093000Z','DTEND:20240115T103000Z','LOCATION:Conference Room A','STATUS:CONFIRMED','ORGANIZER:mailto:alice@query.farm','ATTENDEE:mailto:bob@query.farm','ATTENDEE:mailto:carol@query.farm','RRULE:FREQ=WEEKLY;BYDAY=MO','SEQUENCE:3','END:VEVENT','BEGIN:VTODO','UID:todo-1@query.farm','SUMMARY:Write release notes','DUE:20240120T170000Z','STATUS:NEEDS-ACTION','PRIORITY:2','PERCENT-COMPLETE:40','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) AS event_count;\", \"description\": \"Count the VEVENTs in an iCalendar feed.\"}]",
+        "vgi.executable_examples": "[{\"description\": \"Count the VEVENTs in an inline iCalendar feed.\", \"sql\": \"SELECT ical.main.ical_event_count(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Team Calendar','BEGIN:VEVENT','UID:event-1@query.farm','SUMMARY:Sprint Planning','DESCRIPTION:Plan the next two-week sprint.','DTSTART:20240115T093000Z','DTEND:20240115T103000Z','LOCATION:Conference Room A','STATUS:CONFIRMED','ORGANIZER:mailto:alice@query.farm','ATTENDEE:mailto:bob@query.farm','ATTENDEE:mailto:carol@query.farm','RRULE:FREQ=WEEKLY;BYDAY=MO','SEQUENCE:3','END:VEVENT','BEGIN:VTODO','UID:todo-1@query.farm','SUMMARY:Write release notes','DUE:20240120T170000Z','STATUS:NEEDS-ACTION','PRIORITY:2','PERCENT-COMPLETE:40','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) AS event_count\"}]",
+        "vgi.keywords": "[\"ical event count\",\"count events\",\"number of events\",\"vevent count\",\"calendar size\",\"ics count\"]",
+        "vgi.title": "Count iCalendar Events"
+      },
+      "INTEGER",
+      [
+        "content"
+      ],
+      [
+        "BLOB"
+      ],
+      null,
+      null,
+      false,
+      true,
+      null,
+      22597,
+      [
+        "SELECT ical.main.ical_event_count(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Team Calendar','BEGIN:VEVENT','UID:event-1@query.farm','SUMMARY:Sprint Planning','DESCRIPTION:Plan the next two-week sprint.','DTSTART:20240115T093000Z','DTEND:20240115T103000Z','LOCATION:Conference Room A','STATUS:CONFIRMED','ORGANIZER:mailto:alice@query.farm','ATTENDEE:mailto:bob@query.farm','ATTENDEE:mailto:carol@query.farm','RRULE:FREQ=WEEKLY;BYDAY=MO','SEQUENCE:3','END:VEVENT','BEGIN:VTODO','UID:todo-1@query.farm','SUMMARY:Write release notes','DUE:20240120T170000Z','STATUS:NEEDS-ACTION','PRIORITY:2','PERCENT-COMPLETE:40','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) AS event_count;"
+      ],
+      "CONSISTENT",
+      [
+        "calendar",
+        "icalendar",
+        "ical4j"
+      ]
+    ],
+    [
+      "ical",
+      "22592",
+      "main",
+      "ical_event_count",
+      null,
+      "scalar",
+      "Count the VEVENTs in an .ics file (0 when the feed is empty or unparsable).",
+      null,
+      {
+        "vgi.category": "Events",
+        "vgi.doc_llm": "# ical_event_count\n\nReturn the **number of VEVENTs** in an iCalendar (`.ics`) feed without materialising the rows. Use it as a cheap probe \u2014 e.g. to skip empty feeds or rank feeds by activity.\n\n**Input** (typed overloads): a `VARCHAR` file path the worker opens, or a `BLOB` of `.ics` bytes.\n\n**Output**: an `INTEGER` count. NULL input yields NULL; an empty or unparsable feed yields `0` (never an error).",
+        "vgi.doc_md": "Counts the VEVENTs in an iCalendar (`.ics`) feed.\n\nAccepts a `VARCHAR` file path or a `BLOB` of `.ics` bytes and returns an `INTEGER`. A NULL argument returns NULL; an empty or unparsable feed returns `0`. Cheaper than materialising and counting rows from the event table function when you only need the tally.",
+        "vgi.example_queries": "[{\"sql\": \"SELECT ical.main.ical_event_count(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Team Calendar','BEGIN:VEVENT','UID:event-1@query.farm','SUMMARY:Sprint Planning','DESCRIPTION:Plan the next two-week sprint.','DTSTART:20240115T093000Z','DTEND:20240115T103000Z','LOCATION:Conference Room A','STATUS:CONFIRMED','ORGANIZER:mailto:alice@query.farm','ATTENDEE:mailto:bob@query.farm','ATTENDEE:mailto:carol@query.farm','RRULE:FREQ=WEEKLY;BYDAY=MO','SEQUENCE:3','END:VEVENT','BEGIN:VTODO','UID:todo-1@query.farm','SUMMARY:Write release notes','DUE:20240120T170000Z','STATUS:NEEDS-ACTION','PRIORITY:2','PERCENT-COMPLETE:40','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) AS event_count;\", \"description\": \"Count the VEVENTs in an iCalendar feed.\"}]",
+        "vgi.executable_examples": "[{\"description\": \"Count the VEVENTs in an inline iCalendar feed.\", \"sql\": \"SELECT ical.main.ical_event_count(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Team Calendar','BEGIN:VEVENT','UID:event-1@query.farm','SUMMARY:Sprint Planning','DESCRIPTION:Plan the next two-week sprint.','DTSTART:20240115T093000Z','DTEND:20240115T103000Z','LOCATION:Conference Room A','STATUS:CONFIRMED','ORGANIZER:mailto:alice@query.farm','ATTENDEE:mailto:bob@query.farm','ATTENDEE:mailto:carol@query.farm','RRULE:FREQ=WEEKLY;BYDAY=MO','SEQUENCE:3','END:VEVENT','BEGIN:VTODO','UID:todo-1@query.farm','SUMMARY:Write release notes','DUE:20240120T170000Z','STATUS:NEEDS-ACTION','PRIORITY:2','PERCENT-COMPLETE:40','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) AS event_count\"}]",
+        "vgi.keywords": "[\"ical event count\",\"count events\",\"number of events\",\"vevent count\",\"calendar size\",\"ics count\"]",
+        "vgi.title": "Count iCalendar Events"
+      },
+      "INTEGER",
+      [
+        "path"
+      ],
+      [
+        "VARCHAR"
+      ],
+      null,
+      null,
+      false,
+      true,
+      null,
+      22597,
+      [
+        "SELECT ical.main.ical_event_count(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Team Calendar','BEGIN:VEVENT','UID:event-1@query.farm','SUMMARY:Sprint Planning','DESCRIPTION:Plan the next two-week sprint.','DTSTART:20240115T093000Z','DTEND:20240115T103000Z','LOCATION:Conference Room A','STATUS:CONFIRMED','ORGANIZER:mailto:alice@query.farm','ATTENDEE:mailto:bob@query.farm','ATTENDEE:mailto:carol@query.farm','RRULE:FREQ=WEEKLY;BYDAY=MO','SEQUENCE:3','END:VEVENT','BEGIN:VTODO','UID:todo-1@query.farm','SUMMARY:Write release notes','DUE:20240120T170000Z','STATUS:NEEDS-ACTION','PRIORITY:2','PERCENT-COMPLETE:40','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) AS event_count;"
+      ],
+      "CONSISTENT",
+      [
+        "calendar",
+        "icalendar",
+        "ical4j"
+      ]
+    ],
+    [
+      "ical",
+      "22592",
+      "main",
+      "ical_events",
+      null,
+      "table",
+      "Parse an iCalendar (.ics) feed into one row per VEVENT: uid, summary, UTC-normalised start/end, all-day flag, location, status, organizer, attendees array, recurrence rule, sequence, category tags, url, and created/last-modified timestamps (iCal4j).",
+      null,
+      {
+        "vgi.category": "Events",
+        "vgi.doc_llm": "# ical_events\n\nParse an iCalendar (`.ics`) feed into **one row per VEVENT**. Use it to ingest a calendar feed for scheduling analytics, reporting, or joining events against other tables.\n\n**Input** (typed overloads): a `VARCHAR` file path the worker opens, or a `BLOB` of `.ics` bytes.\n\n**Output**: uid, summary, description, UTC-normalised `dtstart`/`dtend` (`TIMESTAMP WITH TIME ZONE`), an `all_day` flag, location, status, organizer, an `attendees VARCHAR[]` array, the recurrence `rrule`, `sequence`, a `categories VARCHAR[]` tag array, `url`, and the UTC-normalised `created` / `last_modified` audit timestamps.\n\n**Edge cases**: a NULL argument or a feed that fails to parse yields *no rows* (never an error). `DATE`-valued starts set `all_day = true`; recurrences are surfaced as the raw RRULE string, not expanded.",
+        "vgi.doc_md": "Parses an iCalendar (`.ics`) feed into one row per VEVENT, backed by iCal4j (RFC 5545).\n\nAccepts a `VARCHAR` file path or a `BLOB` of `.ics` bytes. Timestamps are normalised to UTC and surfaced as `TIMESTAMP WITH TIME ZONE`. Bad or NULL input yields no rows rather than an error. Recurrence rules appear as the raw RRULE string in the `rrule` column.",
+        "vgi.example_queries": "[{\"sql\": \"SELECT summary, location, all_day FROM ical.main.ical_events(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Team Calendar','BEGIN:VEVENT','UID:event-1@query.farm','SUMMARY:Sprint Planning','DESCRIPTION:Plan the next two-week sprint.','DTSTART:20240115T093000Z','DTEND:20240115T103000Z','LOCATION:Conference Room A','STATUS:CONFIRMED','ORGANIZER:mailto:alice@query.farm','ATTENDEE:mailto:bob@query.farm','ATTENDEE:mailto:carol@query.farm','RRULE:FREQ=WEEKLY;BYDAY=MO','SEQUENCE:3','END:VEVENT','BEGIN:VTODO','UID:todo-1@query.farm','SUMMARY:Write release notes','DUE:20240120T170000Z','STATUS:NEEDS-ACTION','PRIORITY:2','PERCENT-COMPLETE:40','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) ORDER BY dtstart;\", \"description\": \"List every event in an iCalendar feed by start time.\"},{\"sql\": \"SELECT a.summary AS first_event, b.summary AS second_event, greatest(a.dtstart, b.dtstart) AS overlap_start, least(a.dtend, b.dtend) AS overlap_end FROM ical.main.ical_events(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Design Calendar','BEGIN:VEVENT','UID:d1@query.farm','SUMMARY:Design review','DTSTART:20240402T090000Z','DTEND:20240402T100000Z','END:VEVENT','BEGIN:VEVENT','UID:d2@query.farm','SUMMARY:Customer call','DTSTART:20240402T093000Z','DTEND:20240402T101500Z','END:VEVENT','BEGIN:VEVENT','UID:d3@query.farm','SUMMARY:Team sync','DTSTART:20240402T101500Z','DTEND:20240402T110000Z','END:VEVENT','END:VCALENDAR'], chr(10))::BLOB) AS a JOIN ical.main.ical_events(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Design Calendar','BEGIN:VEVENT','UID:d1@query.farm','SUMMARY:Design review','DTSTART:20240402T090000Z','DTEND:20240402T100000Z','END:VEVENT','BEGIN:VEVENT','UID:d2@query.farm','SUMMARY:Customer call','DTSTART:20240402T093000Z','DTEND:20240402T101500Z','END:VEVENT','BEGIN:VEVENT','UID:d3@query.farm','SUMMARY:Team sync','DTSTART:20240402T101500Z','DTEND:20240402T110000Z','END:VEVENT','END:VCALENDAR'], chr(10))::BLOB) AS b ON a.uid < b.uid AND a.dtstart < b.dtend AND b.dtstart < a.dtend ORDER BY overlap_start, first_event;\", \"description\": \"Find double-booked events: self-join ical_events on overlapping [dtstart, dtend) ranges. Returns Design review with Customer call, overlapping 09:30-10:00 UTC; Team sync starts as Customer call ends, so it is not a conflict.\"},{\"sql\": \"SELECT e.summary AS event, e.dtstart, t.summary AS todo, t.due FROM ical.main.ical_events(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Ops Calendar','BEGIN:VEVENT','UID:ops-1@query.farm','SUMMARY:Deploy release','DTSTART:20240310T150000Z','DTEND:20240310T160000Z','STATUS:CONFIRMED','END:VEVENT','BEGIN:VEVENT','UID:ops-2@query.farm','SUMMARY:Retro','DTSTART:20240311T170000Z','DTEND:20240311T173000Z','STATUS:CONFIRMED','END:VEVENT','BEGIN:VTODO','UID:ops-todo-1@query.farm','SUMMARY:Update changelog','DUE:20240312T170000Z','STATUS:NEEDS-ACTION','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) AS e JOIN ical.main.ical_todos(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Ops Calendar','BEGIN:VEVENT','UID:ops-1@query.farm','SUMMARY:Deploy release','DTSTART:20240310T150000Z','DTEND:20240310T160000Z','STATUS:CONFIRMED','END:VEVENT','BEGIN:VEVENT','UID:ops-2@query.farm','SUMMARY:Retro','DTSTART:20240311T170000Z','DTEND:20240311T173000Z','STATUS:CONFIRMED','END:VEVENT','BEGIN:VTODO','UID:ops-todo-1@query.farm','SUMMARY:Update changelog','DUE:20240312T170000Z','STATUS:NEEDS-ACTION','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) AS t ON t.due BETWEEN e.dtstart AND e.dtstart + INTERVAL 7 DAY ORDER BY e.dtstart, t.due;\", \"description\": \"List, for each event, the to-dos that fall due within 7 days of its start, by joining ical_events to ical_todos on a time window. iCalendar does not link to-dos to events, so the pairing is by time only: the Ops Calendar's one to-do, Update changelog (due 2024-03-12 17:00 UTC), pairs with both Deploy release and Retro.\"}]",
+        "vgi.executable_examples": "[{\"description\": \"Parse an inline iCalendar feed into event rows.\", \"sql\": \"SELECT summary, location, all_day FROM ical.main.ical_events(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Team Calendar','BEGIN:VEVENT','UID:event-1@query.farm','SUMMARY:Sprint Planning','DESCRIPTION:Plan the next two-week sprint.','DTSTART:20240115T093000Z','DTEND:20240115T103000Z','LOCATION:Conference Room A','STATUS:CONFIRMED','ORGANIZER:mailto:alice@query.farm','ATTENDEE:mailto:bob@query.farm','ATTENDEE:mailto:carol@query.farm','RRULE:FREQ=WEEKLY;BYDAY=MO','SEQUENCE:3','END:VEVENT','BEGIN:VTODO','UID:todo-1@query.farm','SUMMARY:Write release notes','DUE:20240120T170000Z','STATUS:NEEDS-ACTION','PRIORITY:2','PERCENT-COMPLETE:40','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) ORDER BY dtstart\"}]",
+        "vgi.keywords": "[\"ical events\",\"vevent\",\"calendar events\",\"ics events\",\"parse calendar\",\"dtstart\",\"dtend\",\"rrule\",\"attendees\",\"scheduling\",\"meetings\",\"appointments\"]",
+        "vgi.result_columns_schema": "[{\"name\":\"uid\",\"type\":\"VARCHAR\",\"description\":\"VEVENT unique identifier (UID).\"},{\"name\":\"summary\",\"type\":\"VARCHAR\",\"description\":\"Event title (SUMMARY).\"},{\"name\":\"description\",\"type\":\"VARCHAR\",\"description\":\"Long-form description (DESCRIPTION).\"},{\"name\":\"dtstart\",\"type\":\"TIMESTAMP WITH TIME ZONE\",\"description\":\"Start, UTC-normalised (DTSTART).\"},{\"name\":\"dtend\",\"type\":\"TIMESTAMP WITH TIME ZONE\",\"description\":\"End, UTC-normalised (DTEND), or NULL.\"},{\"name\":\"all_day\",\"type\":\"BOOLEAN\",\"description\":\"True when DTSTART is DATE-valued (an all-day event).\"},{\"name\":\"location\",\"type\":\"VARCHAR\",\"description\":\"Free-text location (LOCATION).\"},{\"name\":\"status\",\"type\":\"VARCHAR\",\"description\":\"Event status: CONFIRMED / TENTATIVE / CANCELLED (STATUS).\"},{\"name\":\"organizer\",\"type\":\"VARCHAR\",\"description\":\"ORGANIZER value (usually a mailto: URI).\"},{\"name\":\"attendees\",\"type\":\"VARCHAR[]\",\"description\":\"ATTENDEE values, one array element per attendee.\"},{\"name\":\"rrule\",\"type\":\"VARCHAR\",\"description\":\"Recurrence rule as the raw RRULE string, or NULL.\"},{\"name\":\"sequence\",\"type\":\"INTEGER\",\"description\":\"Revision sequence number (SEQUENCE).\"},{\"name\":\"categories\",\"type\":\"VARCHAR[]\",\"description\":\"Category tags (CATEGORIES), one array element per tag.\"},{\"name\":\"url\",\"type\":\"VARCHAR\",\"description\":\"Associated URL (URL property), or NULL.\"},{\"name\":\"created\",\"type\":\"TIMESTAMP WITH TIME ZONE\",\"description\":\"Creation time, UTC-normalised (CREATED), or NULL.\"},{\"name\":\"last_modified\",\"type\":\"TIMESTAMP WITH TIME ZONE\",\"description\":\"Last-modified time, UTC-normalised (LAST-MODIFIED), or NULL.\"}]",
+        "vgi.title": "Parse iCalendar Events"
+      },
+      null,
+      [
+        "content"
+      ],
+      [
+        "BLOB"
+      ],
+      null,
+      null,
+      null,
+      true,
+      null,
+      22599,
+      [
+        "SELECT summary, location, all_day FROM ical.main.ical_events(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Team Calendar','BEGIN:VEVENT','UID:event-1@query.farm','SUMMARY:Sprint Planning','DESCRIPTION:Plan the next two-week sprint.','DTSTART:20240115T093000Z','DTEND:20240115T103000Z','LOCATION:Conference Room A','STATUS:CONFIRMED','ORGANIZER:mailto:alice@query.farm','ATTENDEE:mailto:bob@query.farm','ATTENDEE:mailto:carol@query.farm','RRULE:FREQ=WEEKLY;BYDAY=MO','SEQUENCE:3','END:VEVENT','BEGIN:VTODO','UID:todo-1@query.farm','SUMMARY:Write release notes','DUE:20240120T170000Z','STATUS:NEEDS-ACTION','PRIORITY:2','PERCENT-COMPLETE:40','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) ORDER BY dtstart;"
+      ],
+      null,
+      [
+        "calendar",
+        "icalendar",
+        "ical4j"
+      ]
+    ],
+    [
+      "ical",
+      "22592",
+      "main",
+      "ical_events",
+      null,
+      "table",
+      "Parse an iCalendar (.ics) feed into one row per VEVENT: uid, summary, UTC-normalised start/end, all-day flag, location, status, organizer, attendees array, recurrence rule, sequence, category tags, url, and created/last-modified timestamps (iCal4j).",
+      null,
+      {
+        "vgi.category": "Events",
+        "vgi.doc_llm": "# ical_events\n\nParse an iCalendar (`.ics`) feed into **one row per VEVENT**. Use it to ingest a calendar feed for scheduling analytics, reporting, or joining events against other tables.\n\n**Input** (typed overloads): a `VARCHAR` file path the worker opens, or a `BLOB` of `.ics` bytes.\n\n**Output**: uid, summary, description, UTC-normalised `dtstart`/`dtend` (`TIMESTAMP WITH TIME ZONE`), an `all_day` flag, location, status, organizer, an `attendees VARCHAR[]` array, the recurrence `rrule`, `sequence`, a `categories VARCHAR[]` tag array, `url`, and the UTC-normalised `created` / `last_modified` audit timestamps.\n\n**Edge cases**: a NULL argument or a feed that fails to parse yields *no rows* (never an error). `DATE`-valued starts set `all_day = true`; recurrences are surfaced as the raw RRULE string, not expanded.",
+        "vgi.doc_md": "Parses an iCalendar (`.ics`) feed into one row per VEVENT, backed by iCal4j (RFC 5545).\n\nAccepts a `VARCHAR` file path or a `BLOB` of `.ics` bytes. Timestamps are normalised to UTC and surfaced as `TIMESTAMP WITH TIME ZONE`. Bad or NULL input yields no rows rather than an error. Recurrence rules appear as the raw RRULE string in the `rrule` column.",
+        "vgi.example_queries": "[{\"sql\": \"SELECT summary, location, all_day FROM ical.main.ical_events(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Team Calendar','BEGIN:VEVENT','UID:event-1@query.farm','SUMMARY:Sprint Planning','DESCRIPTION:Plan the next two-week sprint.','DTSTART:20240115T093000Z','DTEND:20240115T103000Z','LOCATION:Conference Room A','STATUS:CONFIRMED','ORGANIZER:mailto:alice@query.farm','ATTENDEE:mailto:bob@query.farm','ATTENDEE:mailto:carol@query.farm','RRULE:FREQ=WEEKLY;BYDAY=MO','SEQUENCE:3','END:VEVENT','BEGIN:VTODO','UID:todo-1@query.farm','SUMMARY:Write release notes','DUE:20240120T170000Z','STATUS:NEEDS-ACTION','PRIORITY:2','PERCENT-COMPLETE:40','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) ORDER BY dtstart;\", \"description\": \"List every event in an iCalendar feed by start time.\"},{\"sql\": \"SELECT a.summary AS first_event, b.summary AS second_event, greatest(a.dtstart, b.dtstart) AS overlap_start, least(a.dtend, b.dtend) AS overlap_end FROM ical.main.ical_events(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Design Calendar','BEGIN:VEVENT','UID:d1@query.farm','SUMMARY:Design review','DTSTART:20240402T090000Z','DTEND:20240402T100000Z','END:VEVENT','BEGIN:VEVENT','UID:d2@query.farm','SUMMARY:Customer call','DTSTART:20240402T093000Z','DTEND:20240402T101500Z','END:VEVENT','BEGIN:VEVENT','UID:d3@query.farm','SUMMARY:Team sync','DTSTART:20240402T101500Z','DTEND:20240402T110000Z','END:VEVENT','END:VCALENDAR'], chr(10))::BLOB) AS a JOIN ical.main.ical_events(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Design Calendar','BEGIN:VEVENT','UID:d1@query.farm','SUMMARY:Design review','DTSTART:20240402T090000Z','DTEND:20240402T100000Z','END:VEVENT','BEGIN:VEVENT','UID:d2@query.farm','SUMMARY:Customer call','DTSTART:20240402T093000Z','DTEND:20240402T101500Z','END:VEVENT','BEGIN:VEVENT','UID:d3@query.farm','SUMMARY:Team sync','DTSTART:20240402T101500Z','DTEND:20240402T110000Z','END:VEVENT','END:VCALENDAR'], chr(10))::BLOB) AS b ON a.uid < b.uid AND a.dtstart < b.dtend AND b.dtstart < a.dtend ORDER BY overlap_start, first_event;\", \"description\": \"Find double-booked events: self-join ical_events on overlapping [dtstart, dtend) ranges. Returns Design review with Customer call, overlapping 09:30-10:00 UTC; Team sync starts as Customer call ends, so it is not a conflict.\"},{\"sql\": \"SELECT e.summary AS event, e.dtstart, t.summary AS todo, t.due FROM ical.main.ical_events(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Ops Calendar','BEGIN:VEVENT','UID:ops-1@query.farm','SUMMARY:Deploy release','DTSTART:20240310T150000Z','DTEND:20240310T160000Z','STATUS:CONFIRMED','END:VEVENT','BEGIN:VEVENT','UID:ops-2@query.farm','SUMMARY:Retro','DTSTART:20240311T170000Z','DTEND:20240311T173000Z','STATUS:CONFIRMED','END:VEVENT','BEGIN:VTODO','UID:ops-todo-1@query.farm','SUMMARY:Update changelog','DUE:20240312T170000Z','STATUS:NEEDS-ACTION','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) AS e JOIN ical.main.ical_todos(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Ops Calendar','BEGIN:VEVENT','UID:ops-1@query.farm','SUMMARY:Deploy release','DTSTART:20240310T150000Z','DTEND:20240310T160000Z','STATUS:CONFIRMED','END:VEVENT','BEGIN:VEVENT','UID:ops-2@query.farm','SUMMARY:Retro','DTSTART:20240311T170000Z','DTEND:20240311T173000Z','STATUS:CONFIRMED','END:VEVENT','BEGIN:VTODO','UID:ops-todo-1@query.farm','SUMMARY:Update changelog','DUE:20240312T170000Z','STATUS:NEEDS-ACTION','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) AS t ON t.due BETWEEN e.dtstart AND e.dtstart + INTERVAL 7 DAY ORDER BY e.dtstart, t.due;\", \"description\": \"List, for each event, the to-dos that fall due within 7 days of its start, by joining ical_events to ical_todos on a time window. iCalendar does not link to-dos to events, so the pairing is by time only: the Ops Calendar's one to-do, Update changelog (due 2024-03-12 17:00 UTC), pairs with both Deploy release and Retro.\"}]",
+        "vgi.executable_examples": "[{\"description\": \"Parse an inline iCalendar feed into event rows.\", \"sql\": \"SELECT summary, location, all_day FROM ical.main.ical_events(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Team Calendar','BEGIN:VEVENT','UID:event-1@query.farm','SUMMARY:Sprint Planning','DESCRIPTION:Plan the next two-week sprint.','DTSTART:20240115T093000Z','DTEND:20240115T103000Z','LOCATION:Conference Room A','STATUS:CONFIRMED','ORGANIZER:mailto:alice@query.farm','ATTENDEE:mailto:bob@query.farm','ATTENDEE:mailto:carol@query.farm','RRULE:FREQ=WEEKLY;BYDAY=MO','SEQUENCE:3','END:VEVENT','BEGIN:VTODO','UID:todo-1@query.farm','SUMMARY:Write release notes','DUE:20240120T170000Z','STATUS:NEEDS-ACTION','PRIORITY:2','PERCENT-COMPLETE:40','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) ORDER BY dtstart\"}]",
+        "vgi.keywords": "[\"ical events\",\"vevent\",\"calendar events\",\"ics events\",\"parse calendar\",\"dtstart\",\"dtend\",\"rrule\",\"attendees\",\"scheduling\",\"meetings\",\"appointments\"]",
+        "vgi.result_columns_schema": "[{\"name\":\"uid\",\"type\":\"VARCHAR\",\"description\":\"VEVENT unique identifier (UID).\"},{\"name\":\"summary\",\"type\":\"VARCHAR\",\"description\":\"Event title (SUMMARY).\"},{\"name\":\"description\",\"type\":\"VARCHAR\",\"description\":\"Long-form description (DESCRIPTION).\"},{\"name\":\"dtstart\",\"type\":\"TIMESTAMP WITH TIME ZONE\",\"description\":\"Start, UTC-normalised (DTSTART).\"},{\"name\":\"dtend\",\"type\":\"TIMESTAMP WITH TIME ZONE\",\"description\":\"End, UTC-normalised (DTEND), or NULL.\"},{\"name\":\"all_day\",\"type\":\"BOOLEAN\",\"description\":\"True when DTSTART is DATE-valued (an all-day event).\"},{\"name\":\"location\",\"type\":\"VARCHAR\",\"description\":\"Free-text location (LOCATION).\"},{\"name\":\"status\",\"type\":\"VARCHAR\",\"description\":\"Event status: CONFIRMED / TENTATIVE / CANCELLED (STATUS).\"},{\"name\":\"organizer\",\"type\":\"VARCHAR\",\"description\":\"ORGANIZER value (usually a mailto: URI).\"},{\"name\":\"attendees\",\"type\":\"VARCHAR[]\",\"description\":\"ATTENDEE values, one array element per attendee.\"},{\"name\":\"rrule\",\"type\":\"VARCHAR\",\"description\":\"Recurrence rule as the raw RRULE string, or NULL.\"},{\"name\":\"sequence\",\"type\":\"INTEGER\",\"description\":\"Revision sequence number (SEQUENCE).\"},{\"name\":\"categories\",\"type\":\"VARCHAR[]\",\"description\":\"Category tags (CATEGORIES), one array element per tag.\"},{\"name\":\"url\",\"type\":\"VARCHAR\",\"description\":\"Associated URL (URL property), or NULL.\"},{\"name\":\"created\",\"type\":\"TIMESTAMP WITH TIME ZONE\",\"description\":\"Creation time, UTC-normalised (CREATED), or NULL.\"},{\"name\":\"last_modified\",\"type\":\"TIMESTAMP WITH TIME ZONE\",\"description\":\"Last-modified time, UTC-normalised (LAST-MODIFIED), or NULL.\"}]",
+        "vgi.title": "Parse iCalendar Events"
+      },
+      null,
+      [
+        "path"
+      ],
+      [
+        "VARCHAR"
+      ],
+      null,
+      null,
+      null,
+      true,
+      null,
+      22599,
+      [
+        "SELECT summary, location, all_day FROM ical.main.ical_events(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Team Calendar','BEGIN:VEVENT','UID:event-1@query.farm','SUMMARY:Sprint Planning','DESCRIPTION:Plan the next two-week sprint.','DTSTART:20240115T093000Z','DTEND:20240115T103000Z','LOCATION:Conference Room A','STATUS:CONFIRMED','ORGANIZER:mailto:alice@query.farm','ATTENDEE:mailto:bob@query.farm','ATTENDEE:mailto:carol@query.farm','RRULE:FREQ=WEEKLY;BYDAY=MO','SEQUENCE:3','END:VEVENT','BEGIN:VTODO','UID:todo-1@query.farm','SUMMARY:Write release notes','DUE:20240120T170000Z','STATUS:NEEDS-ACTION','PRIORITY:2','PERCENT-COMPLETE:40','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) ORDER BY dtstart;"
+      ],
+      null,
+      [
+        "calendar",
+        "icalendar",
+        "ical4j"
+      ]
+    ],
+    [
+      "ical",
+      "22592",
+      "main",
+      "ical_todos",
+      null,
+      "table",
+      "Parse an iCalendar (.ics) feed into one row per VTODO: uid, summary, UTC-normalised due date, status, priority, and percent complete (iCal4j).",
+      null,
+      {
+        "vgi.category": "To-dos",
+        "vgi.doc_llm": "# ical_todos\n\nParse an iCalendar (`.ics`) feed into **one row per VTODO** (task). Use it to pull outstanding to-dos out of a shared calendar for task tracking or reporting.\n\n**Input** (typed overloads): a `VARCHAR` file path the worker opens, or a `BLOB` of `.ics` bytes.\n\n**Output**: uid, summary, UTC-normalised `due` (`TIMESTAMP WITH TIME ZONE`), status (`NEEDS-ACTION` / `IN-PROCESS` / `COMPLETED` / `CANCELLED`), priority (0-9), and percent complete (0-100).\n\n**Edge cases**: a NULL argument or an unparsable feed yields *no rows* (never an error). A feed with only events (no VTODOs) yields no rows.",
+        "vgi.doc_md": "Parses an iCalendar (`.ics`) feed into one row per VTODO (task), backed by iCal4j (RFC 5545).\n\nAccepts a `VARCHAR` file path or a `BLOB` of `.ics` bytes. The `due` column is normalised to UTC and surfaced as `TIMESTAMP WITH TIME ZONE`. Filter on `status` to separate open from completed tasks. Bad or NULL input yields no rows rather than an error.",
+        "vgi.example_queries": "[{\"sql\": \"SELECT summary, status, percent_complete FROM ical.main.ical_todos(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Team Calendar','BEGIN:VEVENT','UID:event-1@query.farm','SUMMARY:Sprint Planning','DESCRIPTION:Plan the next two-week sprint.','DTSTART:20240115T093000Z','DTEND:20240115T103000Z','LOCATION:Conference Room A','STATUS:CONFIRMED','ORGANIZER:mailto:alice@query.farm','ATTENDEE:mailto:bob@query.farm','ATTENDEE:mailto:carol@query.farm','RRULE:FREQ=WEEKLY;BYDAY=MO','SEQUENCE:3','END:VEVENT','BEGIN:VTODO','UID:todo-1@query.farm','SUMMARY:Write release notes','DUE:20240120T170000Z','STATUS:NEEDS-ACTION','PRIORITY:2','PERCENT-COMPLETE:40','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) WHERE status <> 'COMPLETED' ORDER BY due;\", \"description\": \"List the outstanding to-dos from an iCalendar feed by due date.\"},{\"sql\": \"SELECT e.summary AS event, e.dtstart, t.summary AS todo, t.due FROM ical.main.ical_events(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Ops Calendar','BEGIN:VEVENT','UID:ops-1@query.farm','SUMMARY:Deploy release','DTSTART:20240310T150000Z','DTEND:20240310T160000Z','STATUS:CONFIRMED','END:VEVENT','BEGIN:VEVENT','UID:ops-2@query.farm','SUMMARY:Retro','DTSTART:20240311T170000Z','DTEND:20240311T173000Z','STATUS:CONFIRMED','END:VEVENT','BEGIN:VTODO','UID:ops-todo-1@query.farm','SUMMARY:Update changelog','DUE:20240312T170000Z','STATUS:NEEDS-ACTION','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) AS e JOIN ical.main.ical_todos(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Ops Calendar','BEGIN:VEVENT','UID:ops-1@query.farm','SUMMARY:Deploy release','DTSTART:20240310T150000Z','DTEND:20240310T160000Z','STATUS:CONFIRMED','END:VEVENT','BEGIN:VEVENT','UID:ops-2@query.farm','SUMMARY:Retro','DTSTART:20240311T170000Z','DTEND:20240311T173000Z','STATUS:CONFIRMED','END:VEVENT','BEGIN:VTODO','UID:ops-todo-1@query.farm','SUMMARY:Update changelog','DUE:20240312T170000Z','STATUS:NEEDS-ACTION','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) AS t ON t.due BETWEEN e.dtstart AND e.dtstart + INTERVAL 7 DAY ORDER BY e.dtstart, t.due;\", \"description\": \"List, for each event, the to-dos that fall due within 7 days of its start, by joining ical_events to ical_todos on a time window. iCalendar does not link to-dos to events, so the pairing is by time only: the Ops Calendar's one to-do, Update changelog (due 2024-03-12 17:00 UTC), pairs with both Deploy release and Retro.\"}]",
+        "vgi.executable_examples": "[{\"description\": \"List the open to-dos from an inline iCalendar feed.\", \"sql\": \"SELECT summary, status, percent_complete FROM ical.main.ical_todos(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Team Calendar','BEGIN:VEVENT','UID:event-1@query.farm','SUMMARY:Sprint Planning','DESCRIPTION:Plan the next two-week sprint.','DTSTART:20240115T093000Z','DTEND:20240115T103000Z','LOCATION:Conference Room A','STATUS:CONFIRMED','ORGANIZER:mailto:alice@query.farm','ATTENDEE:mailto:bob@query.farm','ATTENDEE:mailto:carol@query.farm','RRULE:FREQ=WEEKLY;BYDAY=MO','SEQUENCE:3','END:VEVENT','BEGIN:VTODO','UID:todo-1@query.farm','SUMMARY:Write release notes','DUE:20240120T170000Z','STATUS:NEEDS-ACTION','PRIORITY:2','PERCENT-COMPLETE:40','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) WHERE status <> 'COMPLETED' ORDER BY due\"},{\"description\": \"List, for each event, the to-dos that fall due within 7 days of its start, by joining ical_events to ical_todos on a time window. iCalendar does not link to-dos to events, so the pairing is by time only: the Ops Calendar's one to-do, Update changelog (due 2024-03-12 17:00 UTC), pairs with both Deploy release and Retro.\", \"sql\": \"SELECT e.summary AS event, e.dtstart, t.summary AS todo, t.due FROM ical.main.ical_events(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Ops Calendar','BEGIN:VEVENT','UID:ops-1@query.farm','SUMMARY:Deploy release','DTSTART:20240310T150000Z','DTEND:20240310T160000Z','STATUS:CONFIRMED','END:VEVENT','BEGIN:VEVENT','UID:ops-2@query.farm','SUMMARY:Retro','DTSTART:20240311T170000Z','DTEND:20240311T173000Z','STATUS:CONFIRMED','END:VEVENT','BEGIN:VTODO','UID:ops-todo-1@query.farm','SUMMARY:Update changelog','DUE:20240312T170000Z','STATUS:NEEDS-ACTION','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) AS e JOIN ical.main.ical_todos(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Ops Calendar','BEGIN:VEVENT','UID:ops-1@query.farm','SUMMARY:Deploy release','DTSTART:20240310T150000Z','DTEND:20240310T160000Z','STATUS:CONFIRMED','END:VEVENT','BEGIN:VEVENT','UID:ops-2@query.farm','SUMMARY:Retro','DTSTART:20240311T170000Z','DTEND:20240311T173000Z','STATUS:CONFIRMED','END:VEVENT','BEGIN:VTODO','UID:ops-todo-1@query.farm','SUMMARY:Update changelog','DUE:20240312T170000Z','STATUS:NEEDS-ACTION','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) AS t ON t.due BETWEEN e.dtstart AND e.dtstart + INTERVAL 7 DAY ORDER BY e.dtstart, t.due\"}]",
+        "vgi.keywords": "[\"ical todos\",\"vtodo\",\"tasks\",\"to-do\",\"calendar tasks\",\"due date\",\"priority\",\"percent complete\",\"task tracking\",\"ics tasks\"]",
+        "vgi.result_columns_schema": "[{\"name\":\"uid\",\"type\":\"VARCHAR\",\"description\":\"VTODO unique identifier (UID).\"},{\"name\":\"summary\",\"type\":\"VARCHAR\",\"description\":\"To-do title (SUMMARY).\"},{\"name\":\"due\",\"type\":\"TIMESTAMP WITH TIME ZONE\",\"description\":\"Due date/time, UTC-normalised (DUE), or NULL.\"},{\"name\":\"status\",\"type\":\"VARCHAR\",\"description\":\"To-do status: NEEDS-ACTION / IN-PROCESS / COMPLETED / CANCELLED (STATUS).\"},{\"name\":\"priority\",\"type\":\"INTEGER\",\"description\":\"Priority 0-9, where lower is higher priority (PRIORITY).\"},{\"name\":\"percent_complete\",\"type\":\"INTEGER\",\"description\":\"Completion percentage 0-100 (PERCENT-COMPLETE).\"}]",
+        "vgi.title": "Parse iCalendar Todos"
+      },
+      null,
+      [
+        "content"
+      ],
+      [
+        "BLOB"
+      ],
+      null,
+      null,
+      null,
+      true,
+      null,
+      22600,
+      [
+        "SELECT summary, status, percent_complete FROM ical.main.ical_todos(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Team Calendar','BEGIN:VEVENT','UID:event-1@query.farm','SUMMARY:Sprint Planning','DESCRIPTION:Plan the next two-week sprint.','DTSTART:20240115T093000Z','DTEND:20240115T103000Z','LOCATION:Conference Room A','STATUS:CONFIRMED','ORGANIZER:mailto:alice@query.farm','ATTENDEE:mailto:bob@query.farm','ATTENDEE:mailto:carol@query.farm','RRULE:FREQ=WEEKLY;BYDAY=MO','SEQUENCE:3','END:VEVENT','BEGIN:VTODO','UID:todo-1@query.farm','SUMMARY:Write release notes','DUE:20240120T170000Z','STATUS:NEEDS-ACTION','PRIORITY:2','PERCENT-COMPLETE:40','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) WHERE status <> 'COMPLETED' ORDER BY due;"
+      ],
+      null,
+      [
+        "calendar",
+        "icalendar",
+        "ical4j"
+      ]
+    ],
+    [
+      "ical",
+      "22592",
+      "main",
+      "ical_todos",
+      null,
+      "table",
+      "Parse an iCalendar (.ics) feed into one row per VTODO: uid, summary, UTC-normalised due date, status, priority, and percent complete (iCal4j).",
+      null,
+      {
+        "vgi.category": "To-dos",
+        "vgi.doc_llm": "# ical_todos\n\nParse an iCalendar (`.ics`) feed into **one row per VTODO** (task). Use it to pull outstanding to-dos out of a shared calendar for task tracking or reporting.\n\n**Input** (typed overloads): a `VARCHAR` file path the worker opens, or a `BLOB` of `.ics` bytes.\n\n**Output**: uid, summary, UTC-normalised `due` (`TIMESTAMP WITH TIME ZONE`), status (`NEEDS-ACTION` / `IN-PROCESS` / `COMPLETED` / `CANCELLED`), priority (0-9), and percent complete (0-100).\n\n**Edge cases**: a NULL argument or an unparsable feed yields *no rows* (never an error). A feed with only events (no VTODOs) yields no rows.",
+        "vgi.doc_md": "Parses an iCalendar (`.ics`) feed into one row per VTODO (task), backed by iCal4j (RFC 5545).\n\nAccepts a `VARCHAR` file path or a `BLOB` of `.ics` bytes. The `due` column is normalised to UTC and surfaced as `TIMESTAMP WITH TIME ZONE`. Filter on `status` to separate open from completed tasks. Bad or NULL input yields no rows rather than an error.",
+        "vgi.example_queries": "[{\"sql\": \"SELECT summary, status, percent_complete FROM ical.main.ical_todos(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Team Calendar','BEGIN:VEVENT','UID:event-1@query.farm','SUMMARY:Sprint Planning','DESCRIPTION:Plan the next two-week sprint.','DTSTART:20240115T093000Z','DTEND:20240115T103000Z','LOCATION:Conference Room A','STATUS:CONFIRMED','ORGANIZER:mailto:alice@query.farm','ATTENDEE:mailto:bob@query.farm','ATTENDEE:mailto:carol@query.farm','RRULE:FREQ=WEEKLY;BYDAY=MO','SEQUENCE:3','END:VEVENT','BEGIN:VTODO','UID:todo-1@query.farm','SUMMARY:Write release notes','DUE:20240120T170000Z','STATUS:NEEDS-ACTION','PRIORITY:2','PERCENT-COMPLETE:40','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) WHERE status <> 'COMPLETED' ORDER BY due;\", \"description\": \"List the outstanding to-dos from an iCalendar feed by due date.\"},{\"sql\": \"SELECT e.summary AS event, e.dtstart, t.summary AS todo, t.due FROM ical.main.ical_events(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Ops Calendar','BEGIN:VEVENT','UID:ops-1@query.farm','SUMMARY:Deploy release','DTSTART:20240310T150000Z','DTEND:20240310T160000Z','STATUS:CONFIRMED','END:VEVENT','BEGIN:VEVENT','UID:ops-2@query.farm','SUMMARY:Retro','DTSTART:20240311T170000Z','DTEND:20240311T173000Z','STATUS:CONFIRMED','END:VEVENT','BEGIN:VTODO','UID:ops-todo-1@query.farm','SUMMARY:Update changelog','DUE:20240312T170000Z','STATUS:NEEDS-ACTION','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) AS e JOIN ical.main.ical_todos(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Ops Calendar','BEGIN:VEVENT','UID:ops-1@query.farm','SUMMARY:Deploy release','DTSTART:20240310T150000Z','DTEND:20240310T160000Z','STATUS:CONFIRMED','END:VEVENT','BEGIN:VEVENT','UID:ops-2@query.farm','SUMMARY:Retro','DTSTART:20240311T170000Z','DTEND:20240311T173000Z','STATUS:CONFIRMED','END:VEVENT','BEGIN:VTODO','UID:ops-todo-1@query.farm','SUMMARY:Update changelog','DUE:20240312T170000Z','STATUS:NEEDS-ACTION','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) AS t ON t.due BETWEEN e.dtstart AND e.dtstart + INTERVAL 7 DAY ORDER BY e.dtstart, t.due;\", \"description\": \"List, for each event, the to-dos that fall due within 7 days of its start, by joining ical_events to ical_todos on a time window. iCalendar does not link to-dos to events, so the pairing is by time only: the Ops Calendar's one to-do, Update changelog (due 2024-03-12 17:00 UTC), pairs with both Deploy release and Retro.\"}]",
+        "vgi.executable_examples": "[{\"description\": \"List the open to-dos from an inline iCalendar feed.\", \"sql\": \"SELECT summary, status, percent_complete FROM ical.main.ical_todos(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Team Calendar','BEGIN:VEVENT','UID:event-1@query.farm','SUMMARY:Sprint Planning','DESCRIPTION:Plan the next two-week sprint.','DTSTART:20240115T093000Z','DTEND:20240115T103000Z','LOCATION:Conference Room A','STATUS:CONFIRMED','ORGANIZER:mailto:alice@query.farm','ATTENDEE:mailto:bob@query.farm','ATTENDEE:mailto:carol@query.farm','RRULE:FREQ=WEEKLY;BYDAY=MO','SEQUENCE:3','END:VEVENT','BEGIN:VTODO','UID:todo-1@query.farm','SUMMARY:Write release notes','DUE:20240120T170000Z','STATUS:NEEDS-ACTION','PRIORITY:2','PERCENT-COMPLETE:40','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) WHERE status <> 'COMPLETED' ORDER BY due\"},{\"description\": \"List, for each event, the to-dos that fall due within 7 days of its start, by joining ical_events to ical_todos on a time window. iCalendar does not link to-dos to events, so the pairing is by time only: the Ops Calendar's one to-do, Update changelog (due 2024-03-12 17:00 UTC), pairs with both Deploy release and Retro.\", \"sql\": \"SELECT e.summary AS event, e.dtstart, t.summary AS todo, t.due FROM ical.main.ical_events(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Ops Calendar','BEGIN:VEVENT','UID:ops-1@query.farm','SUMMARY:Deploy release','DTSTART:20240310T150000Z','DTEND:20240310T160000Z','STATUS:CONFIRMED','END:VEVENT','BEGIN:VEVENT','UID:ops-2@query.farm','SUMMARY:Retro','DTSTART:20240311T170000Z','DTEND:20240311T173000Z','STATUS:CONFIRMED','END:VEVENT','BEGIN:VTODO','UID:ops-todo-1@query.farm','SUMMARY:Update changelog','DUE:20240312T170000Z','STATUS:NEEDS-ACTION','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) AS e JOIN ical.main.ical_todos(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Ops Calendar','BEGIN:VEVENT','UID:ops-1@query.farm','SUMMARY:Deploy release','DTSTART:20240310T150000Z','DTEND:20240310T160000Z','STATUS:CONFIRMED','END:VEVENT','BEGIN:VEVENT','UID:ops-2@query.farm','SUMMARY:Retro','DTSTART:20240311T170000Z','DTEND:20240311T173000Z','STATUS:CONFIRMED','END:VEVENT','BEGIN:VTODO','UID:ops-todo-1@query.farm','SUMMARY:Update changelog','DUE:20240312T170000Z','STATUS:NEEDS-ACTION','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) AS t ON t.due BETWEEN e.dtstart AND e.dtstart + INTERVAL 7 DAY ORDER BY e.dtstart, t.due\"}]",
+        "vgi.keywords": "[\"ical todos\",\"vtodo\",\"tasks\",\"to-do\",\"calendar tasks\",\"due date\",\"priority\",\"percent complete\",\"task tracking\",\"ics tasks\"]",
+        "vgi.result_columns_schema": "[{\"name\":\"uid\",\"type\":\"VARCHAR\",\"description\":\"VTODO unique identifier (UID).\"},{\"name\":\"summary\",\"type\":\"VARCHAR\",\"description\":\"To-do title (SUMMARY).\"},{\"name\":\"due\",\"type\":\"TIMESTAMP WITH TIME ZONE\",\"description\":\"Due date/time, UTC-normalised (DUE), or NULL.\"},{\"name\":\"status\",\"type\":\"VARCHAR\",\"description\":\"To-do status: NEEDS-ACTION / IN-PROCESS / COMPLETED / CANCELLED (STATUS).\"},{\"name\":\"priority\",\"type\":\"INTEGER\",\"description\":\"Priority 0-9, where lower is higher priority (PRIORITY).\"},{\"name\":\"percent_complete\",\"type\":\"INTEGER\",\"description\":\"Completion percentage 0-100 (PERCENT-COMPLETE).\"}]",
+        "vgi.title": "Parse iCalendar Todos"
+      },
+      null,
+      [
+        "path"
+      ],
+      [
+        "VARCHAR"
+      ],
+      null,
+      null,
+      null,
+      true,
+      null,
+      22600,
+      [
+        "SELECT summary, status, percent_complete FROM ical.main.ical_todos(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Team Calendar','BEGIN:VEVENT','UID:event-1@query.farm','SUMMARY:Sprint Planning','DESCRIPTION:Plan the next two-week sprint.','DTSTART:20240115T093000Z','DTEND:20240115T103000Z','LOCATION:Conference Room A','STATUS:CONFIRMED','ORGANIZER:mailto:alice@query.farm','ATTENDEE:mailto:bob@query.farm','ATTENDEE:mailto:carol@query.farm','RRULE:FREQ=WEEKLY;BYDAY=MO','SEQUENCE:3','END:VEVENT','BEGIN:VTODO','UID:todo-1@query.farm','SUMMARY:Write release notes','DUE:20240120T170000Z','STATUS:NEEDS-ACTION','PRIORITY:2','PERCENT-COMPLETE:40','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) WHERE status <> 'COMPLETED' ORDER BY due;"
+      ],
+      null,
+      [
+        "calendar",
+        "icalendar",
+        "ical4j"
+      ]
+    ],
+    [
+      "ical",
+      "22592",
+      "main",
+      "is_valid_ical",
+      null,
+      "scalar",
+      "True when the supplied bytes can be parsed as a well-formed iCalendar (.ics) feed (iCal4j, relaxed).",
+      null,
+      {
+        "vgi.category": "Calendar metadata",
+        "vgi.doc_llm": "# is_valid_ical\n\nTest whether the input parses as a **well-formed iCalendar (`.ics`) feed** under iCal4j's compatibility-relaxed rules. Use it to guard a pipeline before calling `ical_events` / `ical_todos`, or to filter dirty data.\n\n**Input** (typed overloads): a `VARCHAR` file path the worker opens, or a `BLOB` of `.ics` bytes.\n\n**Output**: a `BOOLEAN`. NULL input yields NULL; malformed bytes yield `false` (never an error). Validation is relaxed, so minor RFC violations still count as valid.",
+        "vgi.doc_md": "Returns true when the input parses as a well-formed iCalendar (`.ics`) feed (iCal4j, compatibility-relaxed).\n\nAccepts a `VARCHAR` file path or a `BLOB` of `.ics` bytes. A NULL argument returns NULL; malformed input returns `false` rather than raising an error, so it is safe to call across a column of mixed-quality data.",
+        "vgi.example_queries": "[{\"sql\": \"SELECT ical.main.is_valid_ical(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Team Calendar','BEGIN:VEVENT','UID:event-1@query.farm','SUMMARY:Sprint Planning','DESCRIPTION:Plan the next two-week sprint.','DTSTART:20240115T093000Z','DTEND:20240115T103000Z','LOCATION:Conference Room A','STATUS:CONFIRMED','ORGANIZER:mailto:alice@query.farm','ATTENDEE:mailto:bob@query.farm','ATTENDEE:mailto:carol@query.farm','RRULE:FREQ=WEEKLY;BYDAY=MO','SEQUENCE:3','END:VEVENT','BEGIN:VTODO','UID:todo-1@query.farm','SUMMARY:Write release notes','DUE:20240120T170000Z','STATUS:NEEDS-ACTION','PRIORITY:2','PERCENT-COMPLETE:40','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) AS is_valid;\", \"description\": \"Test whether the input parses as a well-formed iCalendar (.ics) feed.\"},{\"sql\": \"SELECT name, ical.main.is_valid_ical(feed::BLOB) AS is_valid, ical.main.ical_calendar_name(feed::BLOB) AS parsed_name, ical.main.ical_event_count(feed::BLOB) AS parsed_events FROM (SELECT name, feed FROM ical.main.example_calendars UNION ALL SELECT 'truncated_export', 'BEGIN:VCALENDAR') AS f ORDER BY name;\", \"description\": \"Health-check a column of stored feeds: the scalars accept columns (table functions do not). Both example_calendars samples come back valid (Ops Calendar 2 events, Team Calendar 1); a truncated export comes back false, NULL, 0. Cast text to `BLOB`: a `VARCHAR` is read as a file path.\"}]",
+        "vgi.executable_examples": "[{\"description\": \"Validate an inline iCalendar feed.\", \"sql\": \"SELECT ical.main.is_valid_ical(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Team Calendar','BEGIN:VEVENT','UID:event-1@query.farm','SUMMARY:Sprint Planning','DESCRIPTION:Plan the next two-week sprint.','DTSTART:20240115T093000Z','DTEND:20240115T103000Z','LOCATION:Conference Room A','STATUS:CONFIRMED','ORGANIZER:mailto:alice@query.farm','ATTENDEE:mailto:bob@query.farm','ATTENDEE:mailto:carol@query.farm','RRULE:FREQ=WEEKLY;BYDAY=MO','SEQUENCE:3','END:VEVENT','BEGIN:VTODO','UID:todo-1@query.farm','SUMMARY:Write release notes','DUE:20240120T170000Z','STATUS:NEEDS-ACTION','PRIORITY:2','PERCENT-COMPLETE:40','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) AS is_valid\"}]",
+        "vgi.keywords": "[\"is valid ical\",\"validate ical\",\"well-formed\",\"ics validation\",\"calendar validation\",\"feed check\",\"parseable\",\"verify ics\"]",
+        "vgi.title": "Validate iCalendar Feed"
+      },
+      "BOOLEAN",
+      [
+        "content"
+      ],
+      [
+        "BLOB"
+      ],
+      null,
+      null,
+      false,
+      true,
+      null,
+      22598,
+      [
+        "SELECT ical.main.is_valid_ical(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Team Calendar','BEGIN:VEVENT','UID:event-1@query.farm','SUMMARY:Sprint Planning','DESCRIPTION:Plan the next two-week sprint.','DTSTART:20240115T093000Z','DTEND:20240115T103000Z','LOCATION:Conference Room A','STATUS:CONFIRMED','ORGANIZER:mailto:alice@query.farm','ATTENDEE:mailto:bob@query.farm','ATTENDEE:mailto:carol@query.farm','RRULE:FREQ=WEEKLY;BYDAY=MO','SEQUENCE:3','END:VEVENT','BEGIN:VTODO','UID:todo-1@query.farm','SUMMARY:Write release notes','DUE:20240120T170000Z','STATUS:NEEDS-ACTION','PRIORITY:2','PERCENT-COMPLETE:40','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) AS is_valid;"
+      ],
+      "CONSISTENT",
+      [
+        "calendar",
+        "icalendar",
+        "ical4j"
+      ]
+    ],
+    [
+      "ical",
+      "22592",
+      "main",
+      "is_valid_ical",
+      null,
+      "scalar",
+      "True when the file at the given path can be parsed as a well-formed iCalendar (.ics) feed (iCal4j, relaxed).",
+      null,
+      {
+        "vgi.category": "Calendar metadata",
+        "vgi.doc_llm": "# is_valid_ical\n\nTest whether the input parses as a **well-formed iCalendar (`.ics`) feed** under iCal4j's compatibility-relaxed rules. Use it to guard a pipeline before calling `ical_events` / `ical_todos`, or to filter dirty data.\n\n**Input** (typed overloads): a `VARCHAR` file path the worker opens, or a `BLOB` of `.ics` bytes.\n\n**Output**: a `BOOLEAN`. NULL input yields NULL; malformed bytes yield `false` (never an error). Validation is relaxed, so minor RFC violations still count as valid.",
+        "vgi.doc_md": "Returns true when the input parses as a well-formed iCalendar (`.ics`) feed (iCal4j, compatibility-relaxed).\n\nAccepts a `VARCHAR` file path or a `BLOB` of `.ics` bytes. A NULL argument returns NULL; malformed input returns `false` rather than raising an error, so it is safe to call across a column of mixed-quality data.",
+        "vgi.example_queries": "[{\"sql\": \"SELECT ical.main.is_valid_ical(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Team Calendar','BEGIN:VEVENT','UID:event-1@query.farm','SUMMARY:Sprint Planning','DESCRIPTION:Plan the next two-week sprint.','DTSTART:20240115T093000Z','DTEND:20240115T103000Z','LOCATION:Conference Room A','STATUS:CONFIRMED','ORGANIZER:mailto:alice@query.farm','ATTENDEE:mailto:bob@query.farm','ATTENDEE:mailto:carol@query.farm','RRULE:FREQ=WEEKLY;BYDAY=MO','SEQUENCE:3','END:VEVENT','BEGIN:VTODO','UID:todo-1@query.farm','SUMMARY:Write release notes','DUE:20240120T170000Z','STATUS:NEEDS-ACTION','PRIORITY:2','PERCENT-COMPLETE:40','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) AS is_valid;\", \"description\": \"Test whether the input parses as a well-formed iCalendar (.ics) feed.\"},{\"sql\": \"SELECT name, ical.main.is_valid_ical(feed::BLOB) AS is_valid, ical.main.ical_calendar_name(feed::BLOB) AS parsed_name, ical.main.ical_event_count(feed::BLOB) AS parsed_events FROM (SELECT name, feed FROM ical.main.example_calendars UNION ALL SELECT 'truncated_export', 'BEGIN:VCALENDAR') AS f ORDER BY name;\", \"description\": \"Health-check a column of stored feeds: the scalars accept columns (table functions do not). Both example_calendars samples come back valid (Ops Calendar 2 events, Team Calendar 1); a truncated export comes back false, NULL, 0. Cast text to `BLOB`: a `VARCHAR` is read as a file path.\"}]",
+        "vgi.executable_examples": "[{\"description\": \"Validate an inline iCalendar feed.\", \"sql\": \"SELECT ical.main.is_valid_ical(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Team Calendar','BEGIN:VEVENT','UID:event-1@query.farm','SUMMARY:Sprint Planning','DESCRIPTION:Plan the next two-week sprint.','DTSTART:20240115T093000Z','DTEND:20240115T103000Z','LOCATION:Conference Room A','STATUS:CONFIRMED','ORGANIZER:mailto:alice@query.farm','ATTENDEE:mailto:bob@query.farm','ATTENDEE:mailto:carol@query.farm','RRULE:FREQ=WEEKLY;BYDAY=MO','SEQUENCE:3','END:VEVENT','BEGIN:VTODO','UID:todo-1@query.farm','SUMMARY:Write release notes','DUE:20240120T170000Z','STATUS:NEEDS-ACTION','PRIORITY:2','PERCENT-COMPLETE:40','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) AS is_valid\"}]",
+        "vgi.keywords": "[\"is valid ical\",\"validate ical\",\"well-formed\",\"ics validation\",\"calendar validation\",\"feed check\",\"parseable\",\"verify ics\"]",
+        "vgi.title": "Validate iCalendar Feed"
+      },
+      "BOOLEAN",
+      [
+        "path"
+      ],
+      [
+        "VARCHAR"
+      ],
+      null,
+      null,
+      false,
+      true,
+      null,
+      22598,
+      [
+        "SELECT ical.main.is_valid_ical(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Team Calendar','BEGIN:VEVENT','UID:event-1@query.farm','SUMMARY:Sprint Planning','DESCRIPTION:Plan the next two-week sprint.','DTSTART:20240115T093000Z','DTEND:20240115T103000Z','LOCATION:Conference Room A','STATUS:CONFIRMED','ORGANIZER:mailto:alice@query.farm','ATTENDEE:mailto:bob@query.farm','ATTENDEE:mailto:carol@query.farm','RRULE:FREQ=WEEKLY;BYDAY=MO','SEQUENCE:3','END:VEVENT','BEGIN:VTODO','UID:todo-1@query.farm','SUMMARY:Write release notes','DUE:20240120T170000Z','STATUS:NEEDS-ACTION','PRIORITY:2','PERCENT-COMPLETE:40','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) AS is_valid;"
+      ],
+      "CONSISTENT",
+      [
+        "calendar",
+        "icalendar",
+        "ical4j"
+      ]
+    ]
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "query": "SELECT * FROM duckdb_views() WHERE database_name='ical' ORDER BY schema_name,view_name",
+  "columns": [
+    "database_name",
+    "database_oid",
+    "schema_name",
+    "schema_oid",
+    "view_name",
+    "view_oid",
+    "comment",
+    "tags",
+    "internal",
+    "temporary",
+    "column_count",
+    "sql",
+    "is_bound"
+  ],
+  "rows": [
+    [
+      "ical",
+      22592,
+      "main",
+      22792,
+      "example_calendars",
+      22793,
+      "Curated, browsable registry of ready-to-use sample iCalendar (.ics) feeds.",
+      {
+        "category": "parsing",
+        "domain": "calendar",
+        "topic": "icalendar",
+        "vgi.category": "Calendar metadata",
+        "vgi.doc_llm": "A curated, browsable registry of ready-to-use example iCalendar (`.ics`) feeds, one per row. Query it first to discover what a well-formed feed looks like and to obtain a sample you can study or copy. Columns: `name` (a short slug id), `calendar_name` (the feed's X-WR-CALNAME display name), `event_count` (how many VEVENTs the sample has), `todo_count` (how many VTODOs it has), `description` (a one-line summary), and `feed` (the raw iCalendar text). The view takes no arguments and needs no credentials. Note: VGI table functions accept only literal arguments, so paste the `feed` text inline into `ical_events`, `ical_todos`, `ical_event_count`, `ical_calendar_name`, or `is_valid_ical` rather than passing this column as a subquery.",
+        "vgi.doc_md": "## example_calendars\n\nA small, built-in catalog of sample **iCalendar** (`.ics`) feeds you can query without supplying any input. It exists so you can see a well-formed feed and the kinds of calendar this worker understands before calling the parsing functions, which all require a feed argument.\n\nEach row describes one sample: a slug `name`, the `calendar_name` display name (X-WR-CALNAME), a precomputed `event_count` and `todo_count`, a short `description`, and the raw `feed` text itself. Browse it, sort by `event_count`, or copy a `feed` literal into `ical_events`, `ical_todos`, or the scalar helpers to experiment.\n\nThe view is defined over an inline `VALUES` list, so it scans instantly with no network access and no credentials.",
+        "vgi.example_queries": "[{\"sql\": \"SELECT name, calendar_name, event_count, todo_count FROM ical.main.example_calendars ORDER BY event_count DESC, name;\", \"description\": \"List the built-in sample iCalendar feeds, richest first, with their display name and event/to-do counts.\"}]",
+        "vgi.keywords": "[\"example\",\"examples\",\"sample\",\"samples\",\"registry\",\"catalog\",\"icalendar\",\"ics\",\"calendar\",\"feed\",\"vevent\",\"vtodo\",\"browse\",\"demo\"]",
+        "vgi.title": "Example iCalendar Feeds"
+      },
+      false,
+      false,
+      null,
+      "CREATE VIEW example_calendars AS SELECT * FROM (SELECT * FROM (VALUES ('team_calendar', 'Team Calendar', 1, 1, 'A weekly recurring Sprint Planning event (with two attendees and an RRULE) plus one open release-notes to-do.', array_to_string(list_value('BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Query Farm//vgi-ical//EN', 'X-WR-CALNAME:Team Calendar', 'BEGIN:VEVENT', 'UID:event-1@query.farm', 'SUMMARY:Sprint Planning', 'DESCRIPTION:Plan the next two-week sprint.', 'DTSTART:20240115T093000Z', 'DTEND:20240115T103000Z', 'LOCATION:Conference Room A', 'STATUS:CONFIRMED', 'ORGANIZER:mailto:alice@query.farm', 'ATTENDEE:mailto:bob@query.farm', 'ATTENDEE:mailto:carol@query.farm', 'RRULE:FREQ=WEEKLY;BYDAY=MO', 'SEQUENCE:3', 'END:VEVENT', 'BEGIN:VTODO', 'UID:todo-1@query.farm', 'SUMMARY:Write release notes', 'DUE:20240120T170000Z', 'STATUS:NEEDS-ACTION', 'PRIORITY:2', 'PERCENT-COMPLETE:40', 'END:VTODO', 'END:VCALENDAR'), chr(10))), ('ops_calendar', 'Ops Calendar', 2, 1, 'Two operations events (a deploy and a retro) and one open changelog to-do.', array_to_string(list_value('BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Query Farm//vgi-ical//EN', 'X-WR-CALNAME:Ops Calendar', 'BEGIN:VEVENT', 'UID:ops-1@query.farm', 'SUMMARY:Deploy release', 'DTSTART:20240310T150000Z', 'DTEND:20240310T160000Z', 'STATUS:CONFIRMED', 'END:VEVENT', 'BEGIN:VEVENT', 'UID:ops-2@query.farm', 'SUMMARY:Retro', 'DTSTART:20240311T170000Z', 'DTEND:20240311T173000Z', 'STATUS:CONFIRMED', 'END:VEVENT', 'BEGIN:VTODO', 'UID:ops-todo-1@query.farm', 'SUMMARY:Update changelog', 'DUE:20240312T170000Z', 'STATUS:NEEDS-ACTION', 'END:VTODO', 'END:VCALENDAR'), chr(10)))) AS valueslist) AS t(\"name\", calendar_name, event_count, todo_count, description, feed);",
+      false
+    ]
+  ]
+}

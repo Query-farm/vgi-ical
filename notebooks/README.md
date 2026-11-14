@@ -1,117 +1,122 @@
-# iCalendar notebooks
+# iCalendar feed quality and occupied time
 
 [01 · Meeting durations double-count overlapping time](01_measure_occupied_time_without_double_counting.ipynb)
-parses an entirely synthetic calendar, declares which event rows enter a timed
-schedule, and computes their occupied interval union in SQL. A timeline and duration
-chart show why summing individual reservations counts overlaps more than once.
+asks how much time an explicitly selected set of calendar events occupies.
+[Open in Colab](https://colab.research.google.com/github/Query-farm/vgi-ical/blob/main/notebooks/01_measure_occupied_time_without_double_counting.ipynb)
+and choose **Runtime → Run all**. The notebook first checks two built-in sample
+feeds, then parses an authored calendar, declares a timed-event policy and merges
+overlapping reservations in visible SQL. Two SVG charts compare individual
+reservations with their union and summed duration with occupied time.
 
-Four confirmed, one-off timed events sum to 210 minutes and occupy 180 minutes.
-Changing `BUFFER_MINUTES` from 0 to 15 reserves time on both sides of each event:
-the sum becomes 330 minutes while the union occupies 240 minutes. The original
-event times, nine-event inventory, and 08:00–17:00 UTC window remain unchanged.
-This selected subset does not establish anyone's complete availability.
+The built-in feeds are separate controls: three stored VEVENT components across
+two feeds, including one weekly recurring component. Parsed component count does
+not count expanded occurrences. Those controls never enter the schedule study.
+The study contains nine synthetic events and three to-dos. Four confirmed,
+one-off timed events sum to **210 minutes** and occupy **180 minutes**. With a
+15-minute buffer on each side, the sum is **330 minutes** and the union is **240**.
+The fixed 08:00–17:00 UTC window and original event times remain unchanged.
+This subset does not establish a person's complete availability.
 
-## Run
-
-Install [uv](https://docs.astral.sh/uv/) and Java 21 or newer on `PATH`. On macOS
-with Homebrew Java, add `/opt/homebrew/opt/openjdk@21/bin` if needed. The release
-helper uses macOS/Linux POSIX file locks. Initial installation needs network access
-for the Python environment, VGI extension, and approximately 36 MB JAR; calendar
-processing itself is local.
-
-From the repository root:
-
-```sh
-uv sync --project notebooks --frozen
-uv run --project notebooks --frozen python notebooks/execute.py
-```
-
-The complete `notebooks/` directory also runs independently of the worker checkout:
+The base shared package supports Colab without replacing compatible kernel and
+plotting libraries. It retrieves immutable SHA256-verified helpers and fixture
+bytes. The local locked publication environment additionally uses `[runner]`:
 
 ```sh
-cd notebooks
-uv sync --frozen
-uv run --frozen python execute.py
+uv sync --locked
+uv run --locked vgi-notebooks
+uv run --locked vgi-notebooks 01_measure_occupied_time_without_double_counting.ipynb --parameters '{"BUFFER_MINUTES":15}' --output-dir artifacts/buffer-15
 ```
 
-In an editor, select `notebooks/.venv/bin/python`, use `notebooks/` as the kernel
-working directory, and restart/run all. The connection, analytical parameter and
-SQL remain visible; import, plot, assertion and cleanup code is folded. Charts use
-Seaborn styling and Matplotlib and are embedded in the saved default notebook.
+Run these commands from `notebooks/`; the directory also works independently of
+the worker checkout. For interactive local Jupyter select `.venv/bin/python`.
+The runner provisions a temporary kernel, rejects unknown overrides and writes
+experiments to separate destinations. Failed runs preserve the saved default.
+If an earlier bootstrap replaced kernel libraries, save your work, disconnect
+and delete that runtime, then open the current notebook in a fresh runtime.
 
-Run the single-parameter experiment without replacing the saved default:
-
-```sh
-uv run --project notebooks --frozen python notebooks/execute.py \
-  --parameters '{"BUFFER_MINUTES":15}' \
-  --output-dir notebooks/validation/buffer-15
-```
-
-The runner rejects unknown parameters, requires a separate directory for overrides,
-and saves a notebook only after successful execution in a fresh kernel. Review PNGs
-are written under ignored `notebooks/validation/charts/`. The supported buffer range
-is an integer from 0 to 60 minutes.
-
-## Portable worker and data
-
-The connection uses this literal location:
+The released worker launch remains visible and literal:
 
 ```sql
+INSTALL vgi FROM community;
+LOAD vgi;
 ATTACH 'ical' (TYPE vgi,
- LOCATION 'uv run --frozen --project . python release_jar.py Query-farm/vgi-ical v0.4.1 vgi-ical-v0.4.1.jar f575983fd1ac579adc6b150bbaafc86606933db8968be8b868168a80670378cf');
+ LOCATION 'uv run --locked --no-project --python 3.13 ical_release.py v0.4.1');
 ```
 
-[`release_jar.py`](release_jar.py) downloads the public
-[v0.4.1 JAR](https://github.com/Query-farm/vgi-ical/releases/tag/v0.4.1), verifies its
-pinned SHA-256 on download and every cached launch, then starts Java. A bounded
-lock serializes downloads and completed files are published atomically. The cache
-is `${XDG_CACHE_HOME:-~/.cache}/vgi-notebook-jars/`. No Gradle, worker source build,
-credentials, or sibling checkout is required. The separate notebook lock uses
-Haybarn 2.0.0rc11 and leaves the repository's Java dependencies unchanged.
+[`ical_release.py`](ical_release.py) pins the public
+[v0.4.1 JAR](https://github.com/Query-farm/vgi-ical/releases/tag/v0.4.1), verifies
+SHA256 `f575983fd1ac579adc6b150bbaafc86606933db8968be8b868168a80670378cf`
+on download and every cached launch, and starts a managed **Java 21.0.8** binary.
+Its separate script lock pins `jdk4py==21.0.8.2` and wheel hashes. The launcher
+checks the actual runtime binary version and never selects Java from PATH or
+JAVA_HOME. No system Java installation, Gradle build or worker checkout is required.
+The script environment is separate from the notebook kernel.
 
-All three calendar fixtures are authored for the notebook:
+Initial setup downloads Python 3.13 if needed, the approximately 30–34 MB Java
+runtime wheel and the approximately 36 MB JAR. The POSIX-lock launcher supports
+macOS and Linux with compatible native wheels (ARM64/x86-64; Linux glibc 2.17+).
+A bounded lock serializes JAR downloads and completed files are published atomically.
+The JAR cache is `${XDG_CACHE_HOME:-~/.cache}/vgi-notebook-jars/`; uv manages the
+script runtime cache. Setup uses network access; calendar processing itself is
+local. The local lock retains Haybarn **2.0.0rc11**. Adopting another worker release
+requires a reviewed asset digest and repeating the catalog/default/experiment checks.
 
-- [synthetic-day.ics](assets/synthetic-day.ics): nine VEVENT components and three
-  VTODO components, all timed values explicitly UTC.
+The [shared v0.3.9 standard](https://github.com/Query-farm/vgi-example-notebooks/blob/v0.3.9/docs/standard.md)
+provides catalog-derived title/subtitle branding, isolated SQL secrets, SVG
+presentation and execution protections. `ical_example.py` validates the visible
+parameter and presents returned results. Keep committed `charts/` SVG files with
+the saved notebook for GitHub rendering; Colab/Jupyter reruns emit native SVG.
+PNG review exports and execution artifacts remain ignored.
+
+Coverage is **6 of 6 public named SQL surfaces**, with path/BLOB overloads counted
+once: `example_calendars`, `ical_calendar_name`, `ical_event_count`, `is_valid_ical`,
+`ical_events`, and `ical_todos`. `coverage.json` binds complete released/current
+runtime catalogs, full view and table-function columns, successful execution
+receipts and reviewed narrative/SQL/result mappings. Current source changes
+composed example metadata and descriptions but matches the released interfaces.
+The notebook executes the pinned release; compatible current mappings do not claim
+current-main notebook execution. No public surfaces are excluded.
+
+All three fixture files are authored and retain their original CRLF bytes:
+
+- [synthetic-day.ics](assets/synthetic-day.ics): nine VEVENTs and three VTODOs, with explicit UTC timed values.
 - [empty.ics](assets/empty.ics): a parseable calendar with no event components.
 - [unparseable.ics](assets/unparseable.ics): deliberately invalid text.
 
-The path overload reads these files; `read_blob` demonstrates scalar calls over
-their bytes. A VARCHAR argument is always a path, so inline feed text needs BLOB
-encoding. Table functions require literal arguments; scalars accept columns.
+A VARCHAR argument is a worker-local path; `read_blob` and `feed::BLOB` demonstrate
+scalar calls over bytes. Table functions require literal inputs and cannot bind
+column/LATERAL arguments. The built-in view is an authored source of controls,
+not a fetched calendar. A successful parse alone does not guarantee every component
+of an arbitrary feed survived relaxed parsing. Empty and invalid feeds both return
+zero event counts but different parse flags.
 
-## Scope and interpretation
+The schedule policy includes only confirmed, non-recurring, timed events with
+usable projected start/end bounds. Cancelled, tentative, all-day, recurring and
+missing-end rows stay in the classified inventory. The release retains RRULE text
+without expanding occurrences. It also does not project DURATION or derive DTEND
+from it; the duration-only fixture retains an unknown end. No fabricated occurrence
+or implicit zero-duration interval is added. All-day dates remain separate from
+timed meetings. This sample does not test floating times, zoned-time/DST rules or
+complete recurrence semantics. [RFC 5545](https://datatracker.ietf.org/doc/html/rfc5545)
+defines the underlying iCalendar properties.
 
-The explicit schedule policy includes only confirmed, non-recurring, timed events
-with positive projected start/end intervals. Cancelled, tentative, all-day,
-recurring and missing-end rows remain in the classified inventory. The release
-returns RRULE text but does not expand recurrence. It also does not project DURATION
-or derive DTEND from it: the duration-only fixture therefore retains an unknown end
-for this calculation. No implicit zero duration or fabricated occurrence is added.
+`BUFFER_MINUTES` accepts integers from **0 through 60**. Change only **0 to 15**,
+restart and run all. Reservations extend on both sides, then clip to
+**08:00–17:00 UTC on 5 January 2026**. The model uses half-open intervals; an end
+that touches another start is not an overlapping pair. The union compares each
+start with the maximum preceding end, handling nested reservations. Touching
+intervals may form a contiguous occupied block. Sum minus union measures duplicate
+counting, not generally the distinct minutes with any conflict. An independent
+one-minute grid checks the union for these minute-aligned boundaries. Reset to 0.
 
-All timestamps used for analysis are explicitly converted to UTC in SQL. The sample
-does not use floating times or test zoned-time/DST behavior. All-day dates remain
-separate from timed meetings. VTODO due times are shown in a separate status table;
-they are not interpreted as meeting reservations or event links.
+VTODO due times are shown separately from reservations and event relationships.
+Their stored completion status is not independent evidence of completed work.
+The thirteen checks reconcile sample metadata, event populations, scope categories,
+recurrence retention, missing bounds, clipping, parse flags and the occupied union.
 
-The union algorithm compares each start with the maximum preceding end, correctly
-handling nested intervals. Touching intervals form a contiguous occupied block but
-do not count as overlapping pairs. Sum minus union measures duplicate counting;
-it is not generally the number of distinct minutes with any conflict. An independent
-one-minute grid validates the union for this fixture's minute-aligned boundaries.
-
-The twelve checks also reconcile source event counts, scope classification,
-recurrence retention, missing bounds, window clipping, parse flags, and separate
-to-dos. Empty and unparseable inputs both produce zero event counts but different
-parse flags. Relaxed parsing can skip components in arbitrary feeds, so a successful
-parse is not a completeness guarantee.
-
-Validation includes executed defaults, the buffer-15 experiment from a detached
-notebooks-only directory, four reviewed charts, runner guards and notebook lint.
-Repository checks passed 16 JUnit tests, 205 SQL assertions across five cases on each
-of stdio, HTTP and Unix transports, and executed vgi-lint 2.5.1 at 100/100 L2 with
-zero findings. Source checks build the worker for testing; notebook runs use the
-released JAR. Worker code is MIT licensed; iCal4j uses BSD-3-Clause.
-
-Unmodified official brand assets link to [Query.Farm](https://query.farm/)
-and [VGI](https://query.farm/vgi/).
+Validation includes a default run, a detached buffer-15 experiment, reviewed charts,
+three runner guards, no-system-Java/fake-Java11 SQL probes and a fresh preloaded
+Colab-compatible kernel bootstrap. Hosted Colab was not manually operated.
+Source checks preserve worker code and root locks: 16 JUnit tests, 205 assertions
+in five SQL cases on each stdio/HTTP/Unix transport, and metadata 100/100 L2 with
+zero findings. Worker code is MIT licensed; iCal4j uses BSD-3-Clause.

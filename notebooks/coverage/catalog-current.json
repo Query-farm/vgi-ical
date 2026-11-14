@@ -1,0 +1,177 @@
+{
+  "schema_version": 1,
+  "repository": "Query-farm/vgi-ical",
+  "revision": "844b6db753a95c82ce41f622a9495b5d735667b3",
+  "captured_at": "2026-11-14T19:25:26.933817+00:00",
+  "default_schema": "main",
+  "scope": "all_public_functions_and_tables",
+  "complete": true,
+  "evidence": [
+    {
+      "path": "coverage/functions-current.json",
+      "sha256": "2d8fbe8a394a426eecc534ea0fbee4b2a9010ad6f26583fcdd1903866312a4d9",
+      "description": "Complete worker-filtered runtime export or full output-column DESCRIBE"
+    },
+    {
+      "path": "coverage/tables-current.json",
+      "sha256": "e2d71c62b56f1dc8d4604d3fecfc0bd50a02b91d7581cc905b546fe92fe3b4e2",
+      "description": "Complete worker-filtered runtime export or full output-column DESCRIBE"
+    },
+    {
+      "path": "coverage/views-current.json",
+      "sha256": "dab167ec48911db353d86abd649677d42336b2d5abedbdbfe14a6d5d71c53a81",
+      "description": "Complete worker-filtered runtime export or full output-column DESCRIBE"
+    },
+    {
+      "path": "coverage/arguments-current.json",
+      "sha256": "59d31555fdb9f87103fa01369206a256c970c6eba16ac404c3821fa42d355b75",
+      "description": "Complete worker-filtered runtime export or full output-column DESCRIBE"
+    },
+    {
+      "path": "coverage/view-columns-current.json",
+      "sha256": "585cf6e6fb8d91e30f05730b17cb38dd05ce8fed9f9edcd5f30b419df5853e27",
+      "description": "Complete worker-filtered runtime export or full output-column DESCRIBE"
+    },
+    {
+      "path": "coverage/event-columns-current.json",
+      "sha256": "dc3e98b52ba5554263c21161f6c0102b2aa29ef6d31b6c0b2d679001e403b9d1",
+      "description": "Complete worker-filtered runtime export or full output-column DESCRIBE"
+    },
+    {
+      "path": "coverage/todo-columns-current.json",
+      "sha256": "3d8e761a8f995ffcfbaaa3d399733a569b4e5d6c066986329c01c6c42dd02533",
+      "description": "Complete worker-filtered runtime export or full output-column DESCRIBE"
+    },
+    {
+      "path": "coverage/catalog-metadata-current.json",
+      "sha256": "3ae214c300e67400d6c4bf3669fa3a954de29fdec9c08e4ecfe7e60dcc67e54f",
+      "description": "Complete worker-filtered runtime export or full output-column DESCRIBE"
+    },
+    {
+      "path": "coverage/view-audit-current.json",
+      "sha256": "0d1819978106793e91e681dbc130f4eb5abc4372d061e294268fba20891e1a04",
+      "description": "Complete worker-filtered runtime export or full output-column DESCRIBE"
+    },
+    {
+      "path": "coverage/source-compatibility.json",
+      "sha256": "2e24476b2c9fb318f5ea0a6185971d37abb13d46b2ff1f4a80fa3a1c51141628",
+      "description": "Reviewed metadata-only main-source diff and actual matching interfaces"
+    }
+  ],
+  "objects": [
+    {
+      "schema": "main",
+      "name": "ical_calendar_name",
+      "kind": "function",
+      "signatures": [
+        "ical_calendar_name(BLOB) -> VARCHAR"
+      ],
+      "authentication": "none",
+      "access": "read"
+    },
+    {
+      "schema": "main",
+      "name": "ical_calendar_name",
+      "kind": "function",
+      "signatures": [
+        "ical_calendar_name(VARCHAR) -> VARCHAR"
+      ],
+      "authentication": "none",
+      "access": "read"
+    },
+    {
+      "schema": "main",
+      "name": "ical_event_count",
+      "kind": "function",
+      "signatures": [
+        "ical_event_count(BLOB) -> INTEGER"
+      ],
+      "authentication": "none",
+      "access": "read"
+    },
+    {
+      "schema": "main",
+      "name": "ical_event_count",
+      "kind": "function",
+      "signatures": [
+        "ical_event_count(VARCHAR) -> INTEGER"
+      ],
+      "authentication": "none",
+      "access": "read"
+    },
+    {
+      "schema": "main",
+      "name": "ical_events",
+      "kind": "function",
+      "signatures": [
+        "ical_events(BLOB) -> TABLE(uid VARCHAR, summary VARCHAR, description VARCHAR, dtstart TIMESTAMP WITH TIME ZONE, dtend TIMESTAMP WITH TIME ZONE, all_day BOOLEAN, location VARCHAR, status VARCHAR, organizer VARCHAR, attendees VARCHAR[], rrule VARCHAR, sequence INTEGER, categories VARCHAR[], url VARCHAR, created TIMESTAMP WITH TIME ZONE, last_modified TIMESTAMP WITH TIME ZONE)"
+      ],
+      "authentication": "none",
+      "access": "read"
+    },
+    {
+      "schema": "main",
+      "name": "ical_events",
+      "kind": "function",
+      "signatures": [
+        "ical_events(VARCHAR) -> TABLE(uid VARCHAR, summary VARCHAR, description VARCHAR, dtstart TIMESTAMP WITH TIME ZONE, dtend TIMESTAMP WITH TIME ZONE, all_day BOOLEAN, location VARCHAR, status VARCHAR, organizer VARCHAR, attendees VARCHAR[], rrule VARCHAR, sequence INTEGER, categories VARCHAR[], url VARCHAR, created TIMESTAMP WITH TIME ZONE, last_modified TIMESTAMP WITH TIME ZONE)"
+      ],
+      "authentication": "none",
+      "access": "read"
+    },
+    {
+      "schema": "main",
+      "name": "ical_todos",
+      "kind": "function",
+      "signatures": [
+        "ical_todos(BLOB) -> TABLE(uid VARCHAR, summary VARCHAR, due TIMESTAMP WITH TIME ZONE, status VARCHAR, priority INTEGER, percent_complete INTEGER)"
+      ],
+      "authentication": "none",
+      "access": "read"
+    },
+    {
+      "schema": "main",
+      "name": "ical_todos",
+      "kind": "function",
+      "signatures": [
+        "ical_todos(VARCHAR) -> TABLE(uid VARCHAR, summary VARCHAR, due TIMESTAMP WITH TIME ZONE, status VARCHAR, priority INTEGER, percent_complete INTEGER)"
+      ],
+      "authentication": "none",
+      "access": "read"
+    },
+    {
+      "schema": "main",
+      "name": "is_valid_ical",
+      "kind": "function",
+      "signatures": [
+        "is_valid_ical(BLOB) -> BOOLEAN"
+      ],
+      "authentication": "none",
+      "access": "read"
+    },
+    {
+      "schema": "main",
+      "name": "is_valid_ical",
+      "kind": "function",
+      "signatures": [
+        "is_valid_ical(VARCHAR) -> BOOLEAN"
+      ],
+      "authentication": "none",
+      "access": "read"
+    },
+    {
+      "schema": "main",
+      "name": "example_calendars",
+      "kind": "table",
+      "signatures": [
+        "VIEW(name VARCHAR, calendar_name VARCHAR, event_count INTEGER, todo_count INTEGER, description VARCHAR, feed VARCHAR)"
+      ],
+      "authentication": "none",
+      "access": "read"
+    }
+  ],
+  "runtime": "Haybarn 2.0.0rc11",
+  "launch": "Fresh Gradle shaded JAR of current public source; validation only",
+  "release_jar_sha256": null,
+  "review_notes": "Actual10 function overload rows/five names,zero physical tables,one public example_calendars view=six logical surfaces. VARCHAR path/BLOB overloads count once. Every public registration included. All operations read local bytes or an authored built-in view; no authentication or writes. Full table-function and view output columns retained. Current and release interfaces match; current mappings review compatibility, not current notebook execution."
+}

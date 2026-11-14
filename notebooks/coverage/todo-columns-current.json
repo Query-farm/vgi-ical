@@ -1,0 +1,61 @@
+{
+  "query": "DESCRIBE SELECT * FROM ical.main.ical_todos('assets/synthetic-day.ics')",
+  "columns": [
+    "column_name",
+    "column_type",
+    "null",
+    "key",
+    "default",
+    "extra"
+  ],
+  "rows": [
+    [
+      "uid",
+      "VARCHAR",
+      "YES",
+      null,
+      null,
+      null
+    ],
+    [
+      "summary",
+      "VARCHAR",
+      "YES",
+      null,
+      null,
+      null
+    ],
+    [
+      "due",
+      "TIMESTAMP WITH TIME ZONE",
+      "YES",
+      null,
+      null,
+      null
+    ],
+    [
+      "status",
+      "VARCHAR",
+      "YES",
+      null,
+      null,
+      null
+    ],
+    [
+      "priority",
+      "INTEGER",
+      "YES",
+      null,
+      null,
+      null
+    ],
+    [
+      "percent_complete",
+      "INTEGER",
+      "YES",
+      null,
+      null,
+      null
+    ]
+  ]
+}

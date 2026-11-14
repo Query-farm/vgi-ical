@@ -1,0 +1,243 @@
+{
+  "schema_version": 1,
+  "catalogs": {
+    "released": {
+      "path": "coverage/catalog-released.json",
+      "sha256": "81806adcdfe12d8ce66078d13131d365a9f6a5aceb97e96a4440135c335d49f4",
+      "review": {
+        "status": "approved",
+        "reviewer": "Codex /root/notebooks_earthquakes",
+        "reviewed_at": "2026-11-14T19:26:01.413519+00:00",
+        "catalog_sha256": "81806adcdfe12d8ce66078d13131d365a9f6a5aceb97e96a4440135c335d49f4",
+        "notes": "Actual complete10 function overload rows/five names,zero physical tables,one public view=six surfaces. Path/BLOB overloads count once; no exclusions. All APIs read local bytes or built-in samples without authentication/writes. Full table-function/view output columns and actual sample scalar audit match release/current. Main-source diff changes metadata only. Notebook runtime is release under managedJava21.0.8."
+      }
+    },
+    "current": {
+      "path": "coverage/catalog-current.json",
+      "sha256": "713dd313df0e590c63154183134ee5be67575543b5f8df2228e62bceebc566b3",
+      "review": {
+        "status": "approved",
+        "reviewer": "Codex /root/notebooks_earthquakes",
+        "reviewed_at": "2026-11-14T19:26:01.413519+00:00",
+        "catalog_sha256": "713dd313df0e590c63154183134ee5be67575543b5f8df2228e62bceebc566b3",
+        "notes": "Actual complete10 function overload rows/five names,zero physical tables,one public view=six surfaces. Path/BLOB overloads count once; no exclusions. All APIs read local bytes or built-in samples without authentication/writes. Full table-function/view output columns and actual sample scalar audit match release/current. Main-source diff changes metadata only. Notebook runtime is release under managedJava21.0.8."
+      }
+    }
+  },
+  "notebooks": [
+    {
+      "path": "01_measure_occupied_time_without_double_counting.ipynb",
+      "sha256": "f2115545a7ec4a9867964849300fb3bb2d4328c3222eeb794d76279d0f4c2dab",
+      "execution": {
+        "path": "coverage/run-01.json",
+        "sha256": "412df200bafbd88b064ff284fe12888b59938814360b886c1423c838368d0a48"
+      }
+    }
+  ],
+  "examples": [
+    {
+      "object": {
+        "schema": "main",
+        "name": "example_calendars"
+      },
+      "notebook": "01_measure_occupied_time_without_double_counting.ipynb",
+      "sql": [
+        {
+          "cell": "sample-query",
+          "reference": "ical.main.example_calendars"
+        }
+      ],
+      "narrative_cells": [
+        "sample-story"
+      ],
+      "result_cells": [
+        "sample-query"
+      ],
+      "interpretation_cells": [
+        "sample-finding"
+      ],
+      "review": {
+        "status": "approved",
+        "reviewer": "Codex /root/notebooks_earthquakes",
+        "reviewed_at": "2026-11-14T19:26:01.413519+00:00",
+        "notebook_sha256": "f2115545a7ec4a9867964849300fb3bb2d4328c3222eeb794d76279d0f4c2dab",
+        "catalog_sha256": [
+          "81806adcdfe12d8ce66078d13131d365a9f6a5aceb97e96a4440135c335d49f4",
+          "713dd313df0e590c63154183134ee5be67575543b5f8df2228e62bceebc566b3"
+        ],
+        "purpose": "Use curated source shapes to distinguish stored components from expanded occurrences before choosing a schedule.",
+        "finding": "Two built-in feeds contain three declared/parsed components. One weekly RRULE still contributes one parsed component; these controls remain separate from the study."
+      }
+    },
+    {
+      "object": {
+        "schema": "main",
+        "name": "ical_calendar_name"
+      },
+      "notebook": "01_measure_occupied_time_without_double_counting.ipynb",
+      "sql": [
+        {
+          "cell": "sample-query",
+          "reference": "ical.main.ical_calendar_name"
+        }
+      ],
+      "narrative_cells": [
+        "sample-story"
+      ],
+      "result_cells": [
+        "sample-query"
+      ],
+      "interpretation_cells": [
+        "sample-finding"
+      ],
+      "review": {
+        "status": "approved",
+        "reviewer": "Codex /root/notebooks_earthquakes",
+        "reviewed_at": "2026-11-14T19:26:01.413519+00:00",
+        "notebook_sha256": "f2115545a7ec4a9867964849300fb3bb2d4328c3222eeb794d76279d0f4c2dab",
+        "catalog_sha256": [
+          "81806adcdfe12d8ce66078d13131d365a9f6a5aceb97e96a4440135c335d49f4",
+          "713dd313df0e590c63154183134ee5be67575543b5f8df2228e62bceebc566b3"
+        ],
+        "purpose": "Check decoded feed identity against the built-in registry before interpreting its count.",
+        "finding": "Both parsed names match declared metadata; source names identify feed provenance, not a complete schedule."
+      }
+    },
+    {
+      "object": {
+        "schema": "main",
+        "name": "ical_event_count"
+      },
+      "notebook": "01_measure_occupied_time_without_double_counting.ipynb",
+      "sql": [
+        {
+          "cell": "sample-query",
+          "reference": "ical.main.ical_event_count"
+        }
+      ],
+      "narrative_cells": [
+        "sample-story"
+      ],
+      "result_cells": [
+        "sample-query"
+      ],
+      "interpretation_cells": [
+        "sample-finding"
+      ],
+      "review": {
+        "status": "approved",
+        "reviewer": "Codex /root/notebooks_earthquakes",
+        "reviewed_at": "2026-11-14T19:26:01.413519+00:00",
+        "notebook_sha256": "f2115545a7ec4a9867964849300fb3bb2d4328c3222eeb794d76279d0f4c2dab",
+        "catalog_sha256": [
+          "81806adcdfe12d8ce66078d13131d365a9f6a5aceb97e96a4440135c335d49f4",
+          "713dd313df0e590c63154183134ee5be67575543b5f8df2228e62bceebc566b3"
+        ],
+        "purpose": "Reconcile declared component counts with actual parser output while preserving recurrence context.",
+        "finding": "The one repeating component remains one counted VEVENT; component totals cannot establish occurrences or occupied minutes."
+      }
+    },
+    {
+      "object": {
+        "schema": "main",
+        "name": "is_valid_ical"
+      },
+      "notebook": "01_measure_occupied_time_without_double_counting.ipynb",
+      "sql": [
+        {
+          "cell": "read-inputs",
+          "reference": "ical.main.is_valid_ical"
+        }
+      ],
+      "narrative_cells": [
+        "quality-story"
+      ],
+      "result_cells": [
+        "read-inputs"
+      ],
+      "interpretation_cells": [
+        "quality-story"
+      ],
+      "review": {
+        "status": "approved",
+        "reviewer": "Codex /root/notebooks_earthquakes",
+        "reviewed_at": "2026-11-14T19:26:01.413519+00:00",
+        "notebook_sha256": "f2115545a7ec4a9867964849300fb3bb2d4328c3222eeb794d76279d0f4c2dab",
+        "catalog_sha256": [
+          "81806adcdfe12d8ce66078d13131d365a9f6a5aceb97e96a4440135c335d49f4",
+          "713dd313df0e590c63154183134ee5be67575543b5f8df2228e62bceebc566b3"
+        ],
+        "purpose": "Separate an empty parseable calendar from an invalid feed when both report zero events.",
+        "finding": "The empty and invalid controls have equal zero counts but distinct parse flags; the synthetic schedule has nine parsed components, and relaxed parsing is not a completeness guarantee."
+      }
+    },
+    {
+      "object": {
+        "schema": "main",
+        "name": "ical_events"
+      },
+      "notebook": "01_measure_occupied_time_without_double_counting.ipynb",
+      "sql": [
+        {
+          "cell": "read-inputs",
+          "reference": "ical.main.ical_events"
+        }
+      ],
+      "narrative_cells": [
+        "scope-story"
+      ],
+      "result_cells": [
+        "classify-query"
+      ],
+      "interpretation_cells": [
+        "timeline-finding"
+      ],
+      "review": {
+        "status": "approved",
+        "reviewer": "Codex /root/notebooks_earthquakes",
+        "reviewed_at": "2026-11-14T19:26:01.413519+00:00",
+        "notebook_sha256": "f2115545a7ec4a9867964849300fb3bb2d4328c3222eeb794d76279d0f4c2dab",
+        "catalog_sha256": [
+          "81806adcdfe12d8ce66078d13131d365a9f6a5aceb97e96a4440135c335d49f4",
+          "713dd313df0e590c63154183134ee5be67575543b5f8df2228e62bceebc566b3"
+        ],
+        "purpose": "Retain every parsed event while selecting an explicit timed subset for an interval union.",
+        "finding": "Nine events retain excluded scope categories and four enter reservations. Buffer0\u219215 grows summed minutes210\u2192330 and union180\u2192240 without expanding recurrence or manufacturing missing bounds."
+      }
+    },
+    {
+      "object": {
+        "schema": "main",
+        "name": "ical_todos"
+      },
+      "notebook": "01_measure_occupied_time_without_double_counting.ipynb",
+      "sql": [
+        {
+          "cell": "read-inputs",
+          "reference": "ical.main.ical_todos"
+        }
+      ],
+      "narrative_cells": [
+        "todo-story"
+      ],
+      "result_cells": [
+        "todo-query"
+      ],
+      "interpretation_cells": [
+        "todo-story"
+      ],
+      "review": {
+        "status": "approved",
+        "reviewer": "Codex /root/notebooks_earthquakes",
+        "reviewed_at": "2026-11-14T19:26:01.413519+00:00",
+        "notebook_sha256": "f2115545a7ec4a9867964849300fb3bb2d4328c3222eeb794d76279d0f4c2dab",
+        "catalog_sha256": [
+          "81806adcdfe12d8ce66078d13131d365a9f6a5aceb97e96a4440135c335d49f4",
+          "713dd313df0e590c63154183134ee5be67575543b5f8df2228e62bceebc566b3"
+        ],
+        "purpose": "Inspect due/status fields separately from timed reservations and event relationships.",
+        "finding": "Three to-dos retain marked-complete, open-before-window and missing-due states. A due time is not a meeting reservation or proof of completed work."
+      }
+    }
+  ]
+}

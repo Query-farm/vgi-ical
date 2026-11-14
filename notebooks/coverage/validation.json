@@ -1,0 +1,468 @@
+{
+  "schema_version": 1,
+  "status": "met",
+  "meets_target": true,
+  "catalogs": {
+    "released": {
+      "catalog_status": "verified",
+      "revision": "v0.4.1",
+      "catalog_sha256": "81806adcdfe12d8ce66078d13131d365a9f6a5aceb97e96a4440135c335d49f4",
+      "collection_reconciled": true,
+      "denominator": 6,
+      "observed_objects": 6,
+      "required": 6,
+      "verified_count": 6,
+      "candidate_count": 0,
+      "fraction": 1.0,
+      "meets_target": true,
+      "exact_runtime_count": 6,
+      "runtime_revisions": [
+        "v0.4.1"
+      ],
+      "covered": [
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "example_calendars"
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ical_calendar_name"
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ical_event_count"
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ical_events"
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ical_todos"
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "is_valid_ical"
+        }
+      ],
+      "uncovered": [],
+      "objects": [
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "example_calendars",
+          "kinds": [
+            "table"
+          ],
+          "signatures": [
+            "VIEW(name VARCHAR, calendar_name VARCHAR, event_count INTEGER, todo_count INTEGER, description VARCHAR, feed VARCHAR)"
+          ],
+          "access": [
+            "read"
+          ],
+          "authentication": [
+            "none"
+          ]
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ical_calendar_name",
+          "kinds": [
+            "function"
+          ],
+          "signatures": [
+            "ical_calendar_name(BLOB) -> VARCHAR",
+            "ical_calendar_name(VARCHAR) -> VARCHAR"
+          ],
+          "access": [
+            "read"
+          ],
+          "authentication": [
+            "none"
+          ]
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ical_event_count",
+          "kinds": [
+            "function"
+          ],
+          "signatures": [
+            "ical_event_count(BLOB) -> INTEGER",
+            "ical_event_count(VARCHAR) -> INTEGER"
+          ],
+          "access": [
+            "read"
+          ],
+          "authentication": [
+            "none"
+          ]
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ical_events",
+          "kinds": [
+            "function"
+          ],
+          "signatures": [
+            "ical_events(BLOB) -> TABLE(uid VARCHAR, summary VARCHAR, description VARCHAR, dtstart TIMESTAMP WITH TIME ZONE, dtend TIMESTAMP WITH TIME ZONE, all_day BOOLEAN, location VARCHAR, status VARCHAR, organizer VARCHAR, attendees VARCHAR[], rrule VARCHAR, sequence INTEGER, categories VARCHAR[], url VARCHAR, created TIMESTAMP WITH TIME ZONE, last_modified TIMESTAMP WITH TIME ZONE)",
+            "ical_events(VARCHAR) -> TABLE(uid VARCHAR, summary VARCHAR, description VARCHAR, dtstart TIMESTAMP WITH TIME ZONE, dtend TIMESTAMP WITH TIME ZONE, all_day BOOLEAN, location VARCHAR, status VARCHAR, organizer VARCHAR, attendees VARCHAR[], rrule VARCHAR, sequence INTEGER, categories VARCHAR[], url VARCHAR, created TIMESTAMP WITH TIME ZONE, last_modified TIMESTAMP WITH TIME ZONE)"
+          ],
+          "access": [
+            "read"
+          ],
+          "authentication": [
+            "none"
+          ]
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ical_todos",
+          "kinds": [
+            "function"
+          ],
+          "signatures": [
+            "ical_todos(BLOB) -> TABLE(uid VARCHAR, summary VARCHAR, due TIMESTAMP WITH TIME ZONE, status VARCHAR, priority INTEGER, percent_complete INTEGER)",
+            "ical_todos(VARCHAR) -> TABLE(uid VARCHAR, summary VARCHAR, due TIMESTAMP WITH TIME ZONE, status VARCHAR, priority INTEGER, percent_complete INTEGER)"
+          ],
+          "access": [
+            "read"
+          ],
+          "authentication": [
+            "none"
+          ]
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "is_valid_ical",
+          "kinds": [
+            "function"
+          ],
+          "signatures": [
+            "is_valid_ical(BLOB) -> BOOLEAN",
+            "is_valid_ical(VARCHAR) -> BOOLEAN"
+          ],
+          "access": [
+            "read"
+          ],
+          "authentication": [
+            "none"
+          ]
+        }
+      ],
+      "issues": []
+    },
+    "current": {
+      "catalog_status": "verified",
+      "revision": "844b6db753a95c82ce41f622a9495b5d735667b3",
+      "catalog_sha256": "713dd313df0e590c63154183134ee5be67575543b5f8df2228e62bceebc566b3",
+      "collection_reconciled": true,
+      "denominator": 6,
+      "observed_objects": 6,
+      "required": 6,
+      "verified_count": 6,
+      "candidate_count": 0,
+      "fraction": 1.0,
+      "meets_target": true,
+      "exact_runtime_count": 0,
+      "runtime_revisions": [
+        "v0.4.1"
+      ],
+      "covered": [
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "example_calendars"
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ical_calendar_name"
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ical_event_count"
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ical_events"
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ical_todos"
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "is_valid_ical"
+        }
+      ],
+      "uncovered": [],
+      "objects": [
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "example_calendars",
+          "kinds": [
+            "table"
+          ],
+          "signatures": [
+            "VIEW(name VARCHAR, calendar_name VARCHAR, event_count INTEGER, todo_count INTEGER, description VARCHAR, feed VARCHAR)"
+          ],
+          "access": [
+            "read"
+          ],
+          "authentication": [
+            "none"
+          ]
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ical_calendar_name",
+          "kinds": [
+            "function"
+          ],
+          "signatures": [
+            "ical_calendar_name(BLOB) -> VARCHAR",
+            "ical_calendar_name(VARCHAR) -> VARCHAR"
+          ],
+          "access": [
+            "read"
+          ],
+          "authentication": [
+            "none"
+          ]
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ical_event_count",
+          "kinds": [
+            "function"
+          ],
+          "signatures": [
+            "ical_event_count(BLOB) -> INTEGER",
+            "ical_event_count(VARCHAR) -> INTEGER"
+          ],
+          "access": [
+            "read"
+          ],
+          "authentication": [
+            "none"
+          ]
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ical_events",
+          "kinds": [
+            "function"
+          ],
+          "signatures": [
+            "ical_events(BLOB) -> TABLE(uid VARCHAR, summary VARCHAR, description VARCHAR, dtstart TIMESTAMP WITH TIME ZONE, dtend TIMESTAMP WITH TIME ZONE, all_day BOOLEAN, location VARCHAR, status VARCHAR, organizer VARCHAR, attendees VARCHAR[], rrule VARCHAR, sequence INTEGER, categories VARCHAR[], url VARCHAR, created TIMESTAMP WITH TIME ZONE, last_modified TIMESTAMP WITH TIME ZONE)",
+            "ical_events(VARCHAR) -> TABLE(uid VARCHAR, summary VARCHAR, description VARCHAR, dtstart TIMESTAMP WITH TIME ZONE, dtend TIMESTAMP WITH TIME ZONE, all_day BOOLEAN, location VARCHAR, status VARCHAR, organizer VARCHAR, attendees VARCHAR[], rrule VARCHAR, sequence INTEGER, categories VARCHAR[], url VARCHAR, created TIMESTAMP WITH TIME ZONE, last_modified TIMESTAMP WITH TIME ZONE)"
+          ],
+          "access": [
+            "read"
+          ],
+          "authentication": [
+            "none"
+          ]
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ical_todos",
+          "kinds": [
+            "function"
+          ],
+          "signatures": [
+            "ical_todos(BLOB) -> TABLE(uid VARCHAR, summary VARCHAR, due TIMESTAMP WITH TIME ZONE, status VARCHAR, priority INTEGER, percent_complete INTEGER)",
+            "ical_todos(VARCHAR) -> TABLE(uid VARCHAR, summary VARCHAR, due TIMESTAMP WITH TIME ZONE, status VARCHAR, priority INTEGER, percent_complete INTEGER)"
+          ],
+          "access": [
+            "read"
+          ],
+          "authentication": [
+            "none"
+          ]
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "is_valid_ical",
+          "kinds": [
+            "function"
+          ],
+          "signatures": [
+            "is_valid_ical(BLOB) -> BOOLEAN",
+            "is_valid_ical(VARCHAR) -> BOOLEAN"
+          ],
+          "access": [
+            "read"
+          ],
+          "authentication": [
+            "none"
+          ]
+        }
+      ],
+      "issues": []
+    }
+  },
+  "interface_drift": {
+    "known": true,
+    "current_only": [],
+    "released_only": [],
+    "changed": []
+  },
+  "notebooks": {
+    "01_measure_occupied_time_without_double_counting.ipynb": {
+      "verified": true,
+      "issues": []
+    }
+  },
+  "examples": [
+    {
+      "status": "verified",
+      "issues": [],
+      "verified_catalogs": [
+        "released",
+        "current"
+      ],
+      "object": {
+        "schema": [
+          "main"
+        ],
+        "name": "example_calendars"
+      },
+      "notebook": "01_measure_occupied_time_without_double_counting.ipynb",
+      "runtime_revision": "v0.4.1",
+      "runtime_catalog_sha256": "81806adcdfe12d8ce66078d13131d365a9f6a5aceb97e96a4440135c335d49f4"
+    },
+    {
+      "status": "verified",
+      "issues": [],
+      "verified_catalogs": [
+        "released",
+        "current"
+      ],
+      "object": {
+        "schema": [
+          "main"
+        ],
+        "name": "ical_calendar_name"
+      },
+      "notebook": "01_measure_occupied_time_without_double_counting.ipynb",
+      "runtime_revision": "v0.4.1",
+      "runtime_catalog_sha256": "81806adcdfe12d8ce66078d13131d365a9f6a5aceb97e96a4440135c335d49f4"
+    },
+    {
+      "status": "verified",
+      "issues": [],
+      "verified_catalogs": [
+        "released",
+        "current"
+      ],
+      "object": {
+        "schema": [
+          "main"
+        ],
+        "name": "ical_event_count"
+      },
+      "notebook": "01_measure_occupied_time_without_double_counting.ipynb",
+      "runtime_revision": "v0.4.1",
+      "runtime_catalog_sha256": "81806adcdfe12d8ce66078d13131d365a9f6a5aceb97e96a4440135c335d49f4"
+    },
+    {
+      "status": "verified",
+      "issues": [],
+      "verified_catalogs": [
+        "released",
+        "current"
+      ],
+      "object": {
+        "schema": [
+          "main"
+        ],
+        "name": "is_valid_ical"
+      },
+      "notebook": "01_measure_occupied_time_without_double_counting.ipynb",
+      "runtime_revision": "v0.4.1",
+      "runtime_catalog_sha256": "81806adcdfe12d8ce66078d13131d365a9f6a5aceb97e96a4440135c335d49f4"
+    },
+    {
+      "status": "verified",
+      "issues": [],
+      "verified_catalogs": [
+        "released",
+        "current"
+      ],
+      "object": {
+        "schema": [
+          "main"
+        ],
+        "name": "ical_events"
+      },
+      "notebook": "01_measure_occupied_time_without_double_counting.ipynb",
+      "runtime_revision": "v0.4.1",
+      "runtime_catalog_sha256": "81806adcdfe12d8ce66078d13131d365a9f6a5aceb97e96a4440135c335d49f4"
+    },
+    {
+      "status": "verified",
+      "issues": [],
+      "verified_catalogs": [
+        "released",
+        "current"
+      ],
+      "object": {
+        "schema": [
+          "main"
+        ],
+        "name": "ical_todos"
+      },
+      "notebook": "01_measure_occupied_time_without_double_counting.ipynb",
+      "runtime_revision": "v0.4.1",
+      "runtime_catalog_sha256": "81806adcdfe12d8ce66078d13131d365a9f6a5aceb97e96a4440135c335d49f4"
+    }
+  ],
+  "issues": []
+}
