@@ -20,7 +20,7 @@ parsing for real-world Google/Outlook/Apple exports) with no equal elsewhere.
 
 ```sql
 INSTALL vgi FROM community; LOAD vgi;
-ATTACH 'ical' (TYPE vgi, LOCATION 'java -jar vgi-ical-v0.4.1.jar');
+ATTACH 'ical' (TYPE vgi, LOCATION 'java -jar vgi-ical-v0.4.2.jar');
 
 -- one calendar file -> one row per event, sorted by start time
 SELECT summary, dtstart, location
@@ -42,7 +42,7 @@ the [iCalendar notebooks](notebooks/README.md).
 Every [GitHub release](https://github.com/Query-farm/vgi-ical/releases) ships a self-contained worker jar. It needs Java 21 or newer. Download it:
 
 ```sh
-curl -LO https://github.com/Query-farm/vgi-ical/releases/download/v0.4.1/vgi-ical-v0.4.1.jar
+curl -LO https://github.com/Query-farm/vgi-ical/releases/download/v0.4.2/vgi-ical-v0.4.2.jar
 ```
 
 then attach it from DuckDB (run from the directory holding the jar, or use its absolute path):
@@ -51,7 +51,7 @@ then attach it from DuckDB (run from the directory holding the jar, or use its a
 INSTALL vgi FROM community;
 LOAD vgi;
 
-ATTACH 'ical' AS ical (TYPE vgi, LOCATION 'java -jar vgi-ical-v0.4.1.jar');
+ATTACH 'ical' AS ical (TYPE vgi, LOCATION 'java -jar vgi-ical-v0.4.2.jar');
 
 -- List the events in an iCalendar feed.
 SELECT summary, location FROM ical.main.ical_events(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Team Calendar','BEGIN:VEVENT','UID:event-1@query.farm','SUMMARY:Sprint Planning','DESCRIPTION:Plan the next two-week sprint.','DTSTART:20240115T093000Z','DTEND:20240115T103000Z','LOCATION:Conference Room A','STATUS:CONFIRMED','ORGANIZER:mailto:alice@query.farm','ATTENDEE:mailto:bob@query.farm','ATTENDEE:mailto:carol@query.farm','RRULE:FREQ=WEEKLY;BYDAY=MO','SEQUENCE:3','END:VEVENT','BEGIN:VTODO','UID:todo-1@query.farm','SUMMARY:Write release notes','DUE:20240120T170000Z','STATUS:NEEDS-ACTION','PRIORITY:2','PERCENT-COMPLETE:40','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) ORDER BY dtstart;
