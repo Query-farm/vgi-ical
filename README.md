@@ -20,7 +20,7 @@ parsing for real-world Google/Outlook/Apple exports) with no equal elsewhere.
 
 ```sql
 INSTALL vgi FROM community; LOAD vgi;
-ATTACH 'ical' (TYPE vgi, LOCATION 'java -jar vgi-ical-v0.4.2.jar');
+ATTACH 'ical' (TYPE vgi, LOCATION 'java -jar vgi-ical-v0.5.0.jar');
 
 -- one calendar file -> one row per event, sorted by start time
 SELECT summary, dtstart, location
@@ -42,8 +42,10 @@ the [iCalendar notebooks](notebooks/README.md).
 Every [GitHub release](https://github.com/Query-farm/vgi-ical/releases) ships a self-contained worker jar. It needs Java 21 or newer. Download it:
 
 ```sh
-curl -LO https://github.com/Query-farm/vgi-ical/releases/download/v0.4.2/vgi-ical-v0.4.2.jar
+curl -LO https://github.com/Query-farm/vgi-ical/releases/download/v0.5.0/vgi-ical-v0.5.0.jar
 ```
+
+Requires Haybarn 2.0.1 or newer (vgi-ical 0.5.0 speaks VGI protocol 3.4; older Haybarn builds load a 3.3 `vgi` extension that cannot attach it).
 
 then attach it from DuckDB (run from the directory holding the jar, or use its absolute path):
 
@@ -51,7 +53,7 @@ then attach it from DuckDB (run from the directory holding the jar, or use its a
 INSTALL vgi FROM community;
 LOAD vgi;
 
-ATTACH 'ical' AS ical (TYPE vgi, LOCATION 'java -jar vgi-ical-v0.4.2.jar');
+ATTACH 'ical' AS ical (TYPE vgi, LOCATION 'java -jar vgi-ical-v0.5.0.jar');
 
 -- List the events in an iCalendar feed.
 SELECT summary, location FROM ical.main.ical_events(array_to_string(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Query Farm//vgi-ical//EN','X-WR-CALNAME:Team Calendar','BEGIN:VEVENT','UID:event-1@query.farm','SUMMARY:Sprint Planning','DESCRIPTION:Plan the next two-week sprint.','DTSTART:20240115T093000Z','DTEND:20240115T103000Z','LOCATION:Conference Room A','STATUS:CONFIRMED','ORGANIZER:mailto:alice@query.farm','ATTENDEE:mailto:bob@query.farm','ATTENDEE:mailto:carol@query.farm','RRULE:FREQ=WEEKLY;BYDAY=MO','SEQUENCE:3','END:VEVENT','BEGIN:VTODO','UID:todo-1@query.farm','SUMMARY:Write release notes','DUE:20240120T170000Z','STATUS:NEEDS-ACTION','PRIORITY:2','PERCENT-COMPLETE:40','END:VTODO','END:VCALENDAR'], chr(10))::BLOB) ORDER BY dtstart;
@@ -228,7 +230,7 @@ make test-sql    # shadowJar + fixtures + haybarn-unittest E2E (TRANSPORT=subpro
 make test        # both
 ```
 
-`make test-sql` needs haybarn **2.0** (`uv tool install --prerelease allow 'haybarn-unittest>=2.0.0rc11,<2.1'`):
+`make test-sql` needs haybarn **2.0** (`uv tool install --prerelease allow 'haybarn-unittest>=2.0.1rc3,<2.1'`):
 the worker speaks VGI protocol `vgi.v3` / 3.3, which haybarn 1.5's `vgi` extension rejects.
 It runs the suite through `ci/run-integration.sh`, as CI does: that script rewrites
 each `require httpfs` / `require icu` into an explicit install-and-load (run raw,

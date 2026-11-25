@@ -82,16 +82,16 @@ Makefile                     build / fixtures / test-unit / test-sql / test / cl
    it (bare haybarn-unittest), so `composed.test` does `require icu` and
    `SET TimeZone = 'UTC'`.
 
-## vgi 0.48.0 record arity (test drivers)
+## vgi 0.50.1 record arity (test drivers)
 
-**Protocol:** vgi 0.48.0 speaks VGI protocol `vgi.v3` / 3.3.0, which only the
+**Protocol:** vgi 0.50.1 speaks VGI protocol `vgi.v3` / 3.4.0, which only the
 haybarn **2.0** community `vgi` extension attaches (haybarn 1.5 rejects it).
 `haybarn-unittest` 2.0 isolates `$HOME`, so `ci/run-integration.sh` and
 `make test-sql` pass `--keep-home` (otherwise the installed `vgi` extension is
 "not found").
 
 
-`TestSupport.invoke` builds a `TableInitParams` with the full vgi 0.48.0
+`TestSupport.invoke` builds a `TableInitParams` with the full vgi 0.50.1
 component list (25), including `bindOutputSchema` and the trailing `atUnit`/`atValue`/
 `storage`/`copyFrom`/`splitPayloads`. If the SDK bumps and the constructor
 arity changes, `javap -cp <vgi jar>
